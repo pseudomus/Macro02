@@ -9,17 +9,20 @@ import SwiftUI
 enum AppScreenNavigation: Codable, Hashable, Identifiable, CaseIterable {
     case essays
     case repertoire
+    case evolution
     case news
     
     var id: AppScreenNavigation { self }
 }
 
-extension AppScreenNavigation{
+extension AppScreenNavigation {
     @ViewBuilder
     var label: some View {
         switch self {
         case .essays:
             Label("Essays", systemImage: "text.document.fill")
+        case .evolution:
+            Label("Repertoires", systemImage: "bird")
         case .repertoire:
             Label("Repertoires", systemImage: "bird")
         case .news:
@@ -31,7 +34,9 @@ extension AppScreenNavigation{
     var destination: some View {
         switch self {
         case .essays:
-            HomeEssayView()
+            EssayNavigationStack()
+        case .evolution:
+            EvolutionNavigationStack()
         case .repertoire:
             RepertoireView()
         case .news:
