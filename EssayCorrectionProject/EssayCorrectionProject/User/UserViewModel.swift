@@ -15,7 +15,8 @@ class UserViewModel: ObservableObject {
 
     let userService: UserService
 
-    init(container: DependencyContainer = .shared) {self.userService = container.userservice
+    init(container: DependencyContainer = .shared) {
+        self.userService = container.userservice
     }
     
     // FETCH USER DATA

@@ -42,6 +42,7 @@ struct ContentView: View {
     }
 }
 
-//#Preview {
-//    ContentView()
-//}
+#Preview {
+    
+    ContentView(userViewModel: UserViewModel())
+}
