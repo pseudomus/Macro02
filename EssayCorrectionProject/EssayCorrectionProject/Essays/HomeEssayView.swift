@@ -8,8 +8,25 @@
 import SwiftUI
 
 struct HomeEssayView: View {
+    @Environment(\.navigate) var navigate
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        Button {
+            navigate(.essays(.correct))
+        } label: {
+            Text("Go to Essay Cor")
+        }
+        Button {
+            navigate(
+                .essays(
+                    .scanner(
+                        text: .constant("Legal")
+                    )
+                )
+            )
+        } label: {
+            Text("Go to Essay Cor")
+        }
     }
 }
 
