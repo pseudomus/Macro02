@@ -9,7 +9,7 @@ import SwiftUI
 import AuthenticationServices
 
 struct AppleLoginView: View {
-    @ObservedObject var userViewModel: UserViewModel
+    @EnvironmentObject var userViewModel: UserViewModel
     
     @State private var showError = false
     @State private var errorMessage = ""

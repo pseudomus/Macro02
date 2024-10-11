@@ -14,8 +14,9 @@ struct HomeEssayView: View {
         Button {
             navigate(.essays(.correct))
         } label: {
-            Text("Go to Essay Cor")
+            Text("Go to Essay Correction")
         }
+        
         Button {
             navigate(
                 .essays(

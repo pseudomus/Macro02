@@ -15,16 +15,10 @@ struct EssayCorrectionProjectApp: App {
     
     var body: some Scene {
         WindowGroup {
-            ZStack {
-                if authManager.isAuthenticated {
-                    ContentView(userViewModel: userViewModel)
-                        .transition(.move(edge: .trailing))
-                } else {
-                    AppleLoginView(userViewModel: userViewModel)
-                        .transition(.move(edge: .bottom))
-                }
-            }
-            .animation(.easeInOut, value: AuthManager.shared.isAuthenticated)
+            ContentView()
+                .environmentObject(userViewModel)
+                .environmentObject(authManager)
+                .onAppear { if userViewModel.user == nil { userViewModel.fetchUserData() } } // Fetch user data when opening again without login
         }
     }
 }
