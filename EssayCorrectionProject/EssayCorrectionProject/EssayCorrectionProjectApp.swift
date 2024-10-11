@@ -17,7 +17,7 @@ struct EssayCorrectionProjectApp: App {
         WindowGroup {
             ZStack {
                 if authManager.isAuthenticated {
-                    ContentView()
+                    ContentView(userViewModel: userViewModel)
                         .transition(.move(edge: .trailing))
                 } else {
                     AppleLoginView(userViewModel: userViewModel)

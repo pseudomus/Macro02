@@ -15,8 +15,7 @@ class UserViewModel: ObservableObject {
 
     let userService: UserService
 
-    init(container: DependencyContainer = .shared) {
-        self.userService = container.userservice
+    init(container: DependencyContainer = .shared) {self.userService = container.userservice
     }
     
     // FETCH USER DATA
@@ -27,6 +26,7 @@ class UserViewModel: ObservableObject {
             DispatchQueue.main.async {
                 self.isLoading = false
                 switch result {
+                    
                 case .success(let user):
                     print("Usuário carregado: \(user)")
                     self.user = user
@@ -45,15 +45,21 @@ class UserViewModel: ObservableObject {
     
     // LOGIN / CADASTRO - BUSCAR DADOS AO ENTRAR NO APP
     func login(withProvider provider: String, token: String, name: String) {
+        isLoading = true
+        
         userService.login(provider: provider, token: token, name: name) { result in
-            switch result {
-            case .success(let user):
-                print("Login feito com sucesso: \(user)")
-                DispatchQueue.main.async {
+            DispatchQueue.main.async {
+                self.isLoading = false
+                switch result {
+                    
+                case .success(let user):
+                    print("Login feito com sucesso: \(user)")
                     self.user = user
+                    
+                case .failure(let failure):
+                    self.errorMessage = "Erro ao serviço tentar fazer login: \(failure.localizedDescription)"
+                    self.user = nil 
                 }
-            case .failure(let failure):
-                self.errorMessage = "Erro ao serviço tentar fazer login: \(failure.localizedDescription)"
             }
         }
     }

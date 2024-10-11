@@ -68,11 +68,11 @@ class UserService: NetworkService {
             // Processar a resposta JSON do backend PARA PEGAR APENAS OS CAMPOS QUE QUERO E CONSTRUIR UM MODELO NO APP
             do {
                 if let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
-                   let userDict = json["student"] as? [String: Any] {
+                   let userDict = json["user"] as? [String: Any] {
 
                     // Extrair os dados do usuário
                     if let id = userDict["id"] as? Int,
-                       let name = userDict["name"] as? String,
+                       let name = userDict["displayName"] as? String,
                        let email = userDict["email"] as? String {
 
                         let user = User(id: id, name: name, email: email)
@@ -129,12 +129,12 @@ class UserService: NetworkService {
                 if let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String : Any] {
                     print("Resposta do servidor: \(json)")
                     // CAMPOS DA RESPOSTA
-                    if let token = json["token"] as? String, let userDict = json["student"] as? [String: Any] {
+                    if let token = json["token"] as? String, let userDict = json["user"] as? [String: Any] {
                         print("Token recebido: \(token)")
                         
                         // EXTRAIR CAMPOS QUE QUEREMOS DO USUÁRIO
                         if let id = userDict["id"] as? Int,
-                           let name = userDict["name"] as? String,
+                           let name = userDict["displayName"] as? String,
                            let email = userDict["email"] as? String {
                             
                             // LOGA O USUÁRIO
