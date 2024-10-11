@@ -10,16 +10,22 @@ import SwiftUI
 struct EssayScannerView: View {
     @Binding var text: String
     @Environment(\.navigate) var navigate
+    @State var tabBarIsHidden: Bool = true
     
     var body: some View {
-        Text("Scanner View with text \(text)")
-        
-        Button {
-            navigate(.popBackToRoot)
-        } label: {
-            Text("Voltar")
+        VStack{
+            Text("Scanner View with text \(text)")
+            
+            Button {
+                tabBarIsHidden = false
+                navigate(.popBackToRoot)
+            } label: {
+                Text("Voltar")
+            }
+            .toolbar(tabBarIsHidden ? .hidden : .visible, for: .tabBar)
+        }.onAppear{
+            tabBarIsHidden = true
         }
-        .toolbar(.hidden, for: .tabBar)
     }
 }
 
