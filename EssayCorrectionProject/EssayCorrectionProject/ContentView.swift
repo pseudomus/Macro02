@@ -12,6 +12,9 @@ struct ContentView: View {
     
     var body: some View {
         AppTabView(selection: $selection)
+            .onAppear{
+                NotificationManager.instance.requestAuthorization()
+            }
     }
 }
 
