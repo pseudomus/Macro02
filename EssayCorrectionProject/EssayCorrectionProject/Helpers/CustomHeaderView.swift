@@ -22,7 +22,7 @@ struct CustomHeaderView<Content: View>: View {
     var content: (Bool) -> Content
 
     @State private var searchQuery: String = ""
-    @FocusState private var searchFieldIsFocused: Bool
+    @FocusState private var searchFieldIsFocused: Bool 
 
     // Animations
     @State private var opacity: Double = 0
@@ -238,13 +238,14 @@ struct CustomHeaderView<Content: View>: View {
 
 #Preview {
     CustomHeaderView(title: "Redações",
+                     filters: ["Filtro 1", "Filtro 2"],
                      distanceContentFromTop: 90,
                      showSearchBar: false,
-                     isScrollable: false) { _ in
+                     isScrollable: true) { _ in
         // CONTEÚDO DA VIEW AQUI
         VStack {
-            ForEach(0..<30) { _ in
-                Text("Contéudo aqui")
+            ForEach(0..<20) { _ in
+                Text("Conteúdo aqui")
             }
         }
     }

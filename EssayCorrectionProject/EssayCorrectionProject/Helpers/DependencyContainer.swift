@@ -10,4 +10,5 @@ class DependencyContainer {
     static var shared = DependencyContainer()
     
     let userservice = UserService()
+    let articleService = ArticleService()
 }
