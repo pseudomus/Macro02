@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+// MODEL
 struct Article: Codable {
     let article_id: String
     let title: String
@@ -19,6 +20,7 @@ struct Article: Codable {
     
 }
 
+// VIEWMODEL
 class ArticleViewModel: ObservableObject {
     @Published var articles: [Article] = []
     @Published var isLoading: Bool = false
@@ -47,21 +49,6 @@ class ArticleViewModel: ObservableObject {
 }
 
 
-
-
-struct sampleData: Hashable {
-    let title: String
-    let date: String
-}
-
-var data: [sampleData] = [
-    .init(title: "Título da notícia 1", date: "11/10/24"),
-    .init(title: "Título da notícia 2", date: "11/10/24"),
-    .init(title: "Título da notícia 3", date: "11/10/24"),
-    .init(title: "Título da notícia 4", date: "11/10/24"),
-]
-
-
 struct NewsView: View {
     @StateObject private var viewModel = ArticleViewModel() // Observando a ViewModel
     
@@ -83,7 +70,7 @@ struct NewsView: View {
                         distanceContentFromTop: 50,
                         showSearchBar: false,
                         isScrollable: true,
-                        numberOfEssays: viewModel.articles.count
+                        numOfItems: viewModel.articles.count
                     ) { _ in
                         VStack(spacing: 30) {
                             ForEach(viewModel.articles, id: \.article_id) { article in

@@ -11,15 +11,15 @@ import SwiftUI
 struct CustomHeaderView<Content: View>: View {
 
     // MARK: - Properties
-    var title: String
-    var filters: [String]?
-    var distanceContentFromTop: CGFloat
-    var showSearchBar: Bool
-    var isScrollable: Bool
-    var numberOfEssays: Int?
-    var onSearch: ((String) -> Void)?
-    var onCancelSearch: (() -> Void)?
-    var content: (Bool) -> Content
+    var title: String                                       // TÍTULO
+    var filters: [String]?                                  // FILTROS (opcional)
+    var distanceContentFromTop: CGFloat                     // DISTANCIA QUE COMECA O CONTEÚDO DO TOPO
+    var showSearchBar: Bool                                 // MOSTRAR A SEARCHBAR
+    var isScrollable: Bool                                  // É CONTEÚDO COM SCROLL
+    var numOfItems: Int?                                    // NUMERO DE ITENS (opcional) *para a tela redações*
+    var onSearch: ((String) -> Void)?                       // CLOSURE - pesquisa da searchbar (opcional)
+    var onCancelSearch: (() -> Void)?                       // CLOSURE - cancelamento da pesquisa (opcional)
+    var content: (Bool) -> Content                          // CONTEÚDO INSERIDO (A VIEW EM SI)
 
     @State private var searchQuery: String = ""
     @FocusState private var searchFieldIsFocused: Bool 
@@ -132,7 +132,7 @@ struct CustomHeaderView<Content: View>: View {
 
     // MARK: - Helper Methods
     private func totalContentHeight() -> CGFloat {
-        let numberOfItems = numberOfEssays ?? 0
+        let numberOfItems = numOfItems ?? 0
         let itemHeight: CGFloat = 140 + 50
         return CGFloat(numberOfItems) * itemHeight + distanceContentFromTop
     }
