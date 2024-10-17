@@ -17,7 +17,6 @@ struct Article: Codable {
     let category: [String]
     let image_url: String?
     let link: String
-    
 }
 
 // VIEWMODEL
@@ -50,7 +49,7 @@ class ArticleViewModel: ObservableObject {
 
 
 struct NewsView: View {
-    @StateObject private var viewModel = ArticleViewModel() // Observando a ViewModel
+    @StateObject private var viewModel = ArticleViewModel() 
     @State private var selectedFilters: Set<String> = []
 
     // Dicionário para traduzir as categorias
@@ -92,12 +91,13 @@ struct NewsView: View {
                             toggleFilter(filter) // Alternar seleção de filtros
                         }
                     ) { _ in
-                        VStack(spacing: 30) {
+                        LazyVStack(spacing: 30) {
                             ForEach(filteredArticles, id: \.article_id) { article in
                                 NewsCardView(
                                     title: article.title,
                                     date: formattedDate(article.pubDate),
                                     imageUrl: article.image_url,
+                                    link: article.link,
                                     proxy: proxy
                                 )
                                 .frame(height: proxy.size.height / 3)
@@ -122,7 +122,7 @@ struct NewsView: View {
     
     // Função para traduzir a categoria
     func translateCategory(_ category: String) -> String {
-        return categoryTranslations[category, default: category.capitalized] // Traduzir ou usar o nome original capitalizado
+        return categoryTranslations[category, default: category.capitalized]
     }
     
     // Função para formatar a data
@@ -166,6 +166,10 @@ struct NewsCardView: View {
     var title: String
     var date: String
     var imageUrl: String?
+    var link: String
+    var validLink: URL? { // verifica se é valido o link
+        return URL(string: link)
+    }
     
     var proxy: GeometryProxy
 
@@ -215,6 +219,9 @@ struct NewsCardView: View {
                     }
                 }
                 .padding(10)
+            }
+            .onTapGesture {
+                if let validLink = validLink { UIApplication.shared.open(validLink) }
             }
             .padding(.horizontal)
         }

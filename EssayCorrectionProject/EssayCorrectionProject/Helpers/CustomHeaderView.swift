@@ -181,20 +181,17 @@ struct CustomHeaderView<Content: View>: View {
     // MARK: - Filters View
     @ViewBuilder
     private func filtersView(filters: [String]) -> some View {
-        if !showFiltersBeforeSwipingUp! || shouldAnimate {
-            // Exibe LinearGradient quando showFiltersBeforeSwipingUp é true ou quando deve animar
-            LinearGradient(gradient: Gradient(colors: [Color.white.opacity(0.7), Color.clear]),
-                           startPoint: .top,
-                           endPoint: .bottom)
-            .frame(height: 50)
-            .overlay {
-                filterScrollView(for: filters)
-            }
-            .opacity(opacity)
-        } else {
-            // Exibe apenas o ScrollView se showFiltersBeforeSwipingUp for false
+        let showFilters = showFiltersBeforeSwipingUp == true // Verifica se é `true`, trata `nil` como `false`
+
+        LinearGradient(gradient: Gradient(colors: [Color.white.opacity(0.7), Color.clear]),
+                       startPoint: .top,
+                       endPoint: .bottom)
+        .opacity(showFilters ? (shouldAnimate ? 1 : 0) : 1)
+        .frame(height: showFilters ? (shouldAnimate ? 50 : 25) : 50)
+        .overlay {
             filterScrollView(for: filters)
         }
+        .opacity(showFilters ? 1 : opacity)
     }
 
    // MARK: - Filter Button
