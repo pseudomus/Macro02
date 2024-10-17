@@ -13,16 +13,19 @@ struct CustomHeaderView<Content: View>: View {
     // MARK: - Properties
     var title: String                                       // TÍTULO
     var filters: [String]?                                  // FILTROS (opcional)
+    var showFiltersBeforeSwipingUp: Bool?                   // MOSTRAR FILTROS ANTES DE SCROLLAR (opcional) - para notícias
     var distanceContentFromTop: CGFloat                     // DISTANCIA QUE COMECA O CONTEÚDO DO TOPO
     var showSearchBar: Bool                                 // MOSTRAR A SEARCHBAR
     var isScrollable: Bool                                  // É CONTEÚDO COM SCROLL
     var numOfItems: Int?                                    // NUMERO DE ITENS (opcional) *para a tela redações*
     var onSearch: ((String) -> Void)?                       // CLOSURE - pesquisa da searchbar (opcional)
     var onCancelSearch: (() -> Void)?                       // CLOSURE - cancelamento da pesquisa (opcional)
+    var onSelectFilter: ((String) -> Void)?                 // CLOSURE - ao clicar em filtro (opcional)
     var content: (Bool) -> Content                          // CONTEÚDO INSERIDO (A VIEW EM SI)
 
     @State private var searchQuery: String = ""
     @FocusState private var searchFieldIsFocused: Bool 
+    @State private var selectedFilters: Set<String> = []   // Estado para armazenar filtros selecionados
 
     // Animations
     @State private var opacity: Double = 0
@@ -178,41 +181,48 @@ struct CustomHeaderView<Content: View>: View {
     // MARK: - Filters View
     @ViewBuilder
     private func filtersView(filters: [String]) -> some View {
+        let showFilters = showFiltersBeforeSwipingUp == true // Verifica se é `true`, trata `nil` como `false`
+
         LinearGradient(gradient: Gradient(colors: [Color.white.opacity(0.7), Color.clear]),
                        startPoint: .top,
                        endPoint: .bottom)
-        .frame(height: 50)
+        .opacity(showFilters ? (shouldAnimate ? 1 : 0) : 1)
+        .frame(height: showFilters ? (shouldAnimate ? 50 : 25) : 50)
         .overlay {
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack {
-                    ForEach(filters, id: \.self) { filter in
-                        filterButton(for: filter)
-                    }
-                }
-                .padding(.leading)
-                .padding(.vertical, 2)
-            }
+            filterScrollView(for: filters)
         }
-        .opacity(opacity)
+        .opacity(showFilters ? 1 : opacity)
     }
 
-    // MARK: - Filter Button
-    @ViewBuilder
-    private func filterButton(for filter: String) -> some View {
-        Text(filter)
-            .font(.footnote)
-            .padding(8)
-            .background(Color(uiColor: .systemGray4))
-            .clipShape(.capsule)
-            .overlay(
-                Capsule()
-                    .stroke(Color.white, lineWidth: 2)
-            )
-            .onTapGesture {
-                // TODO: - FILTROS
-                print("Selecionar filtro: \(filter)")
-            }
-    }
+   // MARK: - Filter Button
+   @ViewBuilder
+   private func filterButton(for filter: String) -> some View {
+       let isSelected = selectedFilters.contains(filter) // Verifica se o filtro está selecionado
+       
+       Text(filter)
+           .font(.footnote)
+           .padding(8)
+           .background(isSelected ? Color.white : Color(uiColor: .systemGray4)) // Cor do fundo baseada na seleção
+           .clipShape(Capsule())
+           .overlay(
+               Capsule()
+                   .stroke(Color.white, lineWidth: 3)
+           )
+           // Click no filtro
+           .onTapGesture {
+               toggleFilter(filter) // Alternar seleção de filtros
+               onSelectFilter?(filter) // Chamar a closure opcional
+           }
+   }
+
+   // MARK: - Helper Methods
+   private func toggleFilter(_ filter: String) {
+       if selectedFilters.contains(filter) {
+           selectedFilters.remove(filter) // Remove se já está selecionado
+       } else {
+           selectedFilters.insert(filter) // Adiciona se não está selecionado
+       }
+   }
 
     // MARK: - Helper Methods
     private func updateOpacity(for offset: CGFloat, height: CGFloat) {
@@ -234,11 +244,25 @@ struct CustomHeaderView<Content: View>: View {
         searchFieldIsFocused = false
         onCancelSearch?()  // Só chama se existir
     }
+    
+    // Função auxiliar para criar o ScrollView de filtros
+    private func filterScrollView(for filters: [String]) -> some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack {
+                ForEach(filters, id: \.self) { filter in
+                    filterButton(for: filter) // Passando o filtro para o botão
+                }
+            }
+            .padding(.leading)
+            .padding(.vertical, 2)
+        }
+    }
 }
 
 #Preview {
     CustomHeaderView(title: "Redações",
                      filters: ["Filtro 1", "Filtro 2"],
+                     showFiltersBeforeSwipingUp: true,
                      distanceContentFromTop: 90,
                      showSearchBar: false,
                      isScrollable: true) { _ in

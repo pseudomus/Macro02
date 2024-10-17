@@ -17,7 +17,6 @@ struct Article: Codable {
     let category: [String]
     let image_url: String?
     let link: String
-    
 }
 
 // VIEWMODEL
@@ -50,7 +49,23 @@ class ArticleViewModel: ObservableObject {
 
 
 struct NewsView: View {
-    @StateObject private var viewModel = ArticleViewModel() // Observando a ViewModel
+    @StateObject private var viewModel = ArticleViewModel() 
+    @State private var selectedFilters: Set<String> = []
+
+    // Dicionário para traduzir as categorias
+    private let categoryTranslations: [String: String] = [
+        "business": "Negócios",
+        "entertainment": "Entretenimento",
+        "environment": "Meio ambiente",
+        "food": "Culinária",
+        "health": "Saúde",
+        "politics": "Política",
+        "science": "Ciência",
+        "sports": "Esporte",
+        "technology": "Tecnologia",
+        "top": "Em alta",
+        "world": "Mundo",
+    ]
     
     var body: some View {
         GeometryReader { proxy in
@@ -67,21 +82,28 @@ struct NewsView: View {
                     CustomHeaderView(
                         title: "Notícias",
                         filters: uniqueCategories(from: viewModel.articles), // Pegando categorias únicas
-                        distanceContentFromTop: 50,
+                        showFiltersBeforeSwipingUp: true,
+                        distanceContentFromTop: 120,
                         showSearchBar: false,
                         isScrollable: true,
-                        numOfItems: viewModel.articles.count
+                        numOfItems: viewModel.articles.count,
+                        onSelectFilter: { filter in
+                            toggleFilter(filter) // Alternar seleção de filtros
+                        }
                     ) { _ in
-                        VStack(spacing: 30) {
-                            ForEach(viewModel.articles, id: \.article_id) { article in
+                        LazyVStack(spacing: 30) {
+                            ForEach(filteredArticles, id: \.article_id) { article in
                                 NewsCardView(
                                     title: article.title,
                                     date: formattedDate(article.pubDate),
-                                    imageUrl: article.image_url
+                                    imageUrl: article.image_url,
+                                    link: article.link,
+                                    proxy: proxy
                                 )
                                 .frame(height: proxy.size.height / 3)
                             }
                         }
+                        .padding(.bottom, 100) // para tabbar nao cobrir
                     }
                 }
             }
@@ -91,44 +113,74 @@ struct NewsView: View {
         }
     }
     
-    // Função para obter categorias únicas
+    // OBTER CATEGORIAS DOS FILTROS (Traduzindo as categorias)
     func uniqueCategories(from articles: [Article]) -> [String] {
-        // Usando Set para eliminar duplicatas
         let allCategories = articles.flatMap { $0.category }
-        return Array(Set(allCategories)).sorted() // Convertendo de volta para array ordenado
+        let uniqueCategories = Array(Set(allCategories)).sorted() // Eliminar duplicatas e ordenar
+        return uniqueCategories.map { translateCategory($0) } // Traduzir categorias
     }
     
-    // Função para formatar a data de String para String
+    // Função para traduzir a categoria
+    func translateCategory(_ category: String) -> String {
+        return categoryTranslations[category, default: category.capitalized]
+    }
+    
+    // Função para formatar a data
     func formattedDate(_ dateString: String) -> String {
         let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ" // O formato original da string
+        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
         
         guard let date = formatter.date(from: dateString) else {
-            return "Data inválida" // Retornar mensagem se a data for inválida
+            return "Data inválida"
         }
         
-        // Formatando a data para o formato desejado
-        formatter.dateFormat = "dd/MM/yyyy" // Formato desejado para exibição
+        formatter.dateFormat = "dd/MM/yyyy"
         return formatter.string(from: date)
     }
-
+    
+    // FILTRAR
+    var filteredArticles: [Article] {
+        if selectedFilters.isEmpty {
+            return viewModel.articles
+        } else {
+            return viewModel.articles.filter { article in
+                selectedFilters.intersection(Set(article.category.map { translateCategory($0) })).count > 0
+            }
+        }
+    }
+    
+    // Alternar seleção de filtros
+    private func toggleFilter(_ filter: String) {
+        if selectedFilters.contains(filter) {
+            selectedFilters.remove(filter) // Se já está selecionado, remove
+        } else {
+            selectedFilters.insert(filter) // Se não está selecionado, adiciona
+        }
+    }
 }
 
 
+
+
 struct NewsCardView: View {
-    var title: String = "Título da notícia"
-    var date: String = "11/10/24"
-    var imageUrl: String? // Adicionando uma propriedade para a URL da imagem
+    var title: String
+    var date: String
+    var imageUrl: String?
+    var link: String
+    var validLink: URL? { // verifica se é valido o link
+        return URL(string: link)
+    }
     
+    var proxy: GeometryProxy
+
     var body: some View {
-        GeometryReader { proxy in
-            // CARD
+        GeometryReader { geometry in
             ZStack(alignment: .top) {
-                // Base
+                // Base do Card
                 RoundedRectangle(cornerRadius: 12)
                     .foregroundStyle(.gray.opacity(0.5))
                 
-                // Imagem e textos
+                // Conteúdo
                 VStack(alignment: .leading, spacing: 10) {
                     // Imagem usando AsyncImage
                     if let imageUrl = imageUrl, let url = URL(string: imageUrl) {
@@ -136,44 +188,44 @@ struct NewsCardView: View {
                             image
                                 .resizable()
                                 .aspectRatio(contentMode: .fill)
+                                .frame(width: geometry.size.width - 50, height: geometry.size.height * 0.75) // Largura do card
                                 .clipShape(UnevenRoundedRectangle(cornerRadii: .init(topLeading: 6, topTrailing: 6)))
+                                .clipped()
                         } placeholder: {
                             // Placeholder enquanto a imagem carrega
                             UnevenRoundedRectangle(cornerRadii: .init(topLeading: 6, topTrailing: 6))
                                 .foregroundStyle(.gray)
+                                .overlay { ProgressView() }
+                                .frame(width: geometry.size.width - 50, height: geometry.size.height * 0.75) // Largura do card
                         }
-                        .frame(height: proxy.size.height * 0.4) 
                     } else {
                         // Placeholder se não houver URL
                         UnevenRoundedRectangle(cornerRadii: .init(topLeading: 6, topTrailing: 6))
                             .foregroundStyle(.gray)
-                            .frame(height: proxy.size.height * 0.4)
+                            .frame(width: geometry.size.width - 50, height: geometry.size.height * 0.75) // Largura do card
                     }
-                    
+
                     // TEXTOS E PIN
                     HStack {
-                        VStack (alignment: .leading) {
+                        VStack(alignment: .leading) {
                             Text(title)
                                 .fontWeight(.bold)
                             Text(date)
                                 .font(.subheadline)
                         }
-                        
                         Spacer()
-                        
                         Image(systemName: "pin")
                             .font(.title2)
                     }
                 }
                 .padding(10)
             }
+            .onTapGesture {
+                if let validLink = validLink { UIApplication.shared.open(validLink) }
+            }
             .padding(.horizontal)
         }
     }
-}
-
-#Preview {
-    NewsCardView()
 }
 
 #Preview {
