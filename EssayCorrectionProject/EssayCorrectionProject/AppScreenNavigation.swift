@@ -22,7 +22,7 @@ extension AppScreenNavigation {
         case .essays:
             Label("Essays", systemImage: "text.document.fill")
         case .evolution:
-            Label("Repertoires", systemImage: "bird")
+            Label("Evolution", systemImage: "bird")
         case .repertoire:
             Label("Repertoires", systemImage: "bird")
         case .news:

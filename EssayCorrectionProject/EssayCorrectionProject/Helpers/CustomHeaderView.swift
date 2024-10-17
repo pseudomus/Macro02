@@ -50,7 +50,7 @@ struct CustomHeaderView<Content: View>: View {
                         let target = newValue ? "scrollTop" : "scrollBottom"
                         withAnimation { scrollProxy.scrollTo(target, anchor: .top) }
                     }
-                    .disabled(!isScrollable)
+                    .scrollDisabled(!isScrollable)
 
                 }
                 // Distância entre filtro e o título

@@ -172,9 +172,6 @@ struct NewsCardView: View {
     }
 }
 
-
-
-
 #Preview {
     NewsCardView()
 }

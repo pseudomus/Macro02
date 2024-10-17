@@ -37,7 +37,10 @@ class AuthManager: ObservableObject {
         // salvar o token no Keychain
         print("salvando token no Keychain: \(token)")
         KeychainHelper.saveJWT(token: token)
-        isAuthenticated = true
+        DispatchQueue.main.async {
+            self.isAuthenticated = true
+        }
+        
     }
 }
 

@@ -11,7 +11,6 @@ import SwiftUI
 struct EssayCorrectionProjectApp: App {
     @StateObject private var userViewModel = UserViewModel()
     @StateObject private var authManager = AuthManager.shared
-
     
     var body: some Scene {
         WindowGroup {

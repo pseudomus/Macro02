@@ -8,13 +8,12 @@
 import SwiftUI
 
 struct EssayScannerView: View {
-    @Binding var text: String
     @Environment(\.navigate) var navigate
     @State var tabBarIsHidden: Bool = true
     
     var body: some View {
         VStack{
-            Text("Scanner View with text \(text)")
+            Text("Scanner View with text")
             
             Button {
                 tabBarIsHidden = false
@@ -30,5 +29,5 @@ struct EssayScannerView: View {
 }
 
 #Preview {
-    EssayScannerView(text: .constant("POP"))
+    EssayScannerView()
 }
