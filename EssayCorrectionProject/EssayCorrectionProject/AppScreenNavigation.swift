@@ -8,8 +8,8 @@ import SwiftUI
 
 enum AppScreenNavigation: Codable, Hashable, Identifiable, CaseIterable {
     case essays
-    case repertoire
     case evolution
+    case repertoire
     case news
     
     var id: AppScreenNavigation { self }
