@@ -159,9 +159,6 @@ struct NewsView: View {
     }
 }
 
-
-
-
 struct NewsCardView: View {
     var title: String
     var date: String
