@@ -158,9 +158,9 @@ struct CompetenceItem {
 
 struct EssayInputView: View {
     @StateObject var essayViewModel = EssayViewModel()
-    @State private var theme: String = "Tecnologia e Sociedade"
-    @State private var title: String = "Redes Sociais e Interações Humanas"
-    @State private var essay: String = "Nos últimos anos, o advento das redes sociais transformou profundamente a forma como as pessoas se comunicam e se relacionam..."
+    @State private var theme: String = "A Importância da Educação no Combate à Desigualdade Social"
+    @State private var title: String = "Educação e Desigualdade Social"
+    @State private var essay: String = "A desigualdade social é um problema muito antigo e presente em várias sociedades ao redor do mundo. No Brasil, esse problema é bastante evidente, especialmente em áreas mais carentes. A educação tem um papel crucial para combater essa desigualdade, porque ao oferecer oportunidade de estudo, todas as pessoas pode ter um futuro melhor e com mais oportunidades de emprego. Entretanto, apesar dos avanços no acesso à educação nos últimos anos, ainda existem muitas desigualdades no sistema educacional. Escolas públicas de áreas periféricas, por exemplo, geralmente não têm a mesma qualidade de ensino que escolas particulares ou públicas de áreas mais ricas. Isso acaba prejudicando os alunos de famílias mais pobres, que não conseguem alcançar os mesmos resultados dos alunos de escolas particulares. Outro ponto a se considerar é a falta de investimento adequado nas escolas públicas. Muitos professores não recebem o apoio necessário para desenvolverem seus trabalhos com eficiência. A falta de material escolar e infraestrutura também é um problema que afeta o aprendizado dos alunos, dificultando ainda mais seu progresso. Portanto, é fundamental que o governo invista mais na educação pública para garantir que todos os estudantes tenham acesso a uma educação de qualidade. Por fim, para que a educação realmente seja um meio eficaz de combate à desigualdade social, é necessário que além do acesso à escola, haja também a implementação de políticas públicas que promovam a permanência e o sucesso dos estudantes no ambiente escolar. Sem essas políticas, muitos jovens acabam abandonando a escola antes mesmo de concluir o ensino básico, o que perpetua o ciclo de pobreza e desigualdade. Conclusão: A educação é, sem dúvida, uma das ferramentas mais importantes para reduzir as desigualdades sociais no Brasil. No entanto, ainda há muitos desafios a serem superados, como a falta de investimento nas escolas públicas e a má qualidade do ensino em algumas regiões do país. Somente através de uma educação acessível e de qualidade para todos será possível construir uma sociedade mais justa e igualitária."
     
     @State private var navigateToResponseView = false
 
@@ -246,15 +246,15 @@ struct EssayResponseView: View {
 
                         ForEach(competency.cards, id: \.title) { card in
                             VStack(alignment: .leading) {
-                                Text("Card: \(card.title)")
+                                Text("Card: \(card.title ?? "")")
                                     .font(.footnote)
-                                Text("Elemento: \(card.element)")
+                                Text("Elemento: \(card.element ?? "")")
                                     .font(.footnote)
-                                Text("Contexto: \(card.context)")
+                                Text("Contexto: \(card.context ?? "")")
                                     .font(.footnote)
                                 Text("Sugestão: \(card.suggestion ?? "N/A")")
                                     .font(.footnote)
-                                Text("Mensagem: \(card.message)")
+                                Text("Mensagem: \(card.message ?? "")")
                                     .font(.footnote)
                             }
                             .padding(.vertical, 2)

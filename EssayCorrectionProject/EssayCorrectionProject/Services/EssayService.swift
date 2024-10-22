@@ -16,11 +16,11 @@ struct Competency: Codable {
 
 // Modelo para Card
 struct Card: Codable {
-    let title: String
-    let element: String
-    let context: String
+    let title: String?
+    let element: String?
+    let context: String?
     let suggestion: String?
-    let message: String
+    let message: String?
 }
 
 // Modelo para a Resposta
