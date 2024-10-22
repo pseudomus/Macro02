@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-
+// MARK: - ESSAY CORRECTED
 struct EssayCorrectedView: View {
     
     @State private var isEssayTextExpanded: Bool = false
@@ -97,11 +97,12 @@ struct EssayCorrectedView: View {
                 }
             }
             .padding(.horizontal)
+            .navigationBarBackButtonHidden()
         }
     }
 }
 
-
+// MARK: - CARD
 struct ExpandableCompetenceCardView: View {
     let cards: [Card] // Array de cartões
     @State private var isExpanded: Bool = false
@@ -164,19 +165,12 @@ struct ExpandableCompetenceCardView: View {
     }
 }
 
-// Estrutura de dados para cada item de competência
-struct CompetenceItem {
-    var erro: String
-    var contexto: String
-    var sugestao: String
-    var description: String
-}
-
 #Preview {
     EssayCorrectedView(essayResponse: EssayResponse(theme: "Tema", title: "TITULO", tag: "TAG", competencies: [Competency(resume: "ResumoResumoResumoResumoResumoResumoResumoResumo", cards: [Card(title: "Titulo do card", element: "Elemento", context: "contexto", suggestion: "Sugestao, aoaoaoao", message: "Mesagem")])], metrics: Metrics(words: 10, paragraphs: 10, lines: 10, connectors: 10, deviations: 10, citations: 10, argumentativeOperators: 10)))
 }
 
 
+// MARK: - INPUT VIEW
 struct EssayInputView: View {
     @StateObject var essayViewModel = EssayViewModel()
     @State private var theme: String = "A Importância da Educação no Combate à Desigualdade Social"
@@ -237,75 +231,6 @@ struct EssayInputView: View {
     }
 }
 
-
-import SwiftUI
-
-struct EssayResponseView: View {
-    let essayResponse: EssayResponse
-    
-    var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 16) {
-                Text("Tema: \(essayResponse.theme)")
-                    .font(.headline)
-                Text("Título: \(essayResponse.title)")
-                    .font(.headline)
-                Text("Tag: \(essayResponse.tag.capitalized)") // Exibir a tag
-                    .font(.subheadline)
-
-                Text("Competências:")
-                    .font(.headline)
-
-                ForEach(essayResponse.competencies, id: \.resume) { competency in
-                    VStack(alignment: .leading) {
-                        Text(competency.resume)
-                            .font(.subheadline)
-
-                        ForEach(competency.cards, id: \.title) { card in
-                            VStack(alignment: .leading) {
-                                Text("Card: \(card.title ?? "")")
-                                    .font(.footnote)
-                                Text("Elemento: \(card.element ?? "")")
-                                    .font(.footnote)
-                                Text("Contexto: \(card.context ?? "")")
-                                    .font(.footnote)
-                                Text("Sugestão: \(card.suggestion ?? "N/A")")
-                                    .font(.footnote)
-                                Text("Mensagem: \(card.message ?? "")")
-                                    .font(.footnote)
-                            }
-                            .padding(.vertical, 2)
-                        }
-                    }
-                    .padding(.vertical)
-                }
-
-                // Exibir métricas
-                Text("Métricas:")
-                    .font(.headline)
-                Text("Palavras: \(essayResponse.metrics.words)")
-                    .font(.subheadline)
-                Text("Parágrafos: \(essayResponse.metrics.paragraphs)")
-                    .font(.subheadline)
-                Text("Linhas: \(essayResponse.metrics.lines)")
-                    .font(.subheadline)
-                Text("Conectores: \(essayResponse.metrics.connectors)")
-                    .font(.subheadline)
-                Text("Desvios: \(essayResponse.metrics.deviations)")
-                    .font(.subheadline)
-                Text("Citações: \(essayResponse.metrics.citations)")
-                    .font(.subheadline)
-                Text("Operadores argumentativos: \(essayResponse.metrics.argumentativeOperators)")
-                    .font(.subheadline)
-
-                Spacer()
-            }
-            .padding()
-        }
-        .navigationTitle("Resposta da Redação")
-        .navigationBarTitleDisplayMode(.inline)
-    }
-}
 
 
 
