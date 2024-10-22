@@ -57,7 +57,7 @@ struct SemiCircularGraphCardComponentView: View {
     }
 }
 
-struct SemiCircularGraphView: View {
+private struct SemiCircularGraphView: View {
     
     @State var lineWidth: CGFloat = 12
     @ObservedObject var data: SemiCircularGraphData

@@ -27,88 +27,10 @@ enum RepertoireFilter: String, CaseIterable {
     }
 }
 
-struct RepertoireCardView: View {
-    
-    @State var title: String
-    @State var descript: String
-    @Binding var isPinned: Bool
-    private let pasterboard = UIPasteboard.general
-    
-    var body: some View {
-        VStack{
-            HStack{
-                Text("Repertoire Card")
-                    .bold()
-                Spacer()
-                Button{
-                    isPinned.toggle()
-                } label: {
-                    if isPinned{
-                        Image(systemName: "pin.fill")
-                            .foregroundStyle(.black)
-                    } else {
-                        Image(systemName: "pin")                        .foregroundStyle(.black)
-                    }
-                    
-                }
-                Button{
-                    
-                } label: {
-                    Image(systemName: "square.and.arrow.up")
-                }
-                
-                Button{
-                    
-                } label: {
-                    Image(systemName: "document.on.document")
-                }
-            }
-            
-            HStack {
-                Text(descript)
-                Spacer()
-            }
-                
-        }.padding()
-        .background{
-            Color.white
-        }
-        .clipShape(.rect(cornerRadius: 10))
-        .padding()
-    }
-}
-
-class RepertoireViewModel: ObservableObject {
-    @Published var repertories: [Article] = []
-    @Published var isLoading: Bool = false
-    @Published var errorMessage: String?
-    
-    let repertoireService: RepertoireService
-    
-    init(container: DependencyContainer = .shared) {
-        self.repertoireService = container.repertoireService
-    }
-    
-    func fetchRepertoires() {
-        isLoading = true
-        repertoireService.fetchRepertoires { [weak self] result in
-            DispatchQueue.main.async {
-                self?.isLoading = false
-                switch result {
-                case .success(let repertories):
-                    self?.repertories = repertories
-                case .failure(let error):
-                    self?.errorMessage = "Erro ao carregar artigos: \(error.localizedDescription)"
-                }
-            }
-        }
-    }
-    
-}
-
 struct RepertoireView: View {
     
     @StateObject private var viewModel: RepertoireViewModel = .init()
+    @State private var selectedFilters: Set<RepertoireFilter> = []
     
     var body: some View {
         VStack{
@@ -116,14 +38,16 @@ struct RepertoireView: View {
                 ProgressView("Carregando repertórios...")
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
-                CustomHeaderView(title: "Repertories", filters: RepertoireFilter.getArray(), distanceContentFromTop: 25, showSearchBar: false, isScrollable: true) { _ in
-                    VStack {
+                CustomHeaderView(title: "Repertories", filters: RepertoireFilter.getArray(), distanceContentFromTop: 45, showSearchBar: false, isScrollable: true, numOfItems: viewModel.repertories.count) { _ in
+                    VStack(spacing: 15) {
                         
-                        /*ForEach(filteredRepertoires, id: \.article_id) { repertoire in*/
-                        RepertoireCardView(title: "Teste de Título", descript: "Teste de description", isPinned: .constant(true))
-//                        }
+                        ForEach(filteredRepertoires, id: \.id) { repertoire in
+                            RepertoireCardView(author: repertoire.author, descript: repertoire.description, isPinned: .constant(false))
+                                .padding(.horizontal)
+                            
+                        }
                         
-                    }
+                    }.padding(.bottom, 110)
                     
                 }
             }
@@ -132,7 +56,7 @@ struct RepertoireView: View {
         }
     }
     
-    var filteredRepertoires: [Article] {
+    var filteredRepertoires: [Citation] {
         return viewModel.repertories
     }
 }
