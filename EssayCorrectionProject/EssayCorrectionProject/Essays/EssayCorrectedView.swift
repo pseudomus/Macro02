@@ -154,3 +154,144 @@ struct CompetenceItem {
 #Preview {
     EssayCorrectedView()
 }
+
+
+struct EssayInputView: View {
+    @StateObject var essayViewModel = EssayViewModel()
+    @State private var theme: String = "Tecnologia e Sociedade"
+    @State private var title: String = "Redes Sociais e Interações Humanas"
+    @State private var essay: String = "Nos últimos anos, o advento das redes sociais transformou profundamente a forma como as pessoas se comunicam e se relacionam..."
+    
+    @State private var navigateToResponseView = false
+
+    var body: some View {
+        NavigationStack {
+            VStack(alignment: .leading, spacing: 16) {
+                // Campo para o tema
+                TextField("Tema", text: $theme)
+                    .padding()
+                    .background(Color.gray.opacity(0.2))
+                    .cornerRadius(8)
+                    .font(.headline)
+
+                // Campo para o título
+                TextField("Título", text: $title)
+                    .padding()
+                    .background(Color.gray.opacity(0.2))
+                    .cornerRadius(8)
+                    .font(.headline)
+
+                // Campo para a redação
+                TextEditor(text: $essay)
+                    .padding()
+                    .background(Color.gray.opacity(0.2))
+                    .cornerRadius(8)
+                    .frame(minHeight: 200) // Define uma altura mínima para o TextEditor
+                    .font(.body)
+
+                // Botão para salvar ou enviar a redação
+                Button(action: {
+                    essayViewModel.sendEssayToCorrection(text: essay, title: title, theme: theme)
+                }) {
+                    Text("Confirmar")
+                        .font(.headline)
+                        .padding()
+                        .frame(maxWidth: .infinity)
+                        .background(Color.gray)
+                        .foregroundColor(.white)
+                        .cornerRadius(8)
+                }
+            }
+            .padding()
+            .navigationTitle("Criar Redação")
+            .navigationBarTitleDisplayMode(.inline)
+            .onChange(of: essayViewModel.isLoading) { oldValue, newValue in
+                // Navegar para a próxima view quando a resposta não for mais nil
+                if oldValue == true && newValue == false {
+                    navigateToResponseView = true
+                }
+            }
+            .navigationDestination(isPresented: $navigateToResponseView) {
+                if let essayResponse = essayViewModel.essayResponse {
+                    EssayResponseView(essayResponse: essayResponse)
+                }
+            }
+        }
+    }
+}
+
+
+import SwiftUI
+
+struct EssayResponseView: View {
+    let essayResponse: EssayResponse
+
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 16) {
+                Text("Tema: \(essayResponse.theme)")
+                    .font(.headline)
+                Text("Título: \(essayResponse.title)")
+                    .font(.headline)
+                Text("Tag: \(essayResponse.tag.capitalized)") // Exibir a tag
+                    .font(.subheadline)
+
+                Text("Competências:")
+                    .font(.headline)
+
+                ForEach(essayResponse.competencies, id: \.resume) { competency in
+                    VStack(alignment: .leading) {
+                        Text(competency.resume)
+                            .font(.subheadline)
+
+                        ForEach(competency.cards, id: \.title) { card in
+                            VStack(alignment: .leading) {
+                                Text("Card: \(card.title)")
+                                    .font(.footnote)
+                                Text("Elemento: \(card.element)")
+                                    .font(.footnote)
+                                Text("Contexto: \(card.context)")
+                                    .font(.footnote)
+                                Text("Sugestão: \(card.suggestion ?? "N/A")")
+                                    .font(.footnote)
+                                Text("Mensagem: \(card.message)")
+                                    .font(.footnote)
+                            }
+                            .padding(.vertical, 2)
+                        }
+                    }
+                    .padding(.vertical)
+                }
+
+                // Exibir métricas
+                Text("Métricas:")
+                    .font(.headline)
+                Text("Palavras: \(essayResponse.metrics.words)")
+                    .font(.subheadline)
+                Text("Parágrafos: \(essayResponse.metrics.paragraphs)")
+                    .font(.subheadline)
+                Text("Linhas: \(essayResponse.metrics.lines)")
+                    .font(.subheadline)
+                Text("Conectores: \(essayResponse.metrics.connectors)")
+                    .font(.subheadline)
+                Text("Desvios: \(essayResponse.metrics.deviations)")
+                    .font(.subheadline)
+                Text("Citações: \(essayResponse.metrics.citations)")
+                    .font(.subheadline)
+                Text("Operadores argumentativos: \(essayResponse.metrics.argumentativeOperators)")
+                    .font(.subheadline)
+
+                Spacer()
+            }
+            .padding()
+        }
+        .navigationTitle("Resposta da Redação")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+}
+
+
+
+#Preview {
+    EssayInputView()
+}
