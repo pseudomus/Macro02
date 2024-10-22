@@ -8,7 +8,6 @@
 import SwiftUI
 import Foundation
 
-
 // MARK: - SERVICE
 class UserService: NetworkService {
     

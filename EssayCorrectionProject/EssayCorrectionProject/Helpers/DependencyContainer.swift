@@ -11,4 +11,5 @@ class DependencyContainer {
     
     let userservice = UserService()
     let articleService = ArticleService()
+    let repertoireService = RepertoireService()
 }
