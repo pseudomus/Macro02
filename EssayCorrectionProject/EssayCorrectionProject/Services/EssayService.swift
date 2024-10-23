@@ -15,7 +15,7 @@ struct Competency: Codable {
 }
 
 // Modelo para Card
-struct Card: Codable {
+struct Card: Codable, Hashable {
     let title: String?
     let element: String?
     let context: String?
@@ -103,6 +103,7 @@ class EssayService: NetworkService {
             "lines": 10,
             "words": 10,
             "paragraphs": 10,
+            "userId": 34,
         ]
         
         request.httpBody = try? JSONSerialization.data(withJSONObject: body, options: [])

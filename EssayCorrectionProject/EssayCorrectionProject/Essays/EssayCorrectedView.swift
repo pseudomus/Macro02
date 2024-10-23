@@ -11,8 +11,9 @@ import SwiftUI
 struct EssayCorrectedView: View {
     
     @State private var isEssayTextExpanded: Bool = false
-    @State private var selectedCompetence = "I"
+    @State private var selectedCompetenceIndex: Int = 0
     
+    // Dicionário com números romanos e os títulos das competências
     let competences: [String: String] = [
         "I": "Demonstrar domínio da modalidade escrita formal da língua portuguesa",
         "II": "Compreender a proposta de redação e aplicar conceitos das várias áreas de conhecimento para desenvolver o tema, dentro dos limites estruturais do texto dissertativo-argumentativo em prosa",
@@ -20,137 +21,192 @@ struct EssayCorrectedView: View {
         "IV": "Demonstrar conhecimento dos mecanismos linguísticos necessários para a construção da argumentação",
         "V": "Elaborar proposta de intervenção para o problema abordado, respeitando os direitos humanos"
     ]
+    
     let essayResponse: EssayResponse
     let essayText: String
+    @State private var fontSize: CGFloat = 16
 
-    
     var body: some View {
         CustomHeaderView(title: "Correção", distanceContentFromTop: 50, showSearchBar: false, isScrollable: true) { _ in
             VStack(spacing: 30) {
-
-                // REDAÇÃO ---------------
-                VStack(alignment: .leading) {
-                    Text("Redação")
-                    
-                    VStack(spacing: 10) {
-                        Text(essayText)
-                            .lineLimit(isEssayTextExpanded ? nil : 3)
-                            .animation(nil, value: isEssayTextExpanded)
-                        Image(systemName: isEssayTextExpanded ? "chevron.up" : "chevron.down")
-                            .foregroundStyle(.black.opacity(0.8))
-                    }
-                    .padding()
-                    .background(Color.gray)
-                    .clipShape(.rect(cornerRadius: 12))
-                    .onTapGesture {
-                        withAnimation(.easeInOut) {
-                            isEssayTextExpanded.toggle()
-                        }
-                    }
-                }
+                // Redação
+                essayExpandableView()
                 
-                // COMPETÊNCIAS ---------------
-                VStack(alignment: .leading, spacing: 10) {
-                    Text("Competências")
-                    Picker("Selecione uma competência", selection: $selectedCompetence) {
-                        ForEach(competences.keys.sorted(), id: \.self) { key in
-                            Text(key).tag(key)
-                        }
-                    }
-                    .pickerStyle(.segmented)
-                    
-                    if let competenceTitle = competences[selectedCompetence] {
-                        Text(competenceTitle)
-                            .font(.footnote)
-                            .fontWeight(.semibold)
-                    }
-                    
-                    // RESUMO
-                    ForEach(essayResponse.competencies, id: \.resume) { competency in
-                        VStack(alignment: .leading) {
-                            Text(competency.resume)
-                                .font(.subheadline)
-
-                            // Utilizando o ExpandableCompetenceCardView
-                            ExpandableCompetenceCardView(cards: competency.cards)
-                        }
-                        .padding(.vertical)
-                    }
-                    
-                    // Exibir métricas
-                    Text("Métricas:")
-                        .font(.headline)
-                    Text("Palavras: \(essayResponse.metrics.words)")
-                        .font(.subheadline)
-                    Text("Parágrafos: \(essayResponse.metrics.paragraphs)")
-                        .font(.subheadline)
-                    Text("Linhas: \(essayResponse.metrics.lines)")
-                        .font(.subheadline)
-                    Text("Conectores: \(essayResponse.metrics.connectors)")
-                        .font(.subheadline)
-                    Text("Desvios: \(essayResponse.metrics.deviations)")
-                        .font(.subheadline)
-                    Text("Citações: \(essayResponse.metrics.citations)")
-                        .font(.subheadline)
-                    Text("Operadores argumentativos: \(essayResponse.metrics.argumentativeOperators)")
-                        .font(.subheadline)
-                }
+                // competências e cards
+                competencesWithCardsView()
+                
+                // métricas
+                metricsView()
             }
             .padding(.horizontal)
             .navigationBarBackButtonHidden()
+        }
+    }
+    
+    
+    // MARK: - VIEWS
+    @ViewBuilder
+    private func essayExpandableView() -> some View {
+        VStack(alignment: .leading) {
+            Text("Redação")
+                .font(.title2)
+            
+            VStack(spacing: 10) {
+                Text(essayText)
+                    .lineLimit(isEssayTextExpanded ? nil : 3)
+                    .animation(nil, value: isEssayTextExpanded)
+                Image(systemName: isEssayTextExpanded ? "chevron.up" : "chevron.down")
+                    .foregroundStyle(.black.opacity(0.8))
+            }
+            .padding()
+            .background(Color.gray)
+            .clipShape(.rect(cornerRadius: 12))
+            .onTapGesture {
+                DispatchQueue.main.async {
+                    withAnimation(.easeInOut) {
+                        isEssayTextExpanded.toggle()
+                    }
+                }
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private func competencesWithCardsView() -> some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("Competências")
+                .font(.title2)
+
+            
+            // Picker usando o índice
+            Picker("Selecione uma competência", selection: $selectedCompetenceIndex) {
+                ForEach(Array(competences.keys).indices, id: \.self) { index in
+                    let key = Array(competences.keys.sorted())[index]
+                    Text(key).tag(index) // Mostrando o número romano "I", "II", etc.
+                }
+            }
+            .pickerStyle(.segmented)
+            
+            // Exibe o título da competência com base na seleção do Picker
+            let selectedKey = Array(competences.keys.sorted())[selectedCompetenceIndex]
+            if let competenceTitle = competences[selectedKey] {
+                Text(competenceTitle)
+                    .font(.footnote)
+                    .fontWeight(.semibold)
+            }
+            
+            // RESUMO E CARDS
+            let selectedCompetency = essayResponse.competencies[selectedCompetenceIndex]
+            VStack(alignment: .leading, spacing: 10) {
+                Text(selectedCompetency.resume)
+                    .font(.body)
+                ExpandableCompetenceCardView(cards: selectedCompetency.cards)
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private func metricsView() -> some View {
+        VStack(alignment: .leading, spacing: 20) {
+            Text("Métricas")
+                .font(.title2)
+            
+            LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: fontSize > 20 ? 1 : 2), spacing: 10) {
+                
+                SemiCircularGraphCardComponentView(value: essayResponse.metrics.words, minValue: 0, maxValue: 1000, range: (320, 476), title: "Palavras")
+                SemiCircularGraphCardComponentView(value: essayResponse.metrics.paragraphs, minValue: 0, maxValue: 10, range: (4, 5), title: "Parágrafos")
+                SemiCircularGraphCardComponentView(value: essayResponse.metrics.lines, minValue: 0, maxValue: 50, range: (22, 30), title: "Linhas")
+                SemiCircularGraphCardComponentView(value: essayResponse.metrics.connectors, minValue: 0, maxValue: 30, range: (7, 17), title: "Conectivos")
+                SemiCircularGraphCardComponentView(value: essayResponse.metrics.deviations, minValue: 0, maxValue: 10, range: (0, 7), title: "Desvios")
+                SemiCircularGraphCardComponentView(value: essayResponse.metrics.citations, minValue: 0, maxValue: 10, range: (3, 11), title: "Citações")
+                SemiCircularGraphCardComponentView(value: essayResponse.metrics.argumentativeOperators, minValue: 0, maxValue: 30, range: (10, 17), title: "Operadores argumentativos")
+                            
+            }
         }
     }
 }
 
 // MARK: - CARD
 struct ExpandableCompetenceCardView: View {
-    let cards: [Card] // Array de cartões
-    @State private var isExpanded: Bool = false
+    let cards: [Card]
+    let groupedCards: [String: [Card]]
+    
+    // grouping Cards with same problem identified
+    init(cards: [Card]) {
+        self.cards = cards
+        groupedCards = Dictionary(grouping: cards) { $0.title ?? "" }
+    }
+    
+    @State private var isExpanded: Bool = true
     
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
-            // Agrupando cartões pelo título
-            let groupedCards = Dictionary(grouping: cards) { $0.title ?? "Sem Título" }
-            
             ForEach(groupedCards.keys.sorted(), id: \.self) { title in
                 let cardsWithTitle = groupedCards[title] ?? []
                 let count = cardsWithTitle.count
                 
-                // Título do card
+                // Título
                 HStack {
                     Text(title)
-                        .fontWeight(.bold)
                     Spacer()
-                    Text(String(count))
+                    Text("\(count) erros")
                 }
+                .fontWeight(.bold)
                 
-                // Exibe os itens, se estiver expandido
+                // Conteúdo
                 if isExpanded {
                     ForEach(cardsWithTitle.indices, id: \.self) { index in
                         let card = cardsWithTitle[index]
+                        
                         HStack(alignment: .top) {
+                            // Círculo com o índice
                             Text("\(index + 1)")
                                 .padding(8)
                                 .background(Color.blue)
                                 .clipShape(Circle())
-                                .frame(width: 30, height: 30) // Tamanho fixo para o círculo
+                                .foregroundStyle(.white)
+                                .offset(y: -8)
                             
                             VStack(alignment: .leading, spacing: 8) {
-                                Text("Elemento: \(card.element ?? "Erro desconhecido")")
-                                Text("Contexto: \(card.context ?? "Sem contexto")")
-                                Text("Sugestão: \(card.suggestion ?? "Sem sugestão")")
-                                Text(card.message ?? "Sem descrição")
-                                    .font(.footnote)
+                                if let element = card.element {
+                                    Text("\(Text("Elemento:").bold()) \(element)")
+                                }
+                                
+                                if let context = card.context {
+                                    Text("\(Text("Contexto:").bold()) \(context)")
+                                }
+                                
+                                if let suggestion = card.suggestion {
+                                    Text("\(Text("Sugestão:").bold()) \(suggestion)")
+                                }
+                                
+                                if let message = card.message {
+                                    Text(message)
+                                        .font(.footnote)
+                                }
                             }
                         }
+                        
                     }
+                    // Botão de visualizar erros na redação
+                    Button(action: {}) {
+                        HStack {
+                            Spacer()
+                            Image(systemName: "eye")
+                            Text("Visualizar erros na redação")
+                            Spacer()
+                        }
+                    }
+                    .buttonStyle(.plain)
+                    .padding(8)
+                    .background(Color.gray)
+                    .clipShape(.rect(cornerRadius: 8))
+                    .frame(maxWidth: .infinity)
                 }
-                
-                Divider() // Adiciona uma linha divisória entre os grupos
             }
         }
         .padding()
-        .background(Color.gray.opacity(0.5))
+        .background(Color.gray.opacity(0.2))
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .overlay(
             RoundedRectangle(cornerRadius: 12)
@@ -159,14 +215,39 @@ struct ExpandableCompetenceCardView: View {
         .onTapGesture {
             withAnimation(.easeInOut) {
                 isExpanded.toggle()
-                print(isExpanded)
             }
         }
     }
 }
 
+
 #Preview {
-    EssayCorrectedView(essayResponse: EssayResponse(theme: "Tema", title: "TITULO", tag: "TAG", competencies: [Competency(resume: "ResumoResumoResumoResumoResumoResumoResumoResumo", cards: [Card(title: "Titulo do card", element: "Elemento", context: "contexto", suggestion: "Sugestao, aoaoaoao", message: "Mesagem")])], metrics: Metrics(words: 10, paragraphs: 10, lines: 10, connectors: 10, deviations: 10, citations: 10, argumentativeOperators: 10)))
+    EssayCorrectedView(essayResponse: EssayResponse(theme: "Tema", title: "TITULO", tag: "TAG", competencies:
+                                                        [Competency(resume: "A redação apresenta alguns desvios ortográficos e gramaticais, como a falta de acentuação em algumas palavras, além de erros de concordância verbal e de pontuação. É importante revisar esses aspectos para garantir uma escrita mais precisa e correta.",
+                                                                    cards: [Card(title: "Titulo do card",
+                                                                                 element: "Elemento",
+                                                                                 context: "contexto",
+                                                                                 suggestion: "Sugestao, aoaoaoao",
+                                                                                 message: "Mesagem"),
+                                                                            Card(title: "Titulo do card",
+                                                                                         element: "Elemento",
+                                                                                         context: "contexto",
+                                                                                         suggestion: "Sugestao, aoaoaoao",
+                                                                                         message: "Mesagem")]),
+                                                         Competency(resume: "222ResumoResumoResumoResumoResumoResumoResumoResumo",
+                                                                     cards: [Card(title: "22Titulo do card",
+                                                                                  element: "222Elemento",
+                                                                                  context: "222contexto",
+                                                                                  suggestion: "222Sugestao, aoaoaoao",
+                                                                                  message: "222Mesagem")])],
+                                                    metrics: Metrics(words: 320,
+                                                                     paragraphs: 6,
+                                                                     lines: 10,
+                                                                     connectors: 10,
+                                                                     deviations: 10,
+                                                                     citations: 10,
+                                                                     argumentativeOperators: 10)),
+                       essayText: "A desigualdade social é um problema muito antigo e presente em várias sociedades ao redor do mundo. No Brasil, esse problema é bastante evidente, especialmente em áreas mais carentes. A educação tem um papel crucial para combater essa desigualdade, porque ao oferecer oportunidade de estudo, todas as pessoas pode ter um futuro melhor e com mais oportunidades de emprego. Entretanto, apesar dos avanços no acesso à educação nos últimos anos, ainda existem muitas desigualdades no sistema educacional. Escolas públicas de áreas periféricas, por exemplo, geralmente não têm a mesma qualidade de ensino que escolas particulares ou públicas de áreas mais ricas. Isso acaba prejudicando os alunos de famílias mais pobres, que não conseguem alcançar os mesmos resultados dos alunos de escolas particulares. Outro ponto a se considerar é a falta de investimento adequado nas escolas públicas. Muitos professores não recebem o apoio necessário para desenvolverem seus trabalhos com eficiência. A falta de material escolar e infraestrutura também é um problema que afeta o aprendizado dos alunos, dificultando ainda mais seu progresso. Portanto, é fundamental que o governo invista mais na educação pública para garantir que todos os estudantes tenham acesso a uma educação de qualidade. Por fim, para que a educação realmente seja um meio eficaz de combate à desigualdade social, é necessário que além do acesso à escola, haja também a implementação de políticas públicas que promovam a permanência e o sucesso dos estudantes no ambiente escolar. Sem essas políticas, muitos jovens acabam abandonando a escola antes mesmo de concluir o ensino básico, o que perpetua o ciclo de pobreza e desigualdade. Conclusão: A educação é, sem dúvida, uma das ferramentas mais importantes para reduzir as desigualdades sociais no Brasil. No entanto, ainda há muitos desafios a serem superados, como a falta de investimento nas escolas públicas e a má qualidade do ensino em algumas regiões do país. Somente através de uma educação acessível e de qualidade para todos será possível construir uma sociedade mais justa e igualitária.")
 }
 
 
