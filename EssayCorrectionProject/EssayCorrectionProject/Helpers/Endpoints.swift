@@ -8,6 +8,7 @@
 // ENDPOINTS
 struct Endpoints {
     static let baseURL = "https://macro02-ca614ecd61ac.herokuapp.com" // academy swiftfun
+    //https://macro02-ca614ecd61ac.herokuapp.com/repertoires/getAll
     static let login = "\(baseURL)/auth/login"
     static let articles = "\(baseURL)/getArticles"
     static let repertoire = "\(baseURL)/repertoires/getAll"

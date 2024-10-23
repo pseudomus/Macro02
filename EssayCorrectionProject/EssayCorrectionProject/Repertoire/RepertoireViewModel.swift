@@ -7,7 +7,7 @@
 import SwiftUI
 
 class RepertoireViewModel: ObservableObject {
-    @Published var repertories: [Citation] = []
+    @Published var repertories: [Repertoire] = []
     @Published var isLoading: Bool = false
     @Published var errorMessage: String?
     
@@ -18,21 +18,22 @@ class RepertoireViewModel: ObservableObject {
     }
     
     func fetchRepertoires() {
-//        isLoading = true
-//        repertoireService.fetchRepertoires { [weak self] result in
-//            DispatchQueue.main.async {
-//                self?.isLoading = false
-//                switch result {
-//                case .success(let repertories):
-//                    self?.repertories = repertories
-//                case .failure(let error):
-//                    self?.errorMessage = "Erro ao carregar artigos: \(error.localizedDescription)"
-//                }
-//            }
-//        }
+        isLoading = true
+        repertoireService.fetchRepertoires { [weak self] result in
+            DispatchQueue.main.async {
+                self?.isLoading = false
+                switch result {
+                case .success(let repertories):
+                    print(repertories)
+                    self?.repertories = repertories
+                case .failure(let error):
+                    self?.errorMessage = "Erro ao carregar repertórios: \(error.localizedDescription)"
+                }
+            }
+        }
         
         //DADOS MOCKADOS TEMPORARIAMENTE DEVIDO A INSTABILIDADE DO SERVIDOR
-        self.repertories = MockRepertoireService.fetchRepertoires()
+//        self.repertories = MockRepertoireService.fetchRepertoires()
     }
     
 }

@@ -29,17 +29,6 @@ struct RepertoireCardView: View {
                         Image(systemName: "pin")                        .foregroundStyle(.black)
                     }
                 }
-                Button{
-                    
-                } label: {
-                    Image(systemName: "square.and.arrow.up")
-                }
-                
-                Button{
-                    copyToClipboard()
-                } label: {
-                    Image(systemName: "document.on.document")
-                }
             }.foregroundStyle(.black)
             
             HStack {
@@ -52,7 +41,6 @@ struct RepertoireCardView: View {
             Color.white
         }
         .clipShape(.rect(cornerRadius: 10))
-//        .padding()
     }
     
     func copyToClipboard() {
