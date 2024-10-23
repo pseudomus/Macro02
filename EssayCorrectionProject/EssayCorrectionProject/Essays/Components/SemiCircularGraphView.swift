@@ -12,7 +12,9 @@ struct SemiCircularGraphCardComponentView: View {
     //AQUI SE FAZ A INSTÂNCIA DOS VALORES DO GRÁFICO
     @StateObject var data: SemiCircularGraphData
     @State var semiCircularSize: CGSize = .zero
+    @State var graphSize: CGSize = .zero
     @State var title: String
+    @State var isFlipped: Bool = false
     
     init(value: Int, minValue: Int, maxValue: Int, range: (Int, Int), title: String) {
         self._data = StateObject(wrappedValue: SemiCircularGraphData(value: value, minValue: minValue, maxValue: maxValue, range: range))
@@ -20,40 +22,81 @@ struct SemiCircularGraphCardComponentView: View {
     }
     
     var body: some View {
-        
-        ZStack(alignment: .top) {
-            ZStack(alignment: .topTrailing){
-                HStack {
-                    Spacer()
-                    Image(systemName: "arrow.uturn.backward.circle.fill")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: semiCircularSize.width / 6, height: semiCircularSize.width / 6)
-                        .foregroundStyle(.gray.opacity(0.8))
-                        .offset(x: semiCircularSize.width / 17, y: -semiCircularSize.width / 6)
-                }
+        Button{
+            isFlipped.toggle()
+        } label: {
+            ZStack() {
+                ZStack(alignment: .top){
+                    
+                    VStack {
+                        Text("\(data.value)")
+                            .font(.system(size: semiCircularSize.width / 4))
+                            .foregroundStyle(.black)
+                            .bold()
+                        Text(title)
+                            .font(.system(size: semiCircularSize.width / 9))
+                            .multilineTextAlignment(.center)
+                            .foregroundStyle(.black)
+                    }.offset(y: semiCircularSize.width / 3.2)
+                    
+                    SemiCircularGraphView(data: data)
+                        .getSize { size in
+                            semiCircularSize = size
+                        }
+                }.offset(y: semiCircularSize.width / 10)
+                    .padding(.horizontal, semiCircularSize.width / 6)
+                    .padding(.vertical, semiCircularSize.width / 6)
+                    .background(Color.gray.mix(with: .white, by: 0.6))
+                    .clipShape(.rect(cornerRadius: semiCircularSize.width / 7))
+                    .overlay {
+                        VStack{
+                            HStack {
+                                Spacer()
+                                Image(systemName: "arrow.triangle.2.circlepath.circle.fill")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: semiCircularSize.width / 6, height: semiCircularSize.width / 6)
+                                    .foregroundStyle(.gray.opacity(0.8))
+                            }
+                            Spacer()
+                        }.padding()
+                        
+                    }
+                    .getSize { size in
+                        graphSize = size
+                    }
+                    .rotation3DEffect(.degrees(isFlipped ? 90: 0 ), axis: (x: 0, y: 1, z: 0), perspective: 0.2)
+                    .animation(isFlipped ? .linear(duration: 0.2) : .linear(duration: 0.2).delay(0.2), value: isFlipped)
+                
+                RoundedRectangle(cornerRadius: semiCircularSize.width / 7)
+                    .foregroundStyle(Color.gray.mix(with: .white, by: 0.6))
+                    .frame(width: graphSize.width, height: graphSize.height)
+                    .overlay {
+                        ZStack{
+                            VStack {
+                                HStack {
+                                    Spacer()
+                                    Image(systemName: "arrow.triangle.2.circlepath.circle.fill")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(width: semiCircularSize.width / 6, height: semiCircularSize.width / 6)
+                                        .foregroundStyle(.gray.opacity(0.8))
+                                }
+                                Spacer()
+                            }.padding()
+                            VStack(spacing: 5){
+                                Text("As redações nota 1000 variam entre")
+                                    .foregroundStyle(.black)
+                                Text("\(data.range.0) e \(data.range.1)")
+                                    .foregroundStyle(.black)
+                                    .fontWeight(.bold)
+                            }.padding()
+                        }
+                    }
+                    .rotation3DEffect(.degrees(isFlipped ? 0: -90), axis: (x: 0, y: 1, z: 0), perspective: 0.2)
+                    .animation(isFlipped ? .linear(duration: 0.2).delay(0.2): .linear(duration: 0.2), value: isFlipped)
             }
-            VStack {
-                Text("\(data.value)")
-                    .font(.system(size: semiCircularSize.width / 4))
-                    .bold()
-                Text(title)
-                    .font(.system(size: semiCircularSize.width / 9))
-                    .multilineTextAlignment(.center)
-            }.offset(y: semiCircularSize.width / 3.2)
-            
-            SemiCircularGraphView(data: data)
-                .getSize { size in
-                    semiCircularSize = size
-                }
-            
         }
-        .offset(y: semiCircularSize.width / 10)
-        .padding(.horizontal, semiCircularSize.width / 6)
-        .padding(.vertical, semiCircularSize.width / 6)
-        .background(Color.gray.opacity(0.5))
-        .clipShape(.rect(cornerRadius: semiCircularSize.width / 7))
-//        .padding(100)
     }
 }
 
@@ -83,12 +126,12 @@ private struct SemiCircularGraphView: View {
                     self.size = size
                 }
         }
-            .animation(.snappy(duration: 0.9), value: data.rotation)
-            .onAppear {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1){
-                    data.getRotation()
-                }
+        .animation(.snappy(duration: 0.9), value: data.rotation)
+        .onAppear {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1){
+                data.getRotation()
             }
+        }
     }
 }
 
@@ -154,7 +197,7 @@ class SemiCircularGraphData: ObservableObject {
     HStack{
         SemiCircularGraphCardComponentView(value: 450, minValue: 100, maxValue: 700, range: (400, 500), title: "Palavras")
         SemiCircularGraphCardComponentView(value: 150, minValue: 100, maxValue: 700, range: (400, 500), title: "Operadores naosioisd")
-
+        
     }.padding(.horizontal, 0)
 }
 
