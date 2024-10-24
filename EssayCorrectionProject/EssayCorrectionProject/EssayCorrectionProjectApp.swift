@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 @main
 struct EssayCorrectionProjectApp: App {
@@ -15,6 +16,7 @@ struct EssayCorrectionProjectApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .modelContainer(for: [RepertoireFixedFilter.self])
                 .environmentObject(userViewModel)
                 .environmentObject(authManager)
                 .onAppear { if userViewModel.user == nil { userViewModel.fetchUserData() } } // Fetch user data when opening again without login
