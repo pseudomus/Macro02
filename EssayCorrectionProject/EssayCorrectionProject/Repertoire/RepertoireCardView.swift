@@ -10,8 +10,9 @@ struct RepertoireCardView: View {
     
     @State var author: String
     @State var descript: String
-    @Binding var isPinned: Bool
+    @State var isPinned: Bool = false
     private let pasterboard = UIPasteboard.general
+    @State var pinnedFunction: (() -> Bool)
     
     var body: some View {
         VStack{
@@ -20,7 +21,7 @@ struct RepertoireCardView: View {
                     .bold()
                 Spacer()
                 Button{
-                    isPinned.toggle()
+                    isPinned = pinnedFunction()
                 } label: {
                     if isPinned{
                         Image(systemName: "pin.fill")
@@ -41,6 +42,9 @@ struct RepertoireCardView: View {
             Color.white
         }
         .clipShape(.rect(cornerRadius: 10))
+        .onAppear{
+            isPinned = pinnedFunction()
+        }
     }
     
     func copyToClipboard() {

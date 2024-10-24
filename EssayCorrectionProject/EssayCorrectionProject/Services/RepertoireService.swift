@@ -13,9 +13,7 @@ class RepertoireService: NetworkService {
             completion(.failure(.invalidURL))
             return
         }
-        
-        print(url)
-        
+                
         request(url: url, completion: completion)
     }
 }

@@ -11,6 +11,7 @@ struct RepertoireView: View {
     
     @StateObject private var viewModel: RepertoireViewModel = .init()
     @State private var selectedFilters: Set<Theme> = []
+    @State var isFixedTabOpen: Bool = false
     
     var body: some View {
         VStack{
@@ -21,8 +22,32 @@ struct RepertoireView: View {
                 CustomHeaderView(title: "Repertories", filters: Theme.getArray(), distanceContentFromTop: 45, showSearchBar: false, isScrollable: true, numOfItems: viewModel.repertories.count, onSelectFilter: toggleFilter) { _ in
                     VStack(spacing: 15) {
                         
+                        Button{
+                            isFixedTabOpen.toggle()
+                        } label: {
+                            HStack{
+                                Text("Fixados")
+                                    .font(.title2)
+                                Spacer()
+                                Image(systemName: "chevron.right")
+                                    .rotationEffect(.degrees(isFixedTabOpen ? 90 : 0))
+                                    .animation(.spring, value: isFixedTabOpen)
+                            }.padding(.horizontal)
+                                .foregroundStyle(.black)
+                                
+                        }.buttonStyle(.plain)
+
+                        VStack{
+                            
+                        }.frame(maxWidth: .infinity)
+                            .frame(height: 1)
+                            .background(Color.black)
+                            .padding(.horizontal)
+                        
                         ForEach(filteredRepertoires, id: \.id) { repertoire in
-                            RepertoireCardView(author: repertoire.author, descript: repertoire.text, isPinned: .constant(false))
+                            RepertoireCardView(author: repertoire.author, descript: repertoire.text){
+                                viewModel.verifyIfIsPinned(id: "\(repertoire.id)")
+                            }
                                 .padding(.horizontal)
                         }
                     }.padding(.bottom, 110)
@@ -52,12 +77,9 @@ struct RepertoireView: View {
             return viewModel.repertories.filter{ selectedFilters.contains($0.theme) }
         }
     }
+
 }
 
 #Preview {
     RepertoireView()
-}
-
-#Preview {
-    ContentView()
 }
