@@ -16,7 +16,7 @@ struct EssayCorrectionView: View {
         if authManager.isAuthenticated {
             // TODO: - FLUXO BRUNO TRANSCRIÇÃO
             //Text("Transcription views")
-            //Button("Logout") { AuthManager.shared.logout() } // BOTAO TEMPORARIO DE LOGOUT REMOVER
+            Button("Logout") { AuthManager.shared.logout() } // BOTAO TEMPORARIO DE LOGOUT REMOVER
             EssayInputView()
         } else {
             VStack {

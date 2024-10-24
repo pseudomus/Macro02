@@ -12,7 +12,9 @@ struct EssayCorrectedView: View {
     
     @State private var isEssayTextExpanded: Bool = false
     @State private var selectedCompetenceIndex: Int = 0
-    
+    @State private var scrollProxy: ScrollViewProxy? = nil
+    @State private var highlightedKeyword: String? = nil
+
     // Dicionário com números romanos e os títulos das competências
     let competences: [String: String] = [
         "I": "Demonstrar domínio da modalidade escrita formal da língua portuguesa",
@@ -28,33 +30,59 @@ struct EssayCorrectedView: View {
 
     var body: some View {
         CustomHeaderView(title: "Correção", distanceContentFromTop: 50, showSearchBar: false, isScrollable: true) { _ in
-            VStack(spacing: 30) {
-                // Redação
-                essayExpandableView()
-                
-                // competências e cards
-                competencesWithCardsView()
-                
-                // métricas
-                metricsView()
+            ScrollViewReader { proxy in
+                VStack(spacing: 30) {
+                    // Redação
+                    essayExpandableView()
+                        .id("REDACAO")
+                        
+                    
+                    // competências e cards
+                    competencesWithCardsView()
+                        
+                    Divider()
+                    
+                    // métricas
+                    metricsView()
+                        
+                }
+                .padding(.horizontal)
+                .onAppear { scrollProxy = proxy }
             }
-            .padding(.horizontal)
             .navigationBarBackButtonHidden()
         }
     }
     
+    // Função para rolar até a palavra-chave
+    private func scrollToKeyword(_ keyword: String) {
+        highlightedKeyword = keyword
+        for (index, paragraph) in essayText.split(separator: "\n").enumerated() {
+            if paragraph.contains(keyword) {
+                scrollProxy?.scrollTo("paragraph\(index)", anchor: .bottom) // Rolando para o parágrafo que contém a palavra-chave
+                break
+            }
+        }
+    }
     
-    // MARK: - VIEWS
     @ViewBuilder
     private func essayExpandableView() -> some View {
         VStack(alignment: .leading) {
             Text("Redação")
                 .font(.title2)
-            
+
             VStack(spacing: 10) {
-                Text(essayText)
-                    .lineLimit(isEssayTextExpanded ? nil : 3)
-                    .animation(nil, value: isEssayTextExpanded)
+                // Exibe o texto modificado com a palavra-chave sublinhada
+                if let attributedText = generateAttributedText(fullText: essayText, keyword: highlightedKeyword) {
+                    Text(attributedText)
+                        .lineLimit(isEssayTextExpanded ? nil : 3)
+                        .animation(nil, value: isEssayTextExpanded)
+                } else {
+                    // Exibe o texto completo sem modificações
+                    Text(essayText)
+                        .lineLimit(isEssayTextExpanded ? nil : 3)
+                        .animation(nil, value: isEssayTextExpanded)
+                }
+
                 Image(systemName: isEssayTextExpanded ? "chevron.up" : "chevron.down")
                     .foregroundStyle(.black.opacity(0.8))
             }
@@ -62,14 +90,34 @@ struct EssayCorrectedView: View {
             .background(Color.gray)
             .clipShape(.rect(cornerRadius: 12))
             .onTapGesture {
-                DispatchQueue.main.async {
-                    withAnimation(.easeInOut) {
-                        isEssayTextExpanded.toggle()
-                    }
+                withAnimation(.easeInOut) {
+                    isEssayTextExpanded.toggle()
                 }
             }
         }
     }
+
+    // Função que gera o AttributedString com sublinhado na palavra-chave
+    private func generateAttributedText(fullText: String, keyword: String?) -> AttributedString? {
+        guard let keyword = keyword, !keyword.isEmpty else {
+            return nil
+        }
+        
+        var attributedText = AttributedString(fullText)
+        
+        if let range = attributedText.range(of: keyword) {
+            attributedText[range].underlineStyle = .single
+        }
+        
+        return attributedText
+    }
+
+
+
+
+
+
+
     
     @ViewBuilder
     private func competencesWithCardsView() -> some View {
@@ -98,9 +146,15 @@ struct EssayCorrectedView: View {
             // RESUMO E CARDS
             let selectedCompetency = essayResponse.competencies[selectedCompetenceIndex]
             VStack(alignment: .leading, spacing: 10) {
-                Text(selectedCompetency.resume)
+                Text(selectedCompetency.resume) // Resumo
                     .font(.body)
-                ExpandableCompetenceCardView(cards: selectedCompetency.cards)
+                ExpandableCompetenceCardView(cards: selectedCompetency.cards,
+                                             isEssayTextExpanded: $isEssayTextExpanded,
+                                             scrollProxy: $scrollProxy,
+                                             highlightedKeyword: $highlightedKeyword,
+                                             scrollToKeyword: { keyword in
+                    self.scrollToKeyword(keyword)
+                })
             }
         }
     }
@@ -113,9 +167,9 @@ struct EssayCorrectedView: View {
             
             LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: fontSize > 20 ? 1 : 2), spacing: 10) {
                 
-                SemiCircularGraphCardComponentView(value: essayResponse.metrics.words, minValue: 0, maxValue: 1000, range: (320, 476), title: "Palavras")
+                SemiCircularGraphCardComponentView(value: essayResponse.metrics.words, minValue: 0, maxValue: 800, range: (320, 476), title: "Palavras")
                 SemiCircularGraphCardComponentView(value: essayResponse.metrics.paragraphs, minValue: 0, maxValue: 10, range: (4, 5), title: "Parágrafos")
-                SemiCircularGraphCardComponentView(value: essayResponse.metrics.lines, minValue: 0, maxValue: 50, range: (22, 30), title: "Linhas")
+                SemiCircularGraphCardComponentView(value: essayResponse.metrics.lines, minValue: 0, maxValue: 30, range: (22, 30), title: "Linhas")
                 SemiCircularGraphCardComponentView(value: essayResponse.metrics.connectors, minValue: 0, maxValue: 30, range: (7, 17), title: "Conectivos")
                 SemiCircularGraphCardComponentView(value: essayResponse.metrics.deviations, minValue: 0, maxValue: 10, range: (0, 7), title: "Desvios")
                 SemiCircularGraphCardComponentView(value: essayResponse.metrics.citations, minValue: 0, maxValue: 10, range: (3, 11), title: "Citações")
@@ -130,10 +184,20 @@ struct EssayCorrectedView: View {
 struct ExpandableCompetenceCardView: View {
     let cards: [Card]
     let groupedCards: [String: [Card]]
-    
-    // grouping Cards with same problem identified
-    init(cards: [Card]) {
+    @Binding var isEssayTextExpanded: Bool
+    @Binding var scrollProxy: ScrollViewProxy?
+    let scrollToKeyword: (String) -> Void
+        @Binding var highlightedKeyword: String? // Palavra sublinhada
+
+    // Inicializa a view
+    init(cards: [Card], isEssayTextExpanded: Binding<Bool>, scrollProxy: Binding<ScrollViewProxy?>, highlightedKeyword: Binding<String?>, scrollToKeyword: @escaping (String) -> Void) {
         self.cards = cards
+        self._isEssayTextExpanded = isEssayTextExpanded
+        self._scrollProxy = scrollProxy
+        self._highlightedKeyword = highlightedKeyword
+        self.scrollToKeyword = scrollToKeyword
+        
+        // Agrupando cartões
         groupedCards = Dictionary(grouping: cards) { $0.title ?? "" }
     }
     
@@ -188,8 +252,30 @@ struct ExpandableCompetenceCardView: View {
                         }
                         
                     }
-                    // Botão de visualizar erros na redação
-                    Button(action: {}) {
+                    // MARK: - VISUALIZAR ERRO NA REDAÇÃO
+                    Button(action: {
+                        if !isEssayTextExpanded {
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                                withAnimation(.easeInOut) {
+                                    isEssayTextExpanded.toggle()
+                                }
+                            }
+                       }
+                        // Scroll com animação suave para a redação
+                        withAnimation(.easeInOut) {
+                            scrollProxy?.scrollTo("REDACAO", anchor: .bottom)
+                        }
+                        
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                            //if let keyword = cardsWithTitle.first?.element {
+                            
+                               // highlightedKeyword = keyword
+                            highlightedKeyword = "Conclusão"
+                            scrollToKeyword("Conclusão")
+                            //}
+                        }
+                        
+                    }) {
                         HStack {
                             Spacer()
                             Image(systemName: "eye")
@@ -249,6 +335,51 @@ struct ExpandableCompetenceCardView: View {
                                                                      argumentativeOperators: 10)),
                        essayText: "A desigualdade social é um problema muito antigo e presente em várias sociedades ao redor do mundo. No Brasil, esse problema é bastante evidente, especialmente em áreas mais carentes. A educação tem um papel crucial para combater essa desigualdade, porque ao oferecer oportunidade de estudo, todas as pessoas pode ter um futuro melhor e com mais oportunidades de emprego. Entretanto, apesar dos avanços no acesso à educação nos últimos anos, ainda existem muitas desigualdades no sistema educacional. Escolas públicas de áreas periféricas, por exemplo, geralmente não têm a mesma qualidade de ensino que escolas particulares ou públicas de áreas mais ricas. Isso acaba prejudicando os alunos de famílias mais pobres, que não conseguem alcançar os mesmos resultados dos alunos de escolas particulares. Outro ponto a se considerar é a falta de investimento adequado nas escolas públicas. Muitos professores não recebem o apoio necessário para desenvolverem seus trabalhos com eficiência. A falta de material escolar e infraestrutura também é um problema que afeta o aprendizado dos alunos, dificultando ainda mais seu progresso. Portanto, é fundamental que o governo invista mais na educação pública para garantir que todos os estudantes tenham acesso a uma educação de qualidade. Por fim, para que a educação realmente seja um meio eficaz de combate à desigualdade social, é necessário que além do acesso à escola, haja também a implementação de políticas públicas que promovam a permanência e o sucesso dos estudantes no ambiente escolar. Sem essas políticas, muitos jovens acabam abandonando a escola antes mesmo de concluir o ensino básico, o que perpetua o ciclo de pobreza e desigualdade. Conclusão: A educação é, sem dúvida, uma das ferramentas mais importantes para reduzir as desigualdades sociais no Brasil. No entanto, ainda há muitos desafios a serem superados, como a falta de investimento nas escolas públicas e a má qualidade do ensino em algumas regiões do país. Somente através de uma educação acessível e de qualidade para todos será possível construir uma sociedade mais justa e igualitária.")
 }
+
+
+
+
+extension String {
+    func highlightKeyword(with keyword: String?) -> Text {
+        guard let keyword = keyword, !keyword.isEmpty else {
+            return Text(self)
+        }
+        
+        let parts = self.components(separatedBy: keyword)
+        
+        var highlightedText = Text("")
+        
+        for (index, part) in parts.enumerated() {
+            highlightedText = highlightedText + Text(part)
+            if index < parts.count - 1 {
+                highlightedText = highlightedText + Text(keyword).underline() // Sublinhando a palavra-chave
+            }
+        }
+        
+        return highlightedText
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 // MARK: - INPUT VIEW
