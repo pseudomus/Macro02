@@ -29,16 +29,13 @@ struct ProfileView: View {
                 ProfileTextBox(textToShow: user.email)
                     .padding()
                 
-                
                 Spacer()
-                
                 
                 LogoutButton(buttonTitle: "Sair da conta", action: AuthManager.shared.logout)
                     .padding(.bottom,20)
                     .padding(.horizontal, 90)
             }
             .padding(.top, 50)
-            
             
         }
     }
