@@ -16,9 +16,18 @@ struct AppTabView: View {
                 screen.destination
                     .tag(screen as AppScreenNavigation?)
                     .tabItem { screen.label }
+                    
             }
         }
     }
 }
 
-
+#Preview {
+    @Previewable @StateObject var userViewModel = UserViewModel()
+    @Previewable @StateObject var authManager = AuthManager.shared
+    
+    return ContentView()
+        .environmentObject(userViewModel)
+        .environmentObject(authManager)
+        .onAppear { if userViewModel.user == nil { userViewModel.fetchUserData() } } // Fetch user data when opening again without login
+}
