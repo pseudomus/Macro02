@@ -10,20 +10,18 @@ import SwiftUI
 struct HomeEssayView: View {
     @Environment(\.navigate) var navigate
     @State var screenSize: CGSize = .zero
-    @State var isFirstTime: Bool = false //Define o estado da view sobre as redações corrigidas
     @Namespace var animation
+    @EnvironmentObject var userViewModel: UserViewModel
+    @StateObject var viewModel: HomeEssayViewModel = HomeEssayViewModel()
     
     var body: some View {
         VStack{
-            CustomHeaderView(title: "Redações", distanceContentFromTop: 50, showSearchBar: false, isScrollable: !isFirstTime) { shouldAnimate in
+            CustomHeaderView(title: "Redações", distanceContentFromTop: 50, showSearchBar: false, isScrollable: !viewModel.isFirstTime, numOfItems: viewModel.essays.count) { shouldAnimate in
                 
                 VStack {
                     if !shouldAnimate {
                     Button {
                         navigate(.essays(.correct))
-                        withAnimation {
-                            isFirstTime.toggle()
-                        }
                         
                     } label: {
                         HStack(alignment: .bottom){
@@ -31,7 +29,7 @@ struct HomeEssayView: View {
                                 .font(.title3)
                                 .foregroundStyle(.black)
                             Spacer(minLength: screenSize.width / 2.7)
-                            if !isFirstTime{
+                            if !viewModel.isFirstTime{
                                 Image(.lapisinho)
                                     .resizable()
                                     .aspectRatio(contentMode: .fit)
@@ -39,14 +37,14 @@ struct HomeEssayView: View {
                             }
                         }
                         .padding()
-                        .padding(.top,isFirstTime ? screenSize.height / 9 : 0)
+                        .padding(.top,viewModel.isFirstTime ? screenSize.height / 9 : 0)
                         .background(Color.gray.opacity(0.5))
                         .clipShape(.rect(cornerRadius: 10))
                         .padding(.horizontal,22)
                         .padding(.bottom, 22)
                     }
                     }
-                    if isFirstTime {
+                    if viewModel.isFirstTime {
                         
                         ZStack {
                             Image(.lapisinho)
@@ -65,8 +63,9 @@ struct HomeEssayView: View {
                         }
                     }
                     else {
-                        CorrectedEssayCardView()
-                            .offset(x: 0, y: shouldAnimate ? -50 : 0)
+                        ForEach(viewModel.essays, id: \.id){ essay in
+                            CorrectedEssayCardView(title: essay.title, description: essay.content, dayOfCorrection: essay.creationDate)
+                        }
                     }
                 }
                 
@@ -76,7 +75,9 @@ struct HomeEssayView: View {
             .getSize { size in
                 screenSize = size
             }
-        
+            .onAppear {
+                viewModel.fetchEssays(id: "101")
+            }
     }
 }
 
@@ -84,12 +85,3 @@ struct HomeEssayView: View {
     HomeEssayView()
 }
 
-#Preview {
-    @Previewable @StateObject var userViewModel = UserViewModel()
-    @Previewable @StateObject var authManager = AuthManager.shared
-    
-    return ContentView()
-        .environmentObject(userViewModel)
-        .environmentObject(authManager)
-        .onAppear { if userViewModel.user == nil { userViewModel.fetchUserData() } } // Fetch user data when opening again without login
-}

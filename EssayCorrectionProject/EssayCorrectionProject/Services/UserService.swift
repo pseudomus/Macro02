@@ -152,21 +152,3 @@ class UserService: NetworkService {
     }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

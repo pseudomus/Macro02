@@ -16,7 +16,6 @@ struct AppTabView: View {
                 screen.destination
                     .tag(screen as AppScreenNavigation?)
                     .tabItem { screen.label }
-                    
             }
         }
     }
@@ -30,4 +29,5 @@ struct AppTabView: View {
         .environmentObject(userViewModel)
         .environmentObject(authManager)
         .onAppear { if userViewModel.user == nil { userViewModel.fetchUserData() } } // Fetch user data when opening again without login
+        .modelContainer(for: [RepertoireFixedFilter.self])
 }

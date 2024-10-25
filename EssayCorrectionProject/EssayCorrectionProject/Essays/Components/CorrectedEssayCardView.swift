@@ -10,13 +10,14 @@ import SwiftUI
 struct CorrectedEssayCardView: View {
     @State var title: String = "Corrected Essay Card"
     @State var description: String = "This is a corrected essay card."
-    @State var dayOfCorrection: String = "20/09/2024"
+    @State var dayOfCorrection: String
     @State var tags: [String] = ["tag", "tag"]
     @State var isCorrected: Bool = true
+    @Environment(\.navigate) var navigate
     
     var body: some View {
         Button{
-            
+
         } label: {
             VStack(alignment: .leading) {
                 HStack {
@@ -31,7 +32,7 @@ struct CorrectedEssayCardView: View {
                     .foregroundStyle(.black)
 
                 HStack {
-                    Text(dayOfCorrection)
+                    Text(dateFormatted)
                         .lineLimit(1)
                         .font(.subheadline)
                         .foregroundStyle(.black)
@@ -67,8 +68,34 @@ struct CorrectedEssayCardView: View {
                         }
                 }
             }
-            .padding()
+            .padding(.horizontal)
+            .padding(.vertical, 10)
         }
         
+    }
+    
+    var dateFormatted: String {
+        let dateFormatter = DateFormatter()
+
+        // Set Date Format (2024-10-23T21:01:10.547Z)
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
+
+        // Convert String to Date
+        dateFormatter.date(from: dayOfCorrection)
+        
+        if let date = dateFormatter.date(from: dayOfCorrection) {
+            print("Data convertida: \(date)")
+            
+            let reducedFormatter = DateFormatter()
+                reducedFormatter.dateFormat = "dd/MM/yyyy"
+                
+                let reducedDateString = reducedFormatter.string(from: date)
+            
+            return reducedDateString
+        } else {
+            print("Erro ao converter a string para Date.")
+        }
+        
+        return ""
     }
 }

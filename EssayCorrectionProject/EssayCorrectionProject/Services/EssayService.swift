@@ -64,5 +64,49 @@ class EssayService: NetworkService {
         }
         .resume()
     }
+    
+    func fetchEssays(id: String, completion: @escaping (Result<[EssayAllResponse], NetworkError>) -> Void) {
+        guard let url = URL(string: Endpoints.allEssays) else {
+            completion(.failure(.invalidURL))  // URL inválida
+            return
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        // Conteúdo que será enviado
+        let body: [String: Any] = [
+            "userId": id
+        ]
+        
+        request.httpBody = try? JSONSerialization.data(withJSONObject: body, options: [])
+        
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                print("Erro na requisição: \(error)")
+                completion(.failure(.unknown(error)))
+                return
+            }
+            
+            guard let data = data else {
+                print("Nenhum dado recebido")
+                completion(.failure(.noData))
+                return
+            }
+            
+            do {
+                // Decodifica a resposta em um objeto EssayResponse
+                let essayResponse = try JSONDecoder().decode([EssayAllResponse].self, from: data)
+                print("Resposta do servidor: \(essayResponse)")
+                completion(.success(essayResponse))
+            } catch {
+                print("Erro ao processar a resposta: \(error)")
+                completion(.failure(.decodingError))
+            }
+        }
+        .resume()
+        
+    }
 
 }

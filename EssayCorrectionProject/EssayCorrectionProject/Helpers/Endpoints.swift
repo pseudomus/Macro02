@@ -16,4 +16,5 @@ struct Endpoints {
     static let students = "\(baseURL)/students/with-essays"
     static let essays = "\(baseURL)/students"
     static let sendEssayToCorrection = "\(baseURL)/correction"
+    static let allEssays = "\(baseURL)/essay/getAll"
 }
