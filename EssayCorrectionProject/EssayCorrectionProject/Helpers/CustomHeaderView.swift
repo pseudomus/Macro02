@@ -81,7 +81,7 @@ struct CustomHeaderView<Content: View>: View {
             let minY = reader.frame(in: .global).minY
             let height = geometry.size.height / 5
 
-            RoundedRectangle(cornerRadius: 20) // IMAGEM DO HEADER
+            UnevenRoundedRectangle(cornerRadii: .init(bottomLeading: 20, bottomTrailing: 20)) // IMAGEM DO HEADER
                 .foregroundStyle(.gray)
                 .frame(height: minY > 0 ? minY + height : height * (1 - opacity))
                 .offset(y: -minY)
@@ -127,7 +127,7 @@ struct CustomHeaderView<Content: View>: View {
         }
         .padding(.horizontal)
         .foregroundStyle(shouldAnimate ? .black : .white)
-        .padding(.top, shouldAnimate ? geometry.safeAreaInsets.top + 70 : 120) // Distância do título do topo
+        .padding(.top, shouldAnimate ? geometry.safeAreaInsets.top + geometry.size.height * 0.08 : geometry.size.height * 0.14) // Distância do título do topo
         .padding(.bottom)
         .frame(maxWidth: .infinity)
         .background(Color.white.opacity(opacity))

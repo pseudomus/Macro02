@@ -27,7 +27,8 @@ struct RepertoireCardView: View {
                         Image(systemName: "pin.fill")
                             .foregroundStyle(.black)
                     } else {
-                        Image(systemName: "pin")                        .foregroundStyle(.black)
+                        Image(systemName: "pin")
+                            .foregroundStyle(.black)
                     }
                 }
             }.foregroundStyle(.black)

@@ -29,7 +29,7 @@ struct EssayCorrectedView: View {
     @State private var fontSize: CGFloat = 16
 
     var body: some View {
-        CustomHeaderView(title: "Correção", distanceContentFromTop: 50, showSearchBar: false, isScrollable: true) { _ in
+        CustomHeaderView(title: "Correção", distanceContentFromTop: 50, showSearchBar: false, isScrollable: true, numOfItems: competences.count) { _ in
             ScrollViewReader { proxy in
                 VStack(spacing: 30) {
                     // Redação
@@ -44,9 +44,9 @@ struct EssayCorrectedView: View {
                     
                     // métricas
                     metricsView()
-                        
                 }
                 .padding(.horizontal)
+                .padding(.bottom, 120)
                 .onAppear { scrollProxy = proxy }
             }
             .navigationBarBackButtonHidden()
@@ -148,13 +148,16 @@ struct EssayCorrectedView: View {
             VStack(alignment: .leading, spacing: 10) {
                 Text(selectedCompetency.resume) // Resumo
                     .font(.body)
-                ExpandableCompetenceCardView(cards: selectedCompetency.cards,
-                                             isEssayTextExpanded: $isEssayTextExpanded,
-                                             scrollProxy: $scrollProxy,
-                                             highlightedKeyword: $highlightedKeyword,
-                                             scrollToKeyword: { keyword in
-                    self.scrollToKeyword(keyword)
-                })
+                if !selectedCompetency.cards.isEmpty {
+                    ExpandableCompetenceCardView(cards: selectedCompetency.cards,
+                                                 competenceIndex: selectedCompetenceIndex,
+                                                 isEssayTextExpanded: $isEssayTextExpanded,
+                                                 scrollProxy: $scrollProxy,
+                                                 highlightedKeyword: $highlightedKeyword,
+                                                 scrollToKeyword: { keyword in
+                        self.scrollToKeyword(keyword)
+                    })
+                }
             }
         }
     }
@@ -184,111 +187,57 @@ struct EssayCorrectedView: View {
 struct ExpandableCompetenceCardView: View {
     let cards: [Card]
     let groupedCards: [String: [Card]]
+    let scrollToKeyword: (String) -> Void
+    let competenceIndex: Int
+    
     @Binding var isEssayTextExpanded: Bool
     @Binding var scrollProxy: ScrollViewProxy?
-    let scrollToKeyword: (String) -> Void
-        @Binding var highlightedKeyword: String? // Palavra sublinhada
-
-    // Inicializa a view
-    init(cards: [Card], isEssayTextExpanded: Binding<Bool>, scrollProxy: Binding<ScrollViewProxy?>, highlightedKeyword: Binding<String?>, scrollToKeyword: @escaping (String) -> Void) {
+    @Binding var highlightedKeyword: String?
+    
+    @State private var expandedStates: [String: Bool] = [:]
+    
+    init(cards: [Card], competenceIndex: Int, isEssayTextExpanded: Binding<Bool>, scrollProxy: Binding<ScrollViewProxy?>, highlightedKeyword: Binding<String?>, scrollToKeyword: @escaping (String) -> Void) {
         self.cards = cards
         self._isEssayTextExpanded = isEssayTextExpanded
         self._scrollProxy = scrollProxy
         self._highlightedKeyword = highlightedKeyword
         self.scrollToKeyword = scrollToKeyword
+        self.competenceIndex = competenceIndex
         
-        // Agrupando cartões
+        // agrupando cards
         groupedCards = Dictionary(grouping: cards) { $0.title ?? "" }
     }
     
-    @State private var isExpanded: Bool = true
-    
     var body: some View {
+        let predefinedTitles = ["Agente", "Ação", "Efeito", "Modo", "Detalhamento"]
+
+        let displayedTitles = competenceIndex == 4
+        ? Array(Set(predefinedTitles).union(groupedCards.keys))
+        : groupedCards.keys.sorted()
+
+        ForEach(displayedTitles.sorted(), id: \.self) { title in
+            cardSection(title: title)
+        }
+    }
+
+    
+    // MARK: - VIEWS
+    @ViewBuilder
+    func cardSection(title: String) -> some View {
+        let cardsWithTitle = groupedCards[title] ?? []
+        let count = cardsWithTitle.count
+        let isExpanded = expandedStates[title] ?? false
+        
         VStack(alignment: .leading, spacing: 20) {
-            ForEach(groupedCards.keys.sorted(), id: \.self) { title in
-                let cardsWithTitle = groupedCards[title] ?? []
-                let count = cardsWithTitle.count
-                
-                // Título
-                HStack {
-                    Text(title)
-                    Spacer()
-                    Text("\(count) erros")
+            sectionHeader(title: title, count: count)
+            
+            // CONTEÚDO AO EXPANDIR
+            if isExpanded {
+                ForEach(cardsWithTitle.indices, id: \.self) { index in
+                    cardContent(card: cardsWithTitle[index], index: index) // conteúdo
                 }
-                .fontWeight(.bold)
                 
-                // Conteúdo
-                if isExpanded {
-                    ForEach(cardsWithTitle.indices, id: \.self) { index in
-                        let card = cardsWithTitle[index]
-                        
-                        HStack(alignment: .top) {
-                            // Círculo com o índice
-                            Text("\(index + 1)")
-                                .padding(8)
-                                .background(Color.blue)
-                                .clipShape(Circle())
-                                .foregroundStyle(.white)
-                                .offset(y: -8)
-                            
-                            VStack(alignment: .leading, spacing: 8) {
-                                if let element = card.element {
-                                    Text("\(Text("Elemento:").bold()) \(element)")
-                                }
-                                
-                                if let context = card.context {
-                                    Text("\(Text("Contexto:").bold()) \(context)")
-                                }
-                                
-                                if let suggestion = card.suggestion {
-                                    Text("\(Text("Sugestão:").bold()) \(suggestion)")
-                                }
-                                
-                                if let message = card.message {
-                                    Text(message)
-                                        .font(.footnote)
-                                }
-                            }
-                        }
-                        
-                    }
-                    // MARK: - VISUALIZAR ERRO NA REDAÇÃO
-                    Button(action: {
-                        if !isEssayTextExpanded {
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-                                withAnimation(.easeInOut) {
-                                    isEssayTextExpanded.toggle()
-                                }
-                            }
-                       }
-                        // Scroll com animação suave para a redação
-                        withAnimation(.easeInOut) {
-                            scrollProxy?.scrollTo("REDACAO", anchor: .bottom)
-                        }
-                        
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                            //if let keyword = cardsWithTitle.first?.element {
-                            
-                               // highlightedKeyword = keyword
-                            highlightedKeyword = "Conclusão"
-                            scrollToKeyword("Conclusão")
-                            //}
-                        }
-                        
-                    }) {
-                        HStack {
-                            Spacer()
-                            Image(systemName: "eye")
-                            Text("Visualizar erros na redação")
-                            Spacer()
-                        }
-                    }
-                    .buttonStyle(.plain)
-                    .padding(8)
-                    .background(Color.gray)
-                    .clipShape(.rect(cornerRadius: 8))
-                    .frame(maxWidth: .infinity)
-                }
+                viewErrorsButton(cardsWithTitle: cardsWithTitle) // botão de ver erros na redação
             }
         }
         .padding()
@@ -298,11 +247,102 @@ struct ExpandableCompetenceCardView: View {
             RoundedRectangle(cornerRadius: 12)
                 .stroke(Color.white, lineWidth: 3)
         )
+        // EXPANDIR AO CLICAR NO CARD
         .onTapGesture {
             withAnimation(.easeInOut) {
-                isExpanded.toggle()
+                expandedStates[title] = !(expandedStates[title] ?? false)
             }
         }
+    }
+    
+    // MARK: - TÍTULO
+    @ViewBuilder
+    func sectionHeader(title: String, count: Int) -> some View {
+        HStack {
+            Text(title)
+            Spacer()
+            // Verifica se o título foi adicionado manualmente
+            if let cards = groupedCards[title], !cards.isEmpty {
+                if competenceIndex != 4 {
+                    Text(count > 1 ? "\(count) erros" : "\(count) erro")
+                } else {
+                    Image(systemName: "checkmark.seal.fill")
+                }
+            } else {
+                Image(systemName: "xmark.seal.fill")
+            }
+        }
+        .fontWeight(.bold)
+    }
+
+
+    // MARK: - conteúdos do card
+    @ViewBuilder
+    func cardContent(card: Card, index: Int) -> some View {
+        HStack(alignment: .top) {
+            // Círculo com o índice
+            Text("\(index + 1)")
+                .padding(8)
+                .background(Color.blue)
+                .clipShape(Circle())
+                .foregroundStyle(.white)
+                .offset(y: -8)
+            
+            VStack(alignment: .leading, spacing: 8) {
+                if let element = card.element {
+                    Text("\(Text("Elemento:").bold()) \(element)")
+                }
+                
+                if let context = card.context {
+                    Text("\(Text("Contexto:").bold()) \(context)")
+                }
+                
+                if let suggestion = card.suggestion {
+                    Text("\(Text("Sugestão:").bold()) \(suggestion)")
+                }
+                
+                if let message = card.message {
+                    Text(message)
+                        .font(.footnote)
+                }
+            }
+        }
+    }
+    
+    // MARK: - botão de visualizar erros
+    @ViewBuilder
+    func viewErrorsButton(cardsWithTitle: [Card]) -> some View {
+        Button(action: {
+            if !isEssayTextExpanded {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                    withAnimation(.easeInOut) {
+                        isEssayTextExpanded.toggle()
+                    }
+                }
+            }
+            // Scroll com animação suave para a redação
+            withAnimation(.easeInOut) {
+                scrollProxy?.scrollTo("REDACAO", anchor: .bottom)
+            }
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                highlightedKeyword = "Conclusão"
+                scrollToKeyword("Conclusão")
+            }
+            
+        }) {
+            HStack {
+                Spacer()
+                Image(systemName: "eye")
+                Text("Visualizar erros na redação")
+                Spacer()
+            }
+        }
+        .buttonStyle(.plain)
+        .padding(8)
+        .background(Color.gray)
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .frame(maxWidth: .infinity)
     }
 }
 
@@ -319,9 +359,14 @@ struct ExpandableCompetenceCardView: View {
                                                                                          element: "Elemento",
                                                                                          context: "contexto",
                                                                                          suggestion: "Sugestao, aoaoaoao",
+                                                                                         message: "Mesagem"),
+                                                                            Card(title: "Titulo do card diferente",
+                                                                                         element: "Elemento",
+                                                                                         context: "contexto",
+                                                                                         suggestion: "Sugestao, aoaoaoao",
                                                                                          message: "Mesagem")]),
                                                          Competency(resume: "222ResumoResumoResumoResumoResumoResumoResumoResumo",
-                                                                     cards: [Card(title: "22Titulo do card",
+                                                                     cards: [Card(title: "Agente",
                                                                                   element: "222Elemento",
                                                                                   context: "222contexto",
                                                                                   suggestion: "222Sugestao, aoaoaoao",
@@ -339,47 +384,6 @@ struct ExpandableCompetenceCardView: View {
 
 
 
-extension String {
-    func highlightKeyword(with keyword: String?) -> Text {
-        guard let keyword = keyword, !keyword.isEmpty else {
-            return Text(self)
-        }
-        
-        let parts = self.components(separatedBy: keyword)
-        
-        var highlightedText = Text("")
-        
-        for (index, part) in parts.enumerated() {
-            highlightedText = highlightedText + Text(part)
-            if index < parts.count - 1 {
-                highlightedText = highlightedText + Text(keyword).underline() // Sublinhando a palavra-chave
-            }
-        }
-        
-        return highlightedText
-    }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 // MARK: - INPUT VIEW
@@ -387,7 +391,7 @@ struct EssayInputView: View {
     @StateObject var essayViewModel = EssayViewModel()
     @State private var theme: String = "A Importância da Educação no Combate à Desigualdade Social"
     @State private var title: String = "Educação e Desigualdade Social"
-    @State private var essay: String = "A desigualdade social é um problema muito antigo e presente em várias sociedades ao redor do mundo. No Brasil, esse problema é bastante evidente, especialmente em áreas mais carentes. A educação tem um papel crucial para combater essa desigualdade, porque ao oferecer oportunidade de estudo, todas as pessoas pode ter um futuro melhor e com mais oportunidades de emprego. Entretanto, apesar dos avanços no acesso à educação nos últimos anos, ainda existem muitas desigualdades no sistema educacional. Escolas públicas de áreas periféricas, por exemplo, geralmente não têm a mesma qualidade de ensino que escolas particulares ou públicas de áreas mais ricas. Isso acaba prejudicando os alunos de famílias mais pobres, que não conseguem alcançar os mesmos resultados dos alunos de escolas particulares. Outro ponto a se considerar é a falta de investimento adequado nas escolas públicas. Muitos professores não recebem o apoio necessário para desenvolverem seus trabalhos com eficiência. A falta de material escolar e infraestrutura também é um problema que afeta o aprendizado dos alunos, dificultando ainda mais seu progresso. Portanto, é fundamental que o governo invista mais na educação pública para garantir que todos os estudantes tenham acesso a uma educação de qualidade. Por fim, para que a educação realmente seja um meio eficaz de combate à desigualdade social, é necessário que além do acesso à escola, haja também a implementação de políticas públicas que promovam a permanência e o sucesso dos estudantes no ambiente escolar. Sem essas políticas, muitos jovens acabam abandonando a escola antes mesmo de concluir o ensino básico, o que perpetua o ciclo de pobreza e desigualdade. Conclusão: A educação é, sem dúvida, uma das ferramentas mais importantes para reduzir as desigualdades sociais no Brasil. No entanto, ainda há muitos desafios a serem superados, como a falta de investimento nas escolas públicas e a má qualidade do ensino em algumas regiões do país. Somente através de uma educação acessível e de qualidade para todos será possível construir uma sociedade mais justa e igualitária."
+    @State private var essay: String = "Nos ultimos anos anos, o advento das redes sociais transformou profundamente a forma como as pessoas se comunicam e se relacionam. Embora essas plataformas tenham proporcionado uma maior conectividade e acessibilidade, elas também trouxeram desafios significativos para as relações pessoais. Portanto, é essencial analisar como as redes sociais influenciam a qualidade das interações humanas e as consequências desse fenômeno na sociedade contemporânea. Em primeiro lugar, as redes sociais oferecem um espaço onde os indivíduos podem se conectar instantaneamente, independentemente da distância geográfica. Essa característica é particularmente benéfica para aqueles que desejam manter relacionamentos à distância, permitindo que amigos e familiares compartilhem experiências e momentos em tempo real. No entanto, essa facilidade de comunicação pode resultar em relações superficiais, onde a quantidade de interações prevalece sobre a qualidade. Muitas vezes, as conversas se tornam breves e despersonalizadas, limitadas a curtidas e comentários em postagens, o que pode prejudicar a profundidade das conexões interpessoais. Alem dissos, o uso excessivo das redes sociais pode gerar um impacto negativo na saúde mental dos ussuárioz. Estudo realizado pela Universidade de Michigan revelou que a comparação constante com as vidas aparentemente perfeitas dos outros pode levar a sentimentos de inadequação e solidão. A busca por validação através de curtidas e compartilhamentos pode criar um ciclo vicioso de ansiedade e dependência emocional, prejudicandos as interacoes cara e cara e afastando as pessoas de vínculos mais significativos e autênticos.Por outro lado, as redes sociais também podem servir como um meio de apoio emocional e solidariedade. Durante períodos de crise, como a pandemia de COVID-19, muitos encontraram conforto em comunidades online que compartilham experiências semelhantes. Grupos de apoio e plataformas de interação permitem que indivíduos se conectem e se ajudem mutuamente, reforçando a importância das redes sociais como espaços de acolhimento e empatia. Em síntese, as redes sociais têm um papel ambivalente nas relações pessoais contemporâneas. Enquanto oferecem oportunidades para conexão e apoio, também podem promover relações superficiais e prejudicar a saúde mental. Assim, é fundamental que os usuários adotem uma postura crítica em relação ao uso dessas plataformas, buscando um equilíbrio que valorize tanto as interações virtuais quanto as pessoais. Apenas dessa formas, será possível aproveitar os benefícios das redes sociais sem comprometer a qualidade das relações humana."
     
 
     @Environment(\.navigate) var navigate
