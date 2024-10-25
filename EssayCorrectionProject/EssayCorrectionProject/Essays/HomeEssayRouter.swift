@@ -9,15 +9,15 @@ import SwiftUI
 
 enum HomeEssayRoute: RouteProtocol {
     case correct
-    case scanner
+    case review
     
     @ViewBuilder
     var destination: some View {
         switch self {
         case .correct:
             EssayCorrectionView()
-        case .scanner:
-            EssayScannerView()
+        case .review:
+            TranscriptionReviewView()
         }
     }
 }

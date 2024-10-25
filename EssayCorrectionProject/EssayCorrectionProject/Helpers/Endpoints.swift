@@ -15,4 +15,5 @@ struct Endpoints {
     static let students = "\(baseURL)/students/with-essays"
     static let essays = "\(baseURL)/students"
     static let checkGrammar = "\(baseURL)/students/checkGrammar"
+    static let transcriptionRequest = "\(baseURL)/transcription"
 }

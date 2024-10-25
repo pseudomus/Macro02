@@ -19,32 +19,32 @@ struct HomeEssayView: View {
                 
                 VStack {
                     if !shouldAnimate {
-                    Button {
-                        navigate(.essays(.correct))
-                        withAnimation {
-                            isFirstTime.toggle()
-                        }
-                        
-                    } label: {
-                        HStack(alignment: .bottom){
-                            Text("Corrigir")
-                                .font(.title3)
-                                .foregroundStyle(.black)
-                            Spacer(minLength: screenSize.width / 2.7)
-                            if !isFirstTime{
-                                Image(.lapisinho)
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .matchedGeometryEffect(id: "lapis", in: animation)
+                        Button {
+                            navigate(.essays(.correct))
+                            withAnimation {
+                                isFirstTime.toggle()
                             }
+                            
+                        } label: {
+                            HStack(alignment: .bottom){
+                                Text("Corrigir")
+                                    .font(.title3)
+                                    .foregroundStyle(.black)
+                                Spacer(minLength: screenSize.width / 2.7)
+                                if !isFirstTime{
+                                    Image(.lapisinho)
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                        .matchedGeometryEffect(id: "lapis", in: animation)
+                                }
+                            }
+                            .padding()
+                            .padding(.top,isFirstTime ? screenSize.height / 9 : 0)
+                            .background(Color.gray.opacity(0.5))
+                            .clipShape(.rect(cornerRadius: 10))
+                            .padding(.horizontal,22)
+                            .padding(.bottom, 22)
                         }
-                        .padding()
-                        .padding(.top,isFirstTime ? screenSize.height / 9 : 0)
-                        .background(Color.gray.opacity(0.5))
-                        .clipShape(.rect(cornerRadius: 10))
-                        .padding(.horizontal,22)
-                        .padding(.bottom, 22)
-                    }
                     }
                     if isFirstTime {
                         
