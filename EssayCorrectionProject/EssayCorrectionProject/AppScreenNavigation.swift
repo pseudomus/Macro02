@@ -36,7 +36,7 @@ extension AppScreenNavigation {
         case .essays:
             EssayNavigationStack()
         case .evolution:
-            EvolutionNavigationStack()
+            EvolutionView()
         case .repertoire:
             RepertoireView()
         case .news:
