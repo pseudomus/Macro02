@@ -41,6 +41,7 @@ struct EvolutionView: View {
 struct EvolutionCardView: View {
     
     @State var text: String
+    @State var colors: [Color] = [.red, .blue, .purple]
     
     var body: some View {
         VStack(alignment: .leading) {
@@ -53,11 +54,12 @@ struct EvolutionCardView: View {
                     .frame(height: 110)
                 Spacer()
                 VStack(alignment: .leading) {
-                    ForEach(0..<3, id: \.self) { _ in
+                    ForEach(0..<3, id: \.self) { i in
                         HStack {
                             Circle()
                                 .frame(width: 8)
                                 .padding(.trailing, 6)
+                                .foregroundStyle(colors[i])
                             Text("Proposta de intervenção")
                                 .font(.footnote)
                         }

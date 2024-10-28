@@ -128,7 +128,7 @@ private struct SemiCircularGraphView: View {
         }
         .animation(.snappy(duration: 0.9), value: data.rotation)
         .onAppear {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1){
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5){
                 data.getRotation()
             }
         }
