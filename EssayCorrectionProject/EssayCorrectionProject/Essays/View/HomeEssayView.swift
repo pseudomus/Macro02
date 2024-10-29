@@ -15,14 +15,13 @@ struct HomeEssayView: View {
     @StateObject var viewModel: HomeEssayViewModel = HomeEssayViewModel()
     
     var body: some View {
-        VStack{
+        VStack {
             CustomHeaderView(title: "Redações", distanceContentFromTop: 50, showSearchBar: false, isScrollable: !viewModel.isFirstTime, numOfItems: viewModel.essays.count) { shouldAnimate in
                 
                 VStack {
                     if !shouldAnimate {
                     Button {
-                        navigate(.essays(.correct))
-                        
+                        navigate(.sheet)
                     } label: {
                         HStack(alignment: .bottom){
                             Text("Corrigir")

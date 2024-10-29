@@ -22,7 +22,7 @@ struct OnboardingView: View {
 }
 
 #Preview {
-    ContentView()
+    OnboardingView(isOnOnboarding: .constant(false))
 }
 
 struct OnboardingCardView: View {
