@@ -15,7 +15,15 @@ struct AppleLoginView: View {
     @State private var errorMessage = ""
     
     var body: some View {
-        VStack {
+        ZStack{
+            VStack{
+                Image("LoginRect")
+                    .resizable()
+                    .scaledToFit()
+//                    .ignoresSafeArea()
+                    .frame(height: 700)
+                    .padding(.bottom,370)
+            }
             // APPLE
             SignInWithAppleButton(.signIn, onRequest: configure, onCompletion: handleAppleLogin)
                 .frame(width: 200, height: 50)
