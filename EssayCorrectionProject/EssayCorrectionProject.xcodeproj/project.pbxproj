@@ -398,7 +398,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"EssayCorrectionProject/Preview Content\"";
-				DEVELOPMENT_TEAM = 5GYXF2FP9Y;
+				DEVELOPMENT_TEAM = SRXHT55569;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -429,7 +429,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"EssayCorrectionProject/Preview Content\"";
-				DEVELOPMENT_TEAM = 5GYXF2FP9Y;
+				DEVELOPMENT_TEAM = SRXHT55569;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;

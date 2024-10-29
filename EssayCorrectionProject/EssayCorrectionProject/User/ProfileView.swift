@@ -10,7 +10,8 @@ import SwiftUI
 struct ProfileView: View {
     
     @EnvironmentObject var authManager: AuthManager
-    @State var user: User
+    @EnvironmentObject var user: UserViewModel
+    @Environment(\.navigate) var navigate
     
     var body: some View {
         ZStack {
@@ -23,15 +24,18 @@ struct ProfileView: View {
                     .foregroundStyle(.white)
                     .shadow(color: .black.opacity(0.5), radius: 5, x: 0, y: 5)
                 
-                ProfileTextBox(textToShow: user.name)
+                ProfileTextBox(textToShow: user.user?.name ?? "no name")
                     .padding()
                 
-                ProfileTextBox(textToShow: user.email)
+                ProfileTextBox(textToShow: user.user?.email ?? "no email")
                     .padding()
                 
                 Spacer()
                 
-                LogoutButton(buttonTitle: "Sair da conta", action: AuthManager.shared.logout)
+                LogoutButton(buttonTitle: "Sair da conta", action: {
+                    AuthManager.shared.logout()
+                    navigate(.back)
+                })
                     .padding(.bottom,20)
                     .padding(.horizontal, 90)
             }
@@ -42,5 +46,5 @@ struct ProfileView: View {
 }
 
 #Preview {
-    ProfileView(user: User(id: 10, name: "teste", email: "teste@gmail.com"))
+    ProfileView()
 }
