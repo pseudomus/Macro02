@@ -9,7 +9,7 @@ import SwiftUI
 
 class HomeEssayViewModel: ObservableObject {
     @Published var isFirstTime: Bool = false //Define o estado da view sobre as redações corrigidas
-    @Published var essays: [EssayAllResponse] = []
+    @Published var essays: [EssayResponse] = []
     @Published var isLoading = false
     
     let essayService: EssayService
@@ -29,11 +29,7 @@ class HomeEssayViewModel: ObservableObject {
                 switch result {
                 case .success(let success):
                     self.essays = success
-                    if self.essays.isEmpty {
-                        self.isFirstTime = true
-                    } else {
-                        self.isFirstTime = false
-                    }
+                    self.isFirstTime = self.essays.isEmpty
                 case .failure(let failure):
                     print(failure)
                 }

@@ -13,65 +13,59 @@ struct CorrectedEssayCardView: View {
     @State var dayOfCorrection: String
     @State var tags: [String] = ["tag", "tag"]
     @State var isCorrected: Bool = true
-    @Environment(\.navigate) var navigate
     
     var body: some View {
-        Button{
-
-        } label: {
-            VStack(alignment: .leading) {
-                HStack {
-                    Text(title)
-                        .lineLimit(1)
-                        .bold()
-                        .foregroundStyle(.black)
-                    Spacer()
-                }
-                Text(description)
+        VStack(alignment: .leading) {
+            HStack {
+                Text(title)
                     .lineLimit(1)
+                    .bold()
+                    .foregroundStyle(.black)
+                Spacer()
+            }
+            Text(description)
+                .lineLimit(1)
+                .foregroundStyle(.black)
+
+            HStack {
+                Text(dateFormatted)
+                    .lineLimit(1)
+                    .font(.subheadline)
                     .foregroundStyle(.black)
 
-                HStack {
-                    Text(dateFormatted)
-                        .lineLimit(1)
-                        .font(.subheadline)
-                        .foregroundStyle(.black)
+                Spacer()
+                ForEach(tags.indices, id: \.self) { index in
+                    if index < 2 {
+                        Text(tags[index])
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 5)
+                            .background(Color.gray)
+                            .clipShape(.rect(cornerRadius: 7))
+                            .foregroundStyle(.black)
 
-                    Spacer()
-                    ForEach(tags.indices, id: \.self) { index in
-                        if index < 2 {
-                            Text(tags[index])
-                                .padding(.horizontal, 10)
-                                .padding(.vertical, 5)
-                                .background(Color.gray)
-                                .clipShape(.rect(cornerRadius: 7))
-                                .foregroundStyle(.black)
-
-                        }
                     }
                 }
-            }.padding(.horizontal, 12)
-                .padding(.vertical, 10)
-            .background(Color.gray.opacity(0.6))
-            .clipShape(.rect(cornerRadius: 10))
-            .overlay{
-                if !isCorrected {
-                    Rectangle()
-                        .fill(Color.gray)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .clipShape(.rect(cornerRadius: 10))
-                        .overlay {
-                            Text("Corrigindo sua redação...")
-                                .foregroundStyle(.black)
-                                .font(.title3)
-                                .bold()
-                        }
-                }
             }
-            .padding(.horizontal)
-            .padding(.vertical, 10)
         }
-        
+        .padding(.horizontal, 12)
+        .padding(.vertical, 10)
+        .background(Color.gray.opacity(0.6))
+        .clipShape(.rect(cornerRadius: 10))
+        .overlay{
+            if !isCorrected {
+                Rectangle()
+                    .fill(Color.gray)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .clipShape(.rect(cornerRadius: 10))
+                    .overlay {
+                        Text("Corrigindo sua redação...")
+                            .foregroundStyle(.black)
+                            .font(.title3)
+                            .bold()
+                    }
+            }
+        }
+        .padding(.horizontal)
     }
     
     var dateFormatted: String {
