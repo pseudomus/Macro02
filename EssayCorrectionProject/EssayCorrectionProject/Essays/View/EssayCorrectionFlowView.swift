@@ -59,12 +59,12 @@ struct EssayCorrectionFlowView: View {
                         lastView
                     } callback: {
                         if essayViewModel.correctionMode == .transciption {
-                            essayViewModel.sendEssayToCorrection()
                             navigate(.essays(.scanner))
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0){
                                 navigate(.exitSheet)
                             }
                         } else {
+                            essayViewModel.sendEssayToCorrection(text: essayViewModel.text, title: essayViewModel.title, theme: essayViewModel.theme, userId: 105)
                             
                         }
                     }
@@ -77,6 +77,9 @@ struct EssayCorrectionFlowView: View {
             
         }.frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             .ignoresSafeArea()
+            .onChange(of: essayViewModel.isLoading) {
+                navigate(.essays(.esssayCorrected(text: essayViewModel.text)))
+            }
     }
     
     var writeButton: some View {
