@@ -17,7 +17,7 @@ struct EssayCorrectionFlowView: View {
     
     @StateObject var essayViewModel = EssayViewModel()
     @Environment(\.navigate) var navigate
-    @State var currentIndex: Int = 2
+    @State var currentIndex: Int = 0
     @Namespace var namespace
     @FocusState var isFocused: Bool
     
@@ -58,6 +58,7 @@ struct EssayCorrectionFlowView: View {
                         mode: essayViewModel.correctionMode
                     ){
                         lastView
+                            .toolbar(.hidden, for: .tabBar)
                     } callback: {
                         if essayViewModel.correctionMode == .transciption {
 
@@ -65,9 +66,11 @@ struct EssayCorrectionFlowView: View {
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0){
                                 navigate(.exitSheet)
                             }
-                        } else {
+                        } else if essayViewModel.correctionMode == .write {
                             essayViewModel.sendEssayToCorrection(text: essayViewModel.text, title: essayViewModel.title, theme: essayViewModel.theme, userId: 105)
-                            
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0){
+                                navigate(.exitSheet)
+                            }
                         }
                     }
                     .tag(2)
@@ -137,6 +140,11 @@ struct EssayCorrectionFlowView: View {
                         } else {
                             CustomTextFieldCorrectionModal(text: $essayViewModel.text, mode: .big)
                                 .focused($isFocused)
+                                .onTapGesture {
+                                    if !isFocused {
+                                        isFocused = true
+                                    }
+                                }
                         }
                 }
             }
