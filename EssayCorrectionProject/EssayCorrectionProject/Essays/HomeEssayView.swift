@@ -17,6 +17,7 @@ struct HomeEssayView: View {
     @Namespace private var animation
     @State private var showingDeleteAlert = false
     @State private var essayToDelete: EssayResponse?
+
     
     // Filters
     var groupedEssays: [String: [EssayResponse]] {
@@ -86,10 +87,7 @@ struct HomeEssayView: View {
         .alert(isPresented: $showingDeleteAlert) {
             deleteEssayAlert
         }
-        .overlay(alignment: .topTrailing){
-            ProfileButton()
-                .padding()
-        }
+
     }
     
     // MARK: - VIEWS
