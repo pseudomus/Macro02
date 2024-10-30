@@ -10,10 +10,11 @@ import SwiftUI
 struct ModalHeaderView: View {
     @Environment(\.navigate) var navigate
     @Binding var index: Int
+    @Binding var mode: CorrectionMode
     
     var body: some View {
         ZStack(alignment: .top) {
-            ProgressBar(progressIndex: $index)
+            ProgressBar(progressIndex: $index, mode: $mode)
                 .padding(.horizontal, 120)
                 .padding(.top, 18)
             

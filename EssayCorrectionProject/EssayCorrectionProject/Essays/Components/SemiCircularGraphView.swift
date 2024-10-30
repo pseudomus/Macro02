@@ -52,7 +52,7 @@ struct SemiCircularGraphCardComponentView: View {
                         VStack{
                             HStack {
                                 Spacer()
-                                Image(systemName: "arrow.triangle.2.circlepath.circle.fill")
+                                Image(systemName: "arrow.left.arrow.right.circle.fill")
                                     .resizable()
                                     .scaledToFit()
                                     .frame(width: semiCircularSize.width / 6, height: semiCircularSize.width / 6)
@@ -76,7 +76,7 @@ struct SemiCircularGraphCardComponentView: View {
                             VStack {
                                 HStack {
                                     Spacer()
-                                    Image(systemName: "arrow.triangle.2.circlepath.circle.fill")
+                                    Image(systemName: "arrow.left.arrow.right.circle.fill")
                                         .resizable()
                                         .scaledToFit()
                                         .frame(width: semiCircularSize.width / 6, height: semiCircularSize.width / 6)

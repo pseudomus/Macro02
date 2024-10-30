@@ -10,6 +10,7 @@ struct ProgressBar: View {
     @State var viewSize: CGSize = .zero
     @State var cornerRadius: CGFloat = 13
     @Binding var progressIndex: Int
+    @Binding var mode: CorrectionMode
     
     var body: some View {
         HStack(spacing: cornerRadius / 1.3) {
@@ -20,7 +21,7 @@ struct ProgressBar: View {
             .frame(width: cornerRadius * 9)
             HStack(spacing: cornerRadius / 2.4) {
                 ProgressBarComponent(cornerRadius: $cornerRadius, isActive: .constant(progressIndex >= 2))
-                ProgressBarComponent(cornerRadius: $cornerRadius, isActive: .constant(progressIndex >= 3))
+                ProgressBarComponent(cornerRadius: $cornerRadius, isActive: .constant(mode != .none))
             }
         }.frame(height: (viewSize.width / 15) * 1.2)
             .getSize { size in

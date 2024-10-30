@@ -18,21 +18,23 @@ struct EssayCorrectionFlowView: View {
     @StateObject var essayViewModel = EssayViewModel()
     @Environment(\.navigate) var navigate
     @State var currentIndex: Int = 0
+    @Namespace var namespace
     
     var body: some View {
         ZStack(alignment: .topLeading) {
             VStack(alignment: .leading) {
-                ModalHeaderView(index: $currentIndex)
+                ModalHeaderView(index: $currentIndex, mode: $essayViewModel.correctionMode)
                     .padding(.bottom, 10)
                 
-                TabView(selection: $currentIndex){
+                TabView(selection: $currentIndex) {
                     CorrectionModalBaseView(
                         title: "Tema da redação",
                         descBody: "O tema da redação influencia na correção.",
                         isActive: .constant(essayViewModel.theme != ""),
                         index: $currentIndex
                     ){
-                        CustomTextFieldCorrectionModal(text: $essayViewModel.theme)
+                        CustomTextFieldCorrectionModal(text: $essayViewModel.theme, mode: .small)
+                            .padding(.top)
                     }
                     .tag(0)
                     
@@ -42,7 +44,8 @@ struct EssayCorrectionFlowView: View {
                         isActive: .constant(essayViewModel.title != ""),
                         index: $currentIndex
                     ){
-                        CustomTextFieldCorrectionModal(text: $essayViewModel.title)
+                        CustomTextFieldCorrectionModal(text: $essayViewModel.title, mode: .small)
+                            .padding(.top)
                     }
                     .tag(1)
                     
@@ -50,51 +53,22 @@ struct EssayCorrectionFlowView: View {
                         title: "Redação",
                         descBody: "Escolha a melhor opção para enviar seu texto para correção.",
                         isActive: .constant(essayViewModel.correctionMode != .none),
-                        index: $currentIndex
-                    ){
-                        HStack( spacing: 45){
-                            ButtonModeCorrectionModal(mode: $essayViewModel.correctionMode, buttonMode: .transciption)
-                            
-                            ButtonModeCorrectionModal(mode: $essayViewModel.correctionMode, buttonMode: .write)
-                        }
-                        .padding(.horizontal)
-                        .padding(.horizontal)
-                        .padding(.vertical)
-                    }
-                    .tag(2)
-                    
-                    CorrectionModalBaseView(
-                        title: "Redação",
-                        descBody: "Escolha a melhor opção para enviar seu texto para correção.",
-                        isActive: .constant(essayViewModel.correctionMode == .transciption ? true : essayViewModel.text != ""),
                         index: $currentIndex,
                         mode: essayViewModel.correctionMode
                     ){
-                        VStack{
-                            HStack(spacing: 20){
-                                ButtonModeCorrectionModal(mode: $essayViewModel.correctionMode, buttonMode: .transciption, withText: false)
-                                
-                                ButtonModeCorrectionModal(mode: $essayViewModel.correctionMode, buttonMode: .write, withText: false)
-                                Spacer(minLength: 190)
+                        lastView
+                    } callback: {
+                        if essayViewModel.correctionMode == .transciption {
+                            essayViewModel.sendEssayToCorrection()
+                            navigate(.essays(.scanner))
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0){
+                                navigate(.exitSheet)
                             }
-                            .padding(.top)
-                            
-                            if essayViewModel.correctionMode == .transciption {
-                                Image(.gabigolPlaceholder)
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .clipShape(.rect(cornerRadius: 20))
-                            } else {
-                                
-                            }
+                        } else {
                             
                         }
-                        
-                    } callback: {
-//                        essayViewModel.sendEssayToCorrection()
-                        navigate(.essays(.scanner))
                     }
-                    .tag(3)
+                    .tag(2)
                     
                 }.tabViewStyle(.automatic)
                 
@@ -103,6 +77,63 @@ struct EssayCorrectionFlowView: View {
             
         }.frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             .ignoresSafeArea()
+    }
+    
+    var writeButton: some View {
+        ButtonModeCorrectionModal(mode: $essayViewModel.correctionMode, buttonMode: .write, withText: false)
+    }
+    
+    var trancriptButton: some View {
+        ButtonModeCorrectionModal(mode: $essayViewModel.correctionMode, buttonMode: .transciption, withText: false)
+    }
+    
+    var lastView: some View {
+        VStack {
+            if (essayViewModel.correctionMode == .none) {
+                HStack( spacing: 45){
+                    VStack {
+                        trancriptButton
+                            .matchedGeometryEffect(id: "b1", in: namespace)
+                        Text("Escanear texto")
+                            .fontWeight(.semibold)
+                        
+                    }
+                    
+                    VStack{
+                        writeButton
+                            .matchedGeometryEffect(id: "b2", in: namespace)
+                        Text("Escrever texto")
+                    }
+                }
+                .padding(.horizontal)
+                .padding(.horizontal)
+                .padding(.vertical)
+            } else {
+                VStack{
+                    HStack(spacing: 20){
+                        trancriptButton
+                            .matchedGeometryEffect(id: "b1", in: namespace)
+                        
+                        writeButton
+                            .matchedGeometryEffect(id: "b2", in: namespace)
+                        Spacer(minLength: 190)
+                    }
+                    .padding(.top)
+                    
+                    ScrollView{
+                        if essayViewModel.correctionMode == .transciption {
+                            Image(.paper)
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .clipShape(.rect(cornerRadius: 20))
+                        } else {
+                            CustomTextFieldCorrectionModal(text: $essayViewModel.text, mode: .big)
+                            
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -142,13 +173,10 @@ struct ButtonModeCorrectionModal: View {
                     }
                     .padding(.vertical, 15)
             }
-            if withText {
-                Text(buttonMode.rawValue)
-                    .fontWeight(.semibold)
-            }
+            
         }
-            .getSize { siz in
-                size = siz
-            }
+        .getSize { siz in
+            size = siz
+        }
     }
 }
