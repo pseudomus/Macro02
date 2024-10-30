@@ -46,7 +46,7 @@ struct HomeEssayView: View {
     
     var body: some View {
         
-        CustomHeaderView(title: "Redações", filters: ["Oi"],
+        CustomHeaderView(title: "Redações", filters: [],
                          distanceContentFromTop: 110,
                          showSearchBar: true,
                          isScrollable: !essayViewModel.isFirstTime) { shouldAnimate in
