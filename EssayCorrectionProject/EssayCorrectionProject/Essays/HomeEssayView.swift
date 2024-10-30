@@ -90,7 +90,7 @@ struct HomeEssayView: View {
     // MARK: - VIEWS
     private var correctionButton: some View {
         Button {
-            navigate(.essays(.correct))
+            navigate(.sheet)
         } label: {
             HStack(alignment: .bottom) {
                 Text("Corrigir")
