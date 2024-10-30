@@ -9,6 +9,19 @@
 import SwiftUI
 import Foundation
 
+// Modelo para a Resposta
+struct EssayResponse: Codable, Identifiable {
+    var id: Int? = nil
+    let theme: String
+    let title: String
+    let tag: String
+    var content: String? = nil
+    var creationDate: String? = nil
+    let competencies: [Competency]
+    let metrics: Metrics
+    var isCorrected: Bool? = true 
+}
+
 // Modelo para Competência
 struct Competency: Codable {
     let resume: String
@@ -22,15 +35,6 @@ struct Card: Codable, Hashable {
     let context: String?
     let suggestion: String?
     let message: String?
-}
-
-// Modelo para a Resposta
-struct EssayResponse: Codable {
-    let theme: String
-    let title: String
-    let tag: String
-    let competencies: [Competency]
-    let metrics: Metrics
 }
 
 // Modelo para Métricas

@@ -9,7 +9,8 @@ import SwiftUI
 
 // MARK: - ESSAY CORRECTED
 struct EssayCorrectedView: View {
-    
+    @EnvironmentObject var essayViewModel: EssayViewModel
+
     @State private var isEssayTextExpanded: Bool = false
     @State private var selectedCompetenceIndex: Int = 0
     @State private var scrollProxy: ScrollViewProxy? = nil
@@ -23,33 +24,44 @@ struct EssayCorrectedView: View {
         "IV": "Demonstrar conhecimento dos mecanismos linguísticos necessários para a construção da argumentação",
         "V": "Elaborar proposta de intervenção para o problema abordado, respeitando os direitos humanos"
     ]
-    
-    let essayResponse: EssayResponse
-    let essayText: String
+    @State var essayResponse: EssayResponse? = nil // resposta da correção
+    let essayText: String // texto da redação
     @State private var fontSize: CGFloat = 16
 
     var body: some View {
         CustomHeaderView(title: "Correção", distanceContentFromTop: 50, showSearchBar: false, isScrollable: true, numOfItems: competences.count) { _ in
             ScrollViewReader { proxy in
-                VStack(spacing: 30) {
-                    // Redação
-                    essayExpandableView()
-                        .id("REDACAO")
+                if let essayResponse = essayResponse {
+                    VStack(spacing: 30) {
+                        // Redação
+                        essayExpandableView()
+                            .id("REDACAO")
+                            
                         
-                    
-                    // competências e cards
-                    competencesWithCardsView()
+                        // competências e cards
+                        competencesWithCardsView(essayResponse: essayResponse)
+                            
+                        Divider()
                         
-                    Divider()
-                    
-                    // métricas
-                    metricsView()
+                        // métricas
+                        metricsView(essayResponse: essayResponse)
+                    }
+                    .padding(.horizontal)
+                    .padding(.bottom, 120)
+                    .onAppear { scrollProxy = proxy }
+                } else {
+                    ProgressView("Carregando")
                 }
-                .padding(.horizontal)
-                .padding(.bottom, 120)
-                .onAppear { scrollProxy = proxy }
             }
-            .navigationBarBackButtonHidden()
+        }
+        .onChange(of: essayViewModel.isLoading) { _, newValue in
+            if !newValue {
+                essayResponse = essayViewModel.essayResponse
+                // Busca a última redação corrigida (isCorrected = true)
+//                if let lastCorrectedEssay = essayViewModel.essays.last(where: { $0.isCorrected == true }) {
+//                    essayResponse = lastCorrectedEssay
+//                }
+            }
         }
     }
     
@@ -120,7 +132,7 @@ struct EssayCorrectedView: View {
 
     
     @ViewBuilder
-    private func competencesWithCardsView() -> some View {
+    private func competencesWithCardsView(essayResponse: EssayResponse) -> some View {
         VStack(alignment: .leading, spacing: 10) {
             Text("Competências")
                 .font(.title2)
@@ -163,7 +175,7 @@ struct EssayCorrectedView: View {
     }
     
     @ViewBuilder
-    private func metricsView() -> some View {
+    private func metricsView(essayResponse: EssayResponse) -> some View {
         VStack(alignment: .leading, spacing: 20) {
             Text("Métricas")
                 .font(.title2)
@@ -348,7 +360,7 @@ struct ExpandableCompetenceCardView: View {
 
 
 #Preview {
-    EssayCorrectedView(essayResponse: EssayResponse(theme: "Tema", title: "TITULO", tag: "TAG", competencies:
+    EssayCorrectedView(essayResponse: EssayResponse(id: 1, theme: "Tema", title: "TITULO", tag: "TAG", competencies:
                                                         [Competency(resume: "A redação apresenta alguns desvios ortográficos e gramaticais, como a falta de acentuação em algumas palavras, além de erros de concordância verbal e de pontuação. É importante revisar esses aspectos para garantir uma escrita mais precisa e correta.",
                                                                     cards: [Card(title: "Titulo do card",
                                                                                  element: "Elemento",
@@ -356,21 +368,21 @@ struct ExpandableCompetenceCardView: View {
                                                                                  suggestion: "Sugestao, aoaoaoao",
                                                                                  message: "Mesagem"),
                                                                             Card(title: "Titulo do card",
-                                                                                         element: "Elemento",
-                                                                                         context: "contexto",
-                                                                                         suggestion: "Sugestao, aoaoaoao",
-                                                                                         message: "Mesagem"),
+                                                                                 element: "Elemento",
+                                                                                 context: "contexto",
+                                                                                 suggestion: "Sugestao, aoaoaoao",
+                                                                                 message: "Mesagem"),
                                                                             Card(title: "Titulo do card diferente",
-                                                                                         element: "Elemento",
-                                                                                         context: "contexto",
-                                                                                         suggestion: "Sugestao, aoaoaoao",
-                                                                                         message: "Mesagem")]),
+                                                                                 element: "Elemento",
+                                                                                 context: "contexto",
+                                                                                 suggestion: "Sugestao, aoaoaoao",
+                                                                                 message: "Mesagem")]),
                                                          Competency(resume: "222ResumoResumoResumoResumoResumoResumoResumoResumo",
-                                                                     cards: [Card(title: "Agente",
-                                                                                  element: "222Elemento",
-                                                                                  context: "222contexto",
-                                                                                  suggestion: "222Sugestao, aoaoaoao",
-                                                                                  message: "222Mesagem")])],
+                                                                    cards: [Card(title: "Agente",
+                                                                                 element: "222Elemento",
+                                                                                 context: "222contexto",
+                                                                                 suggestion: "222Sugestao, aoaoaoao",
+                                                                                 message: "222Mesagem")])],
                                                     metrics: Metrics(words: 320,
                                                                      paragraphs: 6,
                                                                      lines: 10,
@@ -379,6 +391,7 @@ struct ExpandableCompetenceCardView: View {
                                                                      citations: 10,
                                                                      argumentativeOperators: 10)),
                        essayText: "A desigualdade social é um problema muito antigo e presente em várias sociedades ao redor do mundo. No Brasil, esse problema é bastante evidente, especialmente em áreas mais carentes. A educação tem um papel crucial para combater essa desigualdade, porque ao oferecer oportunidade de estudo, todas as pessoas pode ter um futuro melhor e com mais oportunidades de emprego. Entretanto, apesar dos avanços no acesso à educação nos últimos anos, ainda existem muitas desigualdades no sistema educacional. Escolas públicas de áreas periféricas, por exemplo, geralmente não têm a mesma qualidade de ensino que escolas particulares ou públicas de áreas mais ricas. Isso acaba prejudicando os alunos de famílias mais pobres, que não conseguem alcançar os mesmos resultados dos alunos de escolas particulares. Outro ponto a se considerar é a falta de investimento adequado nas escolas públicas. Muitos professores não recebem o apoio necessário para desenvolverem seus trabalhos com eficiência. A falta de material escolar e infraestrutura também é um problema que afeta o aprendizado dos alunos, dificultando ainda mais seu progresso. Portanto, é fundamental que o governo invista mais na educação pública para garantir que todos os estudantes tenham acesso a uma educação de qualidade. Por fim, para que a educação realmente seja um meio eficaz de combate à desigualdade social, é necessário que além do acesso à escola, haja também a implementação de políticas públicas que promovam a permanência e o sucesso dos estudantes no ambiente escolar. Sem essas políticas, muitos jovens acabam abandonando a escola antes mesmo de concluir o ensino básico, o que perpetua o ciclo de pobreza e desigualdade. Conclusão: A educação é, sem dúvida, uma das ferramentas mais importantes para reduzir as desigualdades sociais no Brasil. No entanto, ainda há muitos desafios a serem superados, como a falta de investimento nas escolas públicas e a má qualidade do ensino em algumas regiões do país. Somente através de uma educação acessível e de qualidade para todos será possível construir uma sociedade mais justa e igualitária.")
+    .environmentObject(EssayViewModel())
 }
 
 
@@ -388,11 +401,12 @@ struct ExpandableCompetenceCardView: View {
 
 // MARK: - INPUT VIEW
 struct EssayInputView: View {
-    @StateObject var essayViewModel = EssayViewModel()
+    @EnvironmentObject var userViewModel: UserViewModel
+    @EnvironmentObject var essayViewModel: EssayViewModel
+    
     @State private var theme: String = "A Importância da Educação no Combate à Desigualdade Social"
     @State private var title: String = "Educação e Desigualdade Social"
     @State private var essay: String = "Nos ultimos anos anos, o advento das redes sociais transformou profundamente a forma como as pessoas se comunicam e se relacionam. Embora essas plataformas tenham proporcionado uma maior conectividade e acessibilidade, elas também trouxeram desafios significativos para as relações pessoais. Portanto, é essencial analisar como as redes sociais influenciam a qualidade das interações humanas e as consequências desse fenômeno na sociedade contemporânea. Em primeiro lugar, as redes sociais oferecem um espaço onde os indivíduos podem se conectar instantaneamente, independentemente da distância geográfica. Essa característica é particularmente benéfica para aqueles que desejam manter relacionamentos à distância, permitindo que amigos e familiares compartilhem experiências e momentos em tempo real. No entanto, essa facilidade de comunicação pode resultar em relações superficiais, onde a quantidade de interações prevalece sobre a qualidade. Muitas vezes, as conversas se tornam breves e despersonalizadas, limitadas a curtidas e comentários em postagens, o que pode prejudicar a profundidade das conexões interpessoais. Alem dissos, o uso excessivo das redes sociais pode gerar um impacto negativo na saúde mental dos ussuárioz. Estudo realizado pela Universidade de Michigan revelou que a comparação constante com as vidas aparentemente perfeitas dos outros pode levar a sentimentos de inadequação e solidão. A busca por validação através de curtidas e compartilhamentos pode criar um ciclo vicioso de ansiedade e dependência emocional, prejudicandos as interacoes cara e cara e afastando as pessoas de vínculos mais significativos e autênticos.Por outro lado, as redes sociais também podem servir como um meio de apoio emocional e solidariedade. Durante períodos de crise, como a pandemia de COVID-19, muitos encontraram conforto em comunidades online que compartilham experiências semelhantes. Grupos de apoio e plataformas de interação permitem que indivíduos se conectem e se ajudem mutuamente, reforçando a importância das redes sociais como espaços de acolhimento e empatia. Em síntese, as redes sociais têm um papel ambivalente nas relações pessoais contemporâneas. Enquanto oferecem oportunidades para conexão e apoio, também podem promover relações superficiais e prejudicar a saúde mental. Assim, é fundamental que os usuários adotem uma postura crítica em relação ao uso dessas plataformas, buscando um equilíbrio que valorize tanto as interações virtuais quanto as pessoais. Apenas dessa formas, será possível aproveitar os benefícios das redes sociais sem comprometer a qualidade das relações humana."
-    
 
     @Environment(\.navigate) var navigate
     
@@ -422,7 +436,8 @@ struct EssayInputView: View {
 
             // Botão para salvar ou enviar a redação
             Button(action: {
-                essayViewModel.sendEssayToCorrection(text: essay, title: title, theme: theme)
+                guard let user = userViewModel.user else { return }
+                essayViewModel.sendEssayToCorrection(text: essay, title: title, theme: theme, userId: user.id)
             }) {
                 Text(essayViewModel.isLoading ? "..." : "Confirmar")
                     .font(.headline)
@@ -437,12 +452,7 @@ struct EssayInputView: View {
         .navigationTitle("Criar Redação")
         .navigationBarTitleDisplayMode(.inline)
         .onChange(of: essayViewModel.isLoading) { oldValue, newValue in
-            // Navegar para a próxima view quando a resposta não for mais nil
-            if oldValue == true && newValue == false {
-                if let essayResponse = essayViewModel.essayResponse {
-                    navigate(.essays(.esssayCorrected(essayResponse: essayResponse, text: essay)))
-                }
-            }
+            navigate(.essays(.esssayCorrected(text: essay)))
         }
     }
 }
@@ -452,4 +462,6 @@ struct EssayInputView: View {
 
 #Preview {
     EssayInputView()
+        .environmentObject(EssayViewModel())
+        .environmentObject(UserViewModel())
 }

@@ -13,7 +13,7 @@ enum Route: Hashable {
     case repertoire(HomeEssayRoute)
     case evolution(HomeEssayRoute)
     case news(HomeEssayRoute)
-    case back, popBackToRoot
+    case back, popBackToRoot, sheet, exitSheet
     
     @ViewBuilder
     var destination: some View {
