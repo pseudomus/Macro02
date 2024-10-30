@@ -10,7 +10,7 @@ import SwiftUI
 enum HomeEssayRoute: RouteProtocol {
     case correct
     case scanner
-    case esssayCorrected(essayResponse: EssayResponse, text: String)
+    case esssayCorrected(essayResponse: EssayResponse? = nil, text: String)
     
     @ViewBuilder
     var destination: some View {

@@ -78,7 +78,6 @@ struct CorrectedEssayCardView: View {
         dateFormatter.date(from: dayOfCorrection)
         
         if let date = dateFormatter.date(from: dayOfCorrection) {
-            print("Data convertida: \(date)")
             
             let reducedFormatter = DateFormatter()
                 reducedFormatter.dateFormat = "dd/MM/yyyy"

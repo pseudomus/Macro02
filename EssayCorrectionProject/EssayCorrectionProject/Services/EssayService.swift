@@ -109,5 +109,40 @@ class EssayService: NetworkService {
         .resume()
         
     }
+    
+    // MARK: - DELETE ESSAY - POST METHOD
+    func deleteEssay(withId id: String, completion: @escaping (Result<Void, NetworkError>) -> Void) {
+        guard let url = URL(string: "\(Endpoints.deleteEssay)/\(id)") else {
+            completion(.failure(.invalidURL))
+            return
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "DELETE" 
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                completion(.failure(.unknown(error)))
+                return
+            }
+            
+            guard let httpResponse = response as? HTTPURLResponse else {
+                completion(.failure(.noData))
+                return
+            }
+            
+            switch httpResponse.statusCode {
+            case 200:
+                completion(.success(()))
+            case 404:
+                completion(.failure(.serverError(statusCode: 404)))
+            default:
+                completion(.failure(.serverError(statusCode: httpResponse.statusCode)))
+            }
+        }
+        task.resume()
+    }
+
 
 }

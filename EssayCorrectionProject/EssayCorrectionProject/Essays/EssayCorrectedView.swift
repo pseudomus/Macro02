@@ -9,7 +9,8 @@ import SwiftUI
 
 // MARK: - ESSAY CORRECTED
 struct EssayCorrectedView: View {
-    
+    @EnvironmentObject var essayViewModel: EssayViewModel
+
     @State private var isEssayTextExpanded: Bool = false
     @State private var selectedCompetenceIndex: Int = 0
     @State private var scrollProxy: ScrollViewProxy? = nil
@@ -23,33 +24,43 @@ struct EssayCorrectedView: View {
         "IV": "Demonstrar conhecimento dos mecanismos linguísticos necessários para a construção da argumentação",
         "V": "Elaborar proposta de intervenção para o problema abordado, respeitando os direitos humanos"
     ]
-    
-    let essayResponse: EssayResponse
-    let essayText: String
+    @State var essayResponse: EssayResponse? = nil // resposta da correção
+    let essayText: String // texto da redação
     @State private var fontSize: CGFloat = 16
 
     var body: some View {
         CustomHeaderView(title: "Correção", distanceContentFromTop: 50, showSearchBar: false, isScrollable: true, numOfItems: competences.count) { _ in
             ScrollViewReader { proxy in
-                VStack(spacing: 30) {
-                    // Redação
-                    essayExpandableView()
-                        .id("REDACAO")
+                if let essayResponse = essayResponse {
+                    VStack(spacing: 30) {
+                        // Redação
+                        essayExpandableView()
+                            .id("REDACAO")
+                            
                         
-                    
-                    // competências e cards
-                    competencesWithCardsView()
+                        // competências e cards
+                        competencesWithCardsView(essayResponse: essayResponse)
+                            
+                        Divider()
                         
-                    Divider()
-                    
-                    // métricas
-                    metricsView()
+                        // métricas
+                        metricsView(essayResponse: essayResponse)
+                    }
+                    .padding(.horizontal)
+                    .padding(.bottom, 120)
+                    .onAppear { scrollProxy = proxy }
+                } else {
+                    ProgressView("Carregando")
                 }
-                .padding(.horizontal)
-                .padding(.bottom, 120)
-                .onAppear { scrollProxy = proxy }
             }
-            .navigationBarBackButtonHidden()
+        }
+        .onChange(of: essayViewModel.isLoading) { _, newValue in
+            if !newValue {
+                // pega o último essay da array
+                if let lastEssay = essayViewModel.essays.last {
+                    essayResponse = lastEssay
+                }
+            }
         }
     }
     
@@ -120,7 +131,7 @@ struct EssayCorrectedView: View {
 
     
     @ViewBuilder
-    private func competencesWithCardsView() -> some View {
+    private func competencesWithCardsView(essayResponse: EssayResponse) -> some View {
         VStack(alignment: .leading, spacing: 10) {
             Text("Competências")
                 .font(.title2)
@@ -163,7 +174,7 @@ struct EssayCorrectedView: View {
     }
     
     @ViewBuilder
-    private func metricsView() -> some View {
+    private func metricsView(essayResponse: EssayResponse) -> some View {
         VStack(alignment: .leading, spacing: 20) {
             Text("Métricas")
                 .font(.title2)
@@ -379,6 +390,7 @@ struct ExpandableCompetenceCardView: View {
                                                                      citations: 10,
                                                                      argumentativeOperators: 10)),
                        essayText: "A desigualdade social é um problema muito antigo e presente em várias sociedades ao redor do mundo. No Brasil, esse problema é bastante evidente, especialmente em áreas mais carentes. A educação tem um papel crucial para combater essa desigualdade, porque ao oferecer oportunidade de estudo, todas as pessoas pode ter um futuro melhor e com mais oportunidades de emprego. Entretanto, apesar dos avanços no acesso à educação nos últimos anos, ainda existem muitas desigualdades no sistema educacional. Escolas públicas de áreas periféricas, por exemplo, geralmente não têm a mesma qualidade de ensino que escolas particulares ou públicas de áreas mais ricas. Isso acaba prejudicando os alunos de famílias mais pobres, que não conseguem alcançar os mesmos resultados dos alunos de escolas particulares. Outro ponto a se considerar é a falta de investimento adequado nas escolas públicas. Muitos professores não recebem o apoio necessário para desenvolverem seus trabalhos com eficiência. A falta de material escolar e infraestrutura também é um problema que afeta o aprendizado dos alunos, dificultando ainda mais seu progresso. Portanto, é fundamental que o governo invista mais na educação pública para garantir que todos os estudantes tenham acesso a uma educação de qualidade. Por fim, para que a educação realmente seja um meio eficaz de combate à desigualdade social, é necessário que além do acesso à escola, haja também a implementação de políticas públicas que promovam a permanência e o sucesso dos estudantes no ambiente escolar. Sem essas políticas, muitos jovens acabam abandonando a escola antes mesmo de concluir o ensino básico, o que perpetua o ciclo de pobreza e desigualdade. Conclusão: A educação é, sem dúvida, uma das ferramentas mais importantes para reduzir as desigualdades sociais no Brasil. No entanto, ainda há muitos desafios a serem superados, como a falta de investimento nas escolas públicas e a má qualidade do ensino em algumas regiões do país. Somente através de uma educação acessível e de qualidade para todos será possível construir uma sociedade mais justa e igualitária.")
+    .environmentObject(EssayViewModel())
 }
 
 
@@ -440,12 +452,7 @@ struct EssayInputView: View {
         .navigationTitle("Criar Redação")
         .navigationBarTitleDisplayMode(.inline)
         .onChange(of: essayViewModel.isLoading) { oldValue, newValue in
-            // Navegar para a próxima view quando a resposta não for mais nil
-            if oldValue == true && newValue == false {
-                if let essayResponse = essayViewModel.essayResponse {
-                    navigate(.essays(.esssayCorrected(essayResponse: essayResponse, text: essay)))
-                }
-            }
+            navigate(.essays(.esssayCorrected(text: essay)))
         }
     }
 }
@@ -455,4 +462,6 @@ struct EssayInputView: View {
 
 #Preview {
     EssayInputView()
+        .environmentObject(EssayViewModel())
+        .environmentObject(UserViewModel())
 }
