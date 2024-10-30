@@ -48,13 +48,15 @@ class EssayViewModel: ObservableObject {
         // Cria uma resposta temporária e adiciona à lista de redações
         let temporaryEssayResponse = EssayResponse(
             theme: theme,
-            title: "Carregando...",
+            title: title,
             tag: "",
+            content: text,
             competencies: [],
-            metrics: Metrics(words: 0, paragraphs: 0, lines: 0, connectors: 0, deviations: 0, citations: 0, argumentativeOperators: 0)
+            metrics: Metrics(words: 0, paragraphs: 0, lines: 0, connectors: 0, deviations: 0, citations: 0, argumentativeOperators: 0),
+            isCorrected: false
         )
         
-        // Adiciona o card temporário à lista
+        // adiciona o card temporário à lista
         essays.append(temporaryEssayResponse)
         
         essayService.sendEssayToCorrection(text: text, title: title, theme: theme, userId: userId) { [weak self] result in
@@ -63,19 +65,20 @@ class EssayViewModel: ObservableObject {
                 self.isLoading = false
                 switch result {
                 case .success(let response):
-                    //self.essayResponse = response
-                    // atualiza a redação com a resposta final e remove o temporário
-                    if let index = self.essays.firstIndex(where: { $0.title == "Carregando..." }) {
+                    // Atualiza a redação com a resposta final e remove o temporário
+                    if let index = self.essays.firstIndex(where: { $0.isCorrected == false }) {
                         self.essays[index] = response // Atualiza o card temporário com a resposta final
                     }
+                    self.essayResponse = response
                     self.shouldFetchEssays = true
                 case .failure(let error):
                     // Remove o card temporário se ocorrer erro
-                    self.essays.removeAll(where: { $0.title == "Carregando..." })
+                    self.essays.removeAll(where: { $0.isCorrected == false })
                     self.errorMessage = "Erro ao enviar redação: \(error.localizedDescription)"
                 }
             }
         }
+
     }
     
     func deleteEssay(withId id: String) {

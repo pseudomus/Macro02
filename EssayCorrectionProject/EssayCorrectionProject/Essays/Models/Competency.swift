@@ -19,6 +19,7 @@ struct EssayResponse: Codable, Identifiable {
     var creationDate: String? = nil
     let competencies: [Competency]
     let metrics: Metrics
+    var isCorrected: Bool? = true 
 }
 
 // Modelo para Competência

@@ -134,37 +134,48 @@ struct HomeEssayView: View {
     
     private var essayListView: some View {
         VStack(spacing: 15) {
-            if let temporaryEssay = essayViewModel.essays.first(where: { $0.title == "Carregando..." }) {
-                essayButton(for: temporaryEssay) 
+            // REDAÇÃO CARREGANDO
+            ForEach(essayViewModel.essays.filter { $0.isCorrected == false }, id: \.id) { temporaryEssay in
+                essayButton(for: temporaryEssay)
             }
+            
+            // REDAÇÕES PRONTAS
             ForEach(sortedMonths, id: \.self) { monthYear in
                 Section(header: Text(monthYear)
                     .font(.headline)
                     .textCase(nil)
                     .foregroundColor(.primary)
                 ) {
-                    ForEach(groupedEssays[monthYear]!, id: \.id) { essay in
+                    ForEach(groupedEssays[monthYear]!.filter { $0.isCorrected == true }, id: \.id) { essay in
                         essayButton(for: essay)
                     }
                 }
             }
         }
     }
+
+
     
     private func essayButton(for essay: EssayResponse) -> some View {
         Button {
-            navigate(.essays(.esssayCorrected(essayResponse: essay, text: essay.content!)))
+            if essay.isCorrected ?? false {
+                navigate(.essays(.esssayCorrected(essayResponse: essay, text: essay.content!))) // redação pronta
+            } else {
+                navigate(.essays(.esssayCorrected(text: essay.content!))) // redação carregando
+            }
         } label: {
             CorrectedEssayCardView(
                 title: essay.title,
                 description: essay.theme,
-                dayOfCorrection: essay.creationDate ?? ""
+                dayOfCorrection: essay.creationDate ?? "",
+                isCorrected: essay.isCorrected ?? false
             )
         }
         .simultaneousGesture(LongPressGesture().onEnded { _ in
             showDeleteConfirmation(for: essay)
         })
     }
+
     
     // MARK: - ALERT
     private var deleteEssayAlert: Alert {

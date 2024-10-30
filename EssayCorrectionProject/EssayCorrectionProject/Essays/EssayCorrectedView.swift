@@ -56,10 +56,11 @@ struct EssayCorrectedView: View {
         }
         .onChange(of: essayViewModel.isLoading) { _, newValue in
             if !newValue {
-                // pega o último essay da array
-                if let lastEssay = essayViewModel.essays.last {
-                    essayResponse = lastEssay
-                }
+                essayResponse = essayViewModel.essayResponse
+                // Busca a última redação corrigida (isCorrected = true)
+//                if let lastCorrectedEssay = essayViewModel.essays.last(where: { $0.isCorrected == true }) {
+//                    essayResponse = lastCorrectedEssay
+//                }
             }
         }
     }

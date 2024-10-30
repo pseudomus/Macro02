@@ -58,7 +58,7 @@ class EssayService: NetworkService {
                 print("Resposta do servidor: \(essayResponse)")
                 completion(.success(essayResponse))
             } catch {
-                print("Erro ao processar a resposta: \(error)")
+                print("Erro ao processar a resposta1: \(error)")
                 completion(.failure(.decodingError))
             }
         }
@@ -102,7 +102,7 @@ class EssayService: NetworkService {
                 let essayResponses = essayAllResponses.map { convertToEssayResponse($0) }
                 completion(.success(essayResponses))
             } catch {
-                print("Erro ao processar a resposta: \(error)")
+                print("Erro ao processar a resposta2: \(error)")
                 completion(.failure(.decodingError))
             }
         }
