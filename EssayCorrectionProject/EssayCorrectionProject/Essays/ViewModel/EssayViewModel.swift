@@ -19,6 +19,8 @@ class EssayViewModel: ObservableObject {
     @Published var isLoading = false
     @Published var shouldFetchEssays: Bool = false
     @Published var essayResponse: EssayResponse?
+    @Published var scannedImage: UIImage?
+    @Published var isPresented: Bool = false
 
     private let essayService: EssayService
     

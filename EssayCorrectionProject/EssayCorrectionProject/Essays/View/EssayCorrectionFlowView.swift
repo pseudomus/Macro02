@@ -20,6 +20,7 @@ struct EssayCorrectionFlowView: View {
     @State var currentIndex: Int = 0
     @Namespace var namespace
     @FocusState var isFocused: Bool
+    @State var isPresented: Bool = false
     
     var body: some View {
         ZStack(alignment: .topLeading) {
@@ -40,6 +41,7 @@ struct EssayCorrectionFlowView: View {
                                 essayViewModel.text = ""
                                 essayViewModel.title = ""
                                 essayViewModel.theme = ""
+                                essayViewModel.correctionMode = .none
                             }
                     }
                     .tag(0)
@@ -67,7 +69,7 @@ struct EssayCorrectionFlowView: View {
                     } callback: {
                         if essayViewModel.correctionMode == .transciption {
 
-                            navigate(.essays(.scanner))
+                            navigate(.essays(.scanner($essayViewModel.isPresented)))
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0){
                                 navigate(.exitSheet)
                             }

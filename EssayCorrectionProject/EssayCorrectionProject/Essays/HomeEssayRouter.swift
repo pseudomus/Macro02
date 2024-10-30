@@ -9,7 +9,7 @@ import SwiftUI
 
 enum HomeEssayRoute: RouteProtocol {
     case correct
-    case scanner
+    case scanner(Binding<Bool>)
     case profile
     case esssayCorrected(essayResponse: EssayResponse? = nil, text: String)
     
@@ -18,8 +18,11 @@ enum HomeEssayRoute: RouteProtocol {
         switch self {
         case .correct:
             EssayCorrectionView()
-        case .scanner:
-            EssayScannerView()
+        case .scanner(let isPresented):
+            DocumentScannerCoordinator(isPresented: isPresented)
+                .toolbar(.hidden, for: .tabBar)
+                .toolbar(.hidden, for: .navigationBar)
+                .ignoresSafeArea()
         case .profile:
             ProfileView()
         case .esssayCorrected(let essayResponse, let text):
