@@ -74,7 +74,8 @@ struct CustomHeaderView<Content: View>: View {
         .overlay(alignment: .topTrailing){
             if !shouldAnimate {
                 ProfileButton()
-                    .padding()
+                    .ignoresSafeArea()
+                    .padding(10)
             }
         }
         

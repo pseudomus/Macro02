@@ -15,7 +15,7 @@ enum CorrectionMode: String{
 
 struct EssayCorrectionFlowView: View {
     
-    @StateObject var essayViewModel = EssayViewModel()
+    @EnvironmentObject var essayViewModel: EssayViewModel
     @Environment(\.navigate) var navigate
     @State var currentIndex: Int = 0
     @Namespace var namespace
@@ -36,6 +36,11 @@ struct EssayCorrectionFlowView: View {
                     ){
                         CustomTextFieldCorrectionModal(text: $essayViewModel.theme, mode: .small)
                             .padding(.top)
+                            .onAppear {
+                                essayViewModel.text = ""
+                                essayViewModel.title = ""
+                                essayViewModel.theme = ""
+                            }
                     }
                     .tag(0)
                     

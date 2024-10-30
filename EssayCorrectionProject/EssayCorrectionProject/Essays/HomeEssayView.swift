@@ -83,9 +83,13 @@ struct HomeEssayView: View {
             }
         }
         .onChange(of: essayViewModel.shouldFetchEssays) { _, newValue in
-            guard let user = userViewModel.user else { return }
+//            guard let user = userViewModel.user else { return }
+//            if newValue {
+//                essayViewModel.fetchEssays(userId: "\(user.id)")
+//                essayViewModel.shouldFetchEssays = false
+//            }
             if newValue {
-                essayViewModel.fetchEssays(userId: "\(user.id)")
+                essayViewModel.fetchEssays(userId: "105")
                 essayViewModel.shouldFetchEssays = false
             }
         }

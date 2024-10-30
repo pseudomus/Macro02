@@ -26,6 +26,10 @@ class EssayViewModel: ObservableObject {
         self.essayService = container.essayService
     }
     
+    func getCount() -> Int {
+        return essays.count
+    }
+    
     // MARK: - FETCH DE TODAS AS REDAÇÕES
     func fetchEssays(userId: String) {
         guard !isLoading else { return }
@@ -63,8 +67,10 @@ class EssayViewModel: ObservableObject {
         
         // adiciona o card temporário à lista
         essays.append(temporaryEssayResponse)
-        
+        print("DEBUG: sendessay")
+
         essayService.sendEssayToCorrection(text: text, title: title, theme: theme, userId: userId) { [weak self] result in
+            print("DEBUG: CLOSURE")
             guard let self = self else { return }
             DispatchQueue.main.async {
                 self.isLoading = false
@@ -76,6 +82,7 @@ class EssayViewModel: ObservableObject {
                     }
                     self.essayResponse = response
                     self.shouldFetchEssays = true
+                    print("DEBUG: sucesso correcao")
                 case .failure(let error):
                     // Remove o card temporário se ocorrer erro
                     self.essays.removeAll(where: { $0.isCorrected == false })

@@ -10,6 +10,7 @@ import SwiftUI
 // MARK: - ESSAY CORRECTED
 struct EssayCorrectedView: View {
     @EnvironmentObject var essayViewModel: EssayViewModel
+    @Environment(\.navigate) var navigate
 
     @State private var isEssayTextExpanded: Bool = false
     @State private var selectedCompetenceIndex: Int = 0
@@ -54,12 +55,30 @@ struct EssayCorrectedView: View {
                 }
             }
         }
+//        .toolbar {
+//            ToolbarItem(placement: .topBarLeading) {
+//                Button {
+//                    navigate(.back)
+//                } label: {
+//                    HStack {
+//                        Image(systemName: "chevron.left")
+//                        Text("Redações")
+//                    }
+//                }
+//            }
+//        }
+        .navigationBarBackButtonHidden()
         .onChange(of: essayViewModel.isLoading) { _, newValue in
+            print("DEBUG: ENTROU 1")
             if !newValue {
+                print("DEBUG: ENTROU 2")
+                print("DEBUG: essayresponse: \(String(describing: essayResponse))")
+                print("DEBUG: essayresponse2: \(String(describing: essayViewModel.essayResponse))")
                 essayResponse = essayViewModel.essayResponse
                 // Busca a última redação corrigida (isCorrected = true)
 //                if let lastCorrectedEssay = essayViewModel.essays.last(where: { $0.isCorrected == true }) {
 //                    essayResponse = lastCorrectedEssay
+//                    print("DEBUG: essayresponse3: \(String(describing: lastCorrectedEssay))")
 //                }
             }
         }

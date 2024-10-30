@@ -9,6 +9,7 @@ import SwiftUI
 
 struct EvolutionView: View {
     
+    @EnvironmentObject var essayViewModel: EssayViewModel
     @State var correctedEssays: Int = 1
     
     var body: some View {
@@ -17,7 +18,7 @@ struct EvolutionView: View {
                 CustomHeaderView(title: "Evolução", distanceContentFromTop: 50, showSearchBar: false, isScrollable: true) { shouldAnimate in
                     VStack(alignment: .leading,spacing: 20){
                         
-                        EssayQuantityCardView(correctedEssays: $correctedEssays)
+                        EssayQuantityCardView(correctedEssays: essayViewModel.getCount())
                         
                         EvolutionCardView(text: "Pontos fortes")
                         EvolutionCardView(text: "Pontos fracos")
@@ -54,15 +55,29 @@ struct EvolutionCardView: View {
                     .frame(height: 110)
                 Spacer()
                 VStack(alignment: .leading) {
-                    ForEach(0..<3, id: \.self) { i in
-                        HStack {
-                            Circle()
-                                .frame(width: 8)
-                                .padding(.trailing, 6)
-                                .foregroundStyle(colors[i])
-                            Text("Proposta de intervenção")
-                                .font(.footnote)
-                        }
+                    HStack {
+                        Circle()
+                            .frame(width: 8)
+                            .padding(.trailing, 6)
+                            .foregroundStyle(colors[0])
+                        Text("Argumentação")
+                            .font(.footnote)
+                    }
+                    HStack {
+                        Circle()
+                            .frame(width: 8)
+                            .padding(.trailing, 6)
+                            .foregroundStyle(colors[1])
+                        Text("Concordância")
+                            .font(.footnote)
+                    }
+                    HStack {
+                        Circle()
+                            .frame(width: 8)
+                            .padding(.trailing, 6)
+                            .foregroundStyle(colors[2])
+                        Text("Proposta de intervenção")
+                            .font(.footnote)
                     }
                 }
                 Spacer()
@@ -84,6 +99,7 @@ struct EvolutionCardView: View {
 
 #Preview {
     EvolutionView()
+        .environmentObject(EssayViewModel())
 }
 
 struct WarningInterventionCardView: View {
@@ -116,7 +132,7 @@ struct WarningInterventionCardView: View {
 
 struct EssayQuantityCardView: View {
     
-    @Binding var correctedEssays: Int
+    var correctedEssays: Int
     
     var body: some View {
         HStack(alignment: .bottom){
