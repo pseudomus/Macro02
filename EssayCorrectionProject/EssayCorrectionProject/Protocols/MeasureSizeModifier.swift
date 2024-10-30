@@ -20,7 +20,10 @@ struct MeasureSizeModifier: ViewModifier {
                             callback(geometry.size)
                         }
                         .onChange(of: geometry.size) { oldValue, newValue in
-                            callback(geometry.size)
+                            if oldValue != newValue {
+                                print("Caso 2", oldValue, newValue)
+                                callback(geometry.size)
+                            }
                         }
                 }
             }

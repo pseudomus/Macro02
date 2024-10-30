@@ -9,12 +9,16 @@ import SwiftUI
 
 struct EssayNavigationStack: View {
     @State var router = [HomeEssayRoute]()
+    @State var isPresented: Bool = false
     
     var body: some View {
         NavigationStack(path: $router) {
             HomeEssayView()
                 .navigationDestination(for: HomeEssayRoute.self) { node in
                     node.destination
+                }
+                .sheet(isPresented: $isPresented) {
+                    EssayCorrectionFlowView().interactiveDismissDisabled(true)
                 }
         }.environment(\.navigate, NavigateAction(action: { route in
             if case let .essays(route) = route {
@@ -23,6 +27,10 @@ struct EssayNavigationStack: View {
                 router.removeLast()
             } else if route == .popBackToRoot {
                 router.removeAll()
+            } else if route == .sheet {
+                isPresented = true
+            } else if route == .exitSheet {
+                isPresented = false
             }
         }))
     }

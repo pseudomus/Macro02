@@ -24,7 +24,7 @@ struct HomeEssayView: View {
                     VStack {
                         if !shouldAnimate {
                             Button {
-                                navigate(.essays(.correct))
+                                navigate(.sheet)
                                 
                             } label: {
                                 HStack(alignment: .bottom){

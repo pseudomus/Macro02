@@ -98,7 +98,7 @@ class EssayService: NetworkService {
             do {
                 // Decodifica a resposta em um objeto EssayResponse
                 let essayResponse = try JSONDecoder().decode([EssayAllResponse].self, from: data)
-                print("Resposta do servidor: \(essayResponse)")
+//                print("Resposta do servidor: \(essayResponse)")
                 completion(.success(essayResponse))
             } catch {
                 print("Erro ao processar a resposta: \(error)")

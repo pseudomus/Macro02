@@ -9,7 +9,6 @@ import SwiftUI
 
 // MARK: - ESSAY CORRECTED
 struct EssayCorrectedView: View {
-    
     @State private var isEssayTextExpanded: Bool = false
     @State private var selectedCompetenceIndex: Int = 0
     @State private var scrollProxy: ScrollViewProxy? = nil
@@ -392,7 +391,6 @@ struct EssayInputView: View {
     @State private var theme: String = "A Importância da Educação no Combate à Desigualdade Social"
     @State private var title: String = "Educação e Desigualdade Social"
     @State private var essay: String = "Nos ultimos anos anos, o advento das redes sociais transformou profundamente a forma como as pessoas se comunicam e se relacionam. Embora essas plataformas tenham proporcionado uma maior conectividade e acessibilidade, elas também trouxeram desafios significativos para as relações pessoais. Portanto, é essencial analisar como as redes sociais influenciam a qualidade das interações humanas e as consequências desse fenômeno na sociedade contemporânea. Em primeiro lugar, as redes sociais oferecem um espaço onde os indivíduos podem se conectar instantaneamente, independentemente da distância geográfica. Essa característica é particularmente benéfica para aqueles que desejam manter relacionamentos à distância, permitindo que amigos e familiares compartilhem experiências e momentos em tempo real. No entanto, essa facilidade de comunicação pode resultar em relações superficiais, onde a quantidade de interações prevalece sobre a qualidade. Muitas vezes, as conversas se tornam breves e despersonalizadas, limitadas a curtidas e comentários em postagens, o que pode prejudicar a profundidade das conexões interpessoais. Alem dissos, o uso excessivo das redes sociais pode gerar um impacto negativo na saúde mental dos ussuárioz. Estudo realizado pela Universidade de Michigan revelou que a comparação constante com as vidas aparentemente perfeitas dos outros pode levar a sentimentos de inadequação e solidão. A busca por validação através de curtidas e compartilhamentos pode criar um ciclo vicioso de ansiedade e dependência emocional, prejudicandos as interacoes cara e cara e afastando as pessoas de vínculos mais significativos e autênticos.Por outro lado, as redes sociais também podem servir como um meio de apoio emocional e solidariedade. Durante períodos de crise, como a pandemia de COVID-19, muitos encontraram conforto em comunidades online que compartilham experiências semelhantes. Grupos de apoio e plataformas de interação permitem que indivíduos se conectem e se ajudem mutuamente, reforçando a importância das redes sociais como espaços de acolhimento e empatia. Em síntese, as redes sociais têm um papel ambivalente nas relações pessoais contemporâneas. Enquanto oferecem oportunidades para conexão e apoio, também podem promover relações superficiais e prejudicar a saúde mental. Assim, é fundamental que os usuários adotem uma postura crítica em relação ao uso dessas plataformas, buscando um equilíbrio que valorize tanto as interações virtuais quanto as pessoais. Apenas dessa formas, será possível aproveitar os benefícios das redes sociais sem comprometer a qualidade das relações humana."
-    
 
     @Environment(\.navigate) var navigate
     
@@ -422,7 +420,7 @@ struct EssayInputView: View {
 
             // Botão para salvar ou enviar a redação
             Button(action: {
-                essayViewModel.sendEssayToCorrection(text: essay, title: title, theme: theme)
+//                essayViewModel.sendEssayToCorrection(text: essay, title: title, theme: theme)
             }) {
                 Text(essayViewModel.isLoading ? "..." : "Confirmar")
                     .font(.headline)
@@ -449,7 +447,7 @@ struct EssayInputView: View {
 
 
 
-
-#Preview {
-    EssayInputView()
-}
+//
+//#Preview {
+//    EssayInputView()
+//}

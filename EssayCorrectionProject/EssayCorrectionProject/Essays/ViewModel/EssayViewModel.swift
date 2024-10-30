@@ -8,6 +8,11 @@
 import SwiftUI
 
 class EssayViewModel: ObservableObject {
+    
+    @Published var correctionMode: CorrectionMode = .none
+    @Published var text: String = ""
+    @Published var title: String = ""
+    @Published var theme: String = ""
     @Published var errorMessage: String?
     @Published var isLoading = false
     @Published var essayResponse: EssayResponse? // Armazenar a resposta do ensaio
@@ -19,7 +24,7 @@ class EssayViewModel: ObservableObject {
     }
     
     // FETCH USER DATA
-    func sendEssayToCorrection(text: String, title: String, theme: String) {
+    func sendEssayToCorrection() {
         isLoading = true
         
         essayService.sendEssayToCorrection(text: text, title: title, theme: theme) { result in

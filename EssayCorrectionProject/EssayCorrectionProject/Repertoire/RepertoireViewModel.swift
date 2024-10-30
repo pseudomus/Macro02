@@ -24,11 +24,11 @@ class RepertoireViewModel: ObservableObject {
     func verifyIfIsPinned(id: ID) -> Bool{
         if (fixedRepertoires.contains(id)) {
             fixedRepertoires.removeAll(where: {$0 == id})
-            print(fixedRepertoires)
+//            print(fixedRepertoires)
             return false
         } else {
             fixedRepertoires.append(id)
-            print(fixedRepertoires)
+//            print(fixedRepertoires)
             return true
         }
     }
