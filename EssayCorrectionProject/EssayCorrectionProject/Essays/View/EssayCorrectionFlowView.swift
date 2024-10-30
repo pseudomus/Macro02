@@ -56,7 +56,7 @@ struct EssayCorrectionFlowView: View {
                         isActive: .constant(essayViewModel.correctionMode != .none),
                         index: $currentIndex,
                         mode: essayViewModel.correctionMode
-                    ){
+                    ) {
                         lastView
                             .toolbar(.hidden, for: .tabBar)
                     } callback: {
@@ -70,6 +70,13 @@ struct EssayCorrectionFlowView: View {
                             essayViewModel.sendEssayToCorrection(text: essayViewModel.text, title: essayViewModel.title, theme: essayViewModel.theme, userId: 105)
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0){
                                 navigate(.exitSheet)
+                            }
+                        }
+                    }
+                    .onTapGesture {
+                        if isFocused {
+                            withAnimation {
+                                isFocused = false
                             }
                         }
                     }
@@ -117,14 +124,16 @@ struct EssayCorrectionFlowView: View {
                 .padding(.horizontal)
                 .padding(.vertical)
             } else {
-                VStack{
-                    HStack(spacing: 20){
-                        trancriptButton
-                            .matchedGeometryEffect(id: "b1", in: namespace)
-                        
-                        writeButton
-                            .matchedGeometryEffect(id: "b2", in: namespace)
-                        Spacer(minLength: 190)
+                VStack {
+                    HStack(spacing: 20) {
+                        if !isFocused{
+                            trancriptButton
+                                .matchedGeometryEffect(id: "b1", in: namespace)
+                            
+                            writeButton
+                                .matchedGeometryEffect(id: "b2", in: namespace)
+                            Spacer(minLength: 190)
+                        }
                     }
                     .padding(.top)
                         if essayViewModel.correctionMode == .transciption {
@@ -143,6 +152,8 @@ struct EssayCorrectionFlowView: View {
                                 .onTapGesture {
                                     if !isFocused {
                                         isFocused = true
+                                    } else {
+                                        isFocused = false
                                     }
                                 }
                         }
@@ -196,8 +207,3 @@ struct ButtonModeCorrectionModal: View {
     }
 }
 
-extension View {
-    func hideKeyboard() {
-        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-    }
-}

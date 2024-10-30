@@ -16,6 +16,7 @@ struct CorrectionModalBaseView<Content: View>: View {
     
     var label: () -> Content
     var callback: (() -> Void)?
+    var callback2: (() -> Void)?
     @Namespace var namespace
     
     var body: some View {
@@ -44,6 +45,9 @@ struct CorrectionModalBaseView<Content: View>: View {
                     Spacer()
                     button
                         .matchedGeometryEffect(id: "i", in: namespace)
+                        .onTapGesture {
+                            callback2?()
+                        }
                 }
             }
             
