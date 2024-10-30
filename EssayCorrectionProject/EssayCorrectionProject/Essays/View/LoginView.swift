@@ -15,15 +15,37 @@ struct AppleLoginView: View {
     @State private var errorMessage = ""
     
     var body: some View {
-        VStack {
-            // APPLE
-            SignInWithAppleButton(.signIn, onRequest: configure, onCompletion: handleAppleLogin)
-                .frame(width: 200, height: 50)
-                .signInWithAppleButtonStyle(.black)
-                .padding()
-        }
-        .alert(isPresented: $showError) {
-            Alert(title: Text("Error"), message: Text(errorMessage), dismissButton: .default(Text("OK")))
+        GeometryReader { proxy in
+            ZStack {
+                LoginBackground()
+                    .position(CGPoint(x: proxy.size.width * 0.5, y: proxy.size.height * 0.4))
+                
+                VStack {
+                    // APPLE
+                    Text("Disserta")
+                        .font(.largeTitle)
+                        .foregroundStyle(.black)
+                        .bold()
+                    Text("Desbloqueie a sua escrita")
+                        .font(.title2)
+                        .foregroundStyle(.black)
+                    Text("Entre na sua conta para comprar ou ganhar\nmais creditos e corrigir mais redações")
+                        .multilineTextAlignment(.center)
+                        .padding()
+                    SignInWithAppleButton(.signIn, onRequest: configure, onCompletion: handleAppleLogin)
+                        .frame(width: 200, height: 50)
+                        .signInWithAppleButtonStyle(.black)
+                        .padding(.bottom, 10)
+                    Text("Ao continuar, você concorda com nossos\n Termos de Serviço e Política de Privacidade")
+                        .multilineTextAlignment(.center)
+                        .font(.caption)
+                }
+                .position(CGPoint(x: proxy.size.width * 0.5, y: proxy.size.height * 0.7))
+                
+            }
+            .alert(isPresented: $showError) {
+                Alert(title: Text("Error"), message: Text(errorMessage), dismissButton: .default(Text("OK")))
+            }
         }
     }
     
