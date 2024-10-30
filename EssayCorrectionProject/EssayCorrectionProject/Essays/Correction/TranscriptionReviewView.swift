@@ -10,7 +10,7 @@ import SwiftUI
 struct TranscriptionReviewView: View {
     
     @StateObject var vm = EssayCorrectionViewModel.shared
-    @State var transcrition: Transcription?
+    @State var transcription: Transcription?
     @State var isTranscriptionReady: Bool = false
     @State var numberOfPossibleErrors: Int = 0
     private var transcriptionRequest = TranscriptionRequest()
@@ -26,20 +26,41 @@ struct TranscriptionReviewView: View {
                     NumberOfErrorsComponent(numberOfErrors: $numberOfPossibleErrors)
                 }.padding()
                     .padding(.top, 80)
+                Text("Erros de transcrição podem ter sido encontrados, verifique antes de corrigir")
+                    .font(.body)
+                    .bold()
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(EdgeInsets(top: 0, leading: 15, bottom: 0, trailing: 0))
+                
                 if isTranscriptionReady {
-                    WordWrapView(transcription: $transcrition, maxWidth: 300)
+                    ScrollView {
+                        BorderedContainerComponent{
+                            WordWrapView(transcription: $transcription, maxWidth: 350)
+                        }
+                        .frame(maxWidth: 450)
+                        .padding()
+                    }
                 } else {
-                    ProgressView()
+                    VStack {
+                        Spacer()
+                        ProgressView()
+                        Spacer()
+                    }
                 }
             }
+        }
+        .sheet(isPresented: $vm.isSuggestionPresented){
+            WordSuggestionModalView()
+                .presentationDetents([.medium, .fraction(0.5)])
+                .presentationDragIndicator(.visible)
         }
         .navigationBarBackButtonHidden(true)
         .task {
             do {
                 guard let imageData = vm.scannedImage?.jpegData(compressionQuality: 1) else { return }
-                transcrition = try await transcriptionRequest.send(imageData: imageData)
+                transcription = try await transcriptionRequest.send(imageData: imageData)
                 isTranscriptionReady = true
-                numberOfPossibleErrors = transcrition?.numberOfPossibleTranscriptionMistakes() ?? 0
+                numberOfPossibleErrors = transcription?.numberOfPossibleTranscriptionMistakes() ?? 0
                 
             } catch {
                 print("Error: \(error)")
