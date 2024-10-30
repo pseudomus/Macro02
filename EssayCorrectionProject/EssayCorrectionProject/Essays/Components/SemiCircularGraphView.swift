@@ -159,9 +159,9 @@ class SemiCircularGraphData: ObservableObject {
     func getRotation() {
         let porcentagem1 = (Double(value) - Double(minValue)) / (Double(maxValue) - Double(minValue))
         let rotation = (porcentagem1 * 190) - 5
-        print(rotation)
+//        print(rotation)
         var newRotation = rotation
-        print(newRotation)
+//        print(newRotation)
         
         if value < range.0 {
             newRotation = rotation * 0.89
@@ -170,7 +170,7 @@ class SemiCircularGraphData: ObservableObject {
         } else {
             newRotation = rotation
         }
-        print(newRotation)
+//        print(newRotation)
         
         if newRotation < -5 {
             self.rotation = -5
@@ -179,9 +179,9 @@ class SemiCircularGraphData: ObservableObject {
         } else {
             self.rotation = newRotation
         }
-        print(newRotation)
+//        print(newRotation)
         
-        print(self.rotation)
+//        print(self.rotation)
     }
     
     func update() {

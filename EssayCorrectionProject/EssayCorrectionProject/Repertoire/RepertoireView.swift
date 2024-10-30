@@ -55,9 +55,9 @@ struct RepertoireView: View {
             }
         }.onAppear{
             viewModel.fetchRepertoires()
-            DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-                print(viewModel.repertories)
-            }
+//            DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+//                print(viewModel.repertories)
+//            }
         }
     }
     
