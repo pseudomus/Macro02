@@ -17,8 +17,9 @@ struct EssayCorrectionFlowView: View {
     
     @StateObject var essayViewModel = EssayViewModel()
     @Environment(\.navigate) var navigate
-    @State var currentIndex: Int = 0
+    @State var currentIndex: Int = 2
     @Namespace var namespace
+    @FocusState var isFocused: Bool
     
     var body: some View {
         ZStack(alignment: .topLeading) {
@@ -59,7 +60,7 @@ struct EssayCorrectionFlowView: View {
                         lastView
                     } callback: {
                         if essayViewModel.correctionMode == .transciption {
-                            essayViewModel.sendEssayToCorrection()
+//                            essayViewModel.sendEssayToCorrection()
                             navigate(.essays(.scanner))
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0){
                                 navigate(.exitSheet)
@@ -96,13 +97,13 @@ struct EssayCorrectionFlowView: View {
                             .matchedGeometryEffect(id: "b1", in: namespace)
                         Text("Escanear texto")
                             .fontWeight(.semibold)
-                        
                     }
                     
                     VStack{
                         writeButton
                             .matchedGeometryEffect(id: "b2", in: namespace)
                         Text("Escrever texto")
+                            .fontWeight(.semibold)
                     }
                 }
                 .padding(.horizontal)
@@ -119,18 +120,20 @@ struct EssayCorrectionFlowView: View {
                         Spacer(minLength: 190)
                     }
                     .padding(.top)
-                    
-                    ScrollView{
                         if essayViewModel.correctionMode == .transciption {
-                            Image(.paper)
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .clipShape(.rect(cornerRadius: 20))
+                            VStack {
+                                Image(.paper)
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(width: 180)
+                                Text("Tire uma foto da sua folha de redação e revise o texto quando for digitalizado")
+                                    .multilineTextAlignment(.center)
+                                    .padding(35)
+                            }.padding(.top)
                         } else {
                             CustomTextFieldCorrectionModal(text: $essayViewModel.text, mode: .big)
-                            
+                                .focused($isFocused)
                         }
-                    }
                 }
             }
         }
@@ -178,5 +181,11 @@ struct ButtonModeCorrectionModal: View {
         .getSize { siz in
             size = siz
         }
+    }
+}
+
+extension View {
+    func hideKeyboard() {
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }
 }
