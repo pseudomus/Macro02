@@ -17,6 +17,7 @@ struct HomeEssayView: View {
     @Namespace private var animation
     @State private var showingDeleteAlert = false
     @State private var essayToDelete: EssayResponse?
+
     
     // Filters
     var groupedEssays: [String: [EssayResponse]] {
@@ -45,7 +46,7 @@ struct HomeEssayView: View {
     
     var body: some View {
         
-        CustomHeaderView(title: "Redações", filters: ["Oi"],
+        CustomHeaderView(title: "Redações", filters: [],
                          distanceContentFromTop: 110,
                          showSearchBar: true,
                          isScrollable: !essayViewModel.isFirstTime) { shouldAnimate in
@@ -86,10 +87,7 @@ struct HomeEssayView: View {
         .alert(isPresented: $showingDeleteAlert) {
             deleteEssayAlert
         }
-        .overlay(alignment: .topTrailing){
-            ProfileButton()
-                .padding()
-        }
+
     }
     
     // MARK: - VIEWS

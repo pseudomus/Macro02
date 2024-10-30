@@ -15,7 +15,9 @@ struct AppTabView: View {
             ForEach(AppScreenNavigation.allCases) { screen in
                 screen.destination
                     .tag(screen as AppScreenNavigation?)
-                    .tabItem { screen.label }
+                    .tabItem {
+                        screen.label
+                    }
             }
         }
     }

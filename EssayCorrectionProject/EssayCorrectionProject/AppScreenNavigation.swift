@@ -20,13 +20,13 @@ extension AppScreenNavigation {
     var label: some View {
         switch self {
         case .essays:
-            Label("Essays", systemImage: "text.document.fill")
+            Label("Essays", systemImage: "doc.plaintext")
         case .evolution:
-            Label("Evolution", systemImage: "bird")
+            Label("Evolution", systemImage: "chart.line.uptrend.xyaxis.circle")
         case .repertoire:
-            Label("Repertoires", systemImage: "bird")
+            Label("Repertoires", systemImage: "bubble")
         case .news:
-            Label("News", systemImage: "flame")
+            Label("News", systemImage: "newspaper")
         }
     }
     
