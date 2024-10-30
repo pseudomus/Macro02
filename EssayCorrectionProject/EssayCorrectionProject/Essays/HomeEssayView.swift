@@ -44,6 +44,7 @@ struct HomeEssayView: View {
 
     
     var body: some View {
+        
         CustomHeaderView(title: "Redações", filters: ["Oi"],
                          distanceContentFromTop: 110,
                          showSearchBar: true,
@@ -84,6 +85,10 @@ struct HomeEssayView: View {
         }
         .alert(isPresented: $showingDeleteAlert) {
             deleteEssayAlert
+        }
+        .overlay(alignment: .topTrailing){
+            ProfileButton()
+                .padding()
         }
     }
     
