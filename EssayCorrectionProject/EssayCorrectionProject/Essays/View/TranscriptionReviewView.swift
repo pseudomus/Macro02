@@ -1,13 +1,43 @@
 import SwiftUI
 
+/*
+ } else if essayViewModel.correctionMode == .write {
+     essayViewModel.sendEssayToCorrection(text: essayViewModel.text, title: essayViewModel.title, theme: essayViewModel.theme, userId: userViewModel.user?.id ?? 105)
+     navigate(.exitSheet)
+ }
+}
+.onTapGesture {
+ if isFocused {
+     withAnimation {
+         isFocused = false
+     }
+ }
+}
+.tag(2)
+
+}.tabViewStyle(.automatic)
+
+Spacer()
+}
+
+}.frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+.ignoresSafeArea()
+.onChange(of: essayViewModel.isLoading) {
+navigate(.essays(.esssayCorrected(text: essayViewModel.text)))
+}
+ */
+
 struct TranscriptionReviewView: View {
     
     @EnvironmentObject var essayViewModel: EssayViewModel
+    @EnvironmentObject var userViewModel: UserViewModel
+    @Environment(\.navigate) var navigate
+
     
     var body: some View {
         ZStack {
             TopBarCorrectionComponent() {
-                
+                essayViewModel.sendEssayToCorrection(text: essayViewModel.fullTranscribedText, title: essayViewModel.title, theme: essayViewModel.theme, userId: userViewModel.user?.id ?? 105)
             }
 
             VStack {
@@ -56,8 +86,12 @@ struct TranscriptionReviewView: View {
                     }
                 }
             }
-        }.toolbar(.hidden, for: .navigationBar)
-            .toolbar(.hidden, for: .tabBar)
+        }
+        .toolbar(.hidden, for: .navigationBar)
+        .toolbar(.hidden, for: .tabBar)
+        .onChange(of: essayViewModel.isLoading) {
+            navigate(.essays(.esssayCorrected(text: essayViewModel.text)))
+        }
     }
 }
 
