@@ -37,6 +37,7 @@ struct EssayNavigationStack: View {
                                 essayViewModel.fullTranscribedText = transcription.joinParagraphText()
                             } catch {
                                 print("deu ruim: \(error.localizedDescription)")
+                                essayViewModel.transcriptionError = true
                             }
                         }
                         

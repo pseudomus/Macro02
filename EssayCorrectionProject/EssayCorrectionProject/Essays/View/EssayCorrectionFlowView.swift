@@ -43,6 +43,11 @@ struct EssayCorrectionFlowView: View {
                                 essayViewModel.theme = ""
                                 essayViewModel.correctionMode = .none
                                 essayViewModel.scannedImage = nil
+                                essayViewModel.fullTranscribedText = ""
+                                essayViewModel.transcriptionError = false
+                                essayViewModel.isTranscriptionReady = false
+                                essayViewModel.transcription = nil
+                                
                             }
                     }
                     .tag(0)

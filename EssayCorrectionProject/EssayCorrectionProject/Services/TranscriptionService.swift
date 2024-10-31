@@ -117,7 +117,6 @@ class TranscriptionService {
         
         request.httpBody = imageData
         
-        
         let (data, response) = try await urlSession.data(for: request)
 
         if let httpResponse = response as? HTTPURLResponse, !(200...299).contains(httpResponse.statusCode) {

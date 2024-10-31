@@ -17,6 +17,7 @@ class EssayViewModel: ObservableObject {
     @Published var scannedImage: UIImage?
     @Published var transcription: Transcription?
     @Published var isTranscriptionReady: Bool = false
+    @Published var transcriptionError: Bool = false
     @Published var fullTranscribedText: String = ""
     
     

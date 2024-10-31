@@ -9,7 +9,8 @@ import SwiftUI
 
 struct TopBarCorrectionComponent: View {
     
-    @Environment(\.dismiss) private var dismiss // Access the dismiss action
+    @Environment(\.navigate) private var navigate // Access the dismiss action
+    var callback: (() -> Void)?
     
     var body: some View {
         VStack {
@@ -17,7 +18,7 @@ struct TopBarCorrectionComponent: View {
                 Spacer()
                 HStack {
                     Button(action: {
-                        dismiss()
+                        navigate(.back)
                     }) {
                         Text("Cancelar")
                             .foregroundStyle(Color.primary)
@@ -27,7 +28,7 @@ struct TopBarCorrectionComponent: View {
                     Spacer()
                     
                     Button(action: {
-                        
+                        callback?()
                     }) {
                         Text("Corrigir")
                             .bold()
