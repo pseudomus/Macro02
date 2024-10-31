@@ -62,17 +62,10 @@ struct HomeEssayView: View {
                     essayListView
                 }
             }
-            // debug
-            //.onAppear { essayViewModel.fetchEssays(userId: "101") }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .getSize { size in
             screenSize = size
-        }
-        .onAppear {
-            if userViewModel.user == nil {
-                essayViewModel.fetchEssays(userId: "105")
-            }
         }
         // MARK: - isLoading changes (fetch essays)
         .onChange(of: userViewModel.isLoading) { _, newValue in
@@ -83,16 +76,16 @@ struct HomeEssayView: View {
             }
         }
         .onChange(of: essayViewModel.shouldFetchEssays) { _, newValue in
-//            guard let user = userViewModel.user else { return }
-//            if newValue {
-//                essayViewModel.fetchEssays(userId: "\(user.id)")
-//                essayViewModel.shouldFetchEssays = false
-//            }
             if newValue {
-                essayViewModel.fetchEssays(userId: "105")
+                // verifica se há um usuário logado - caso contrário, usa o ID de teste
+                let userId = userViewModel.user?.id ?? 105
+                essayViewModel.fetchEssays(userId: "\(userId)")
+                
+                // redefine shouldFetchEssays para evitar buscas repetidas
                 essayViewModel.shouldFetchEssays = false
             }
         }
+
         .alert(isPresented: $showingDeleteAlert) {
             deleteEssayAlert
         }
