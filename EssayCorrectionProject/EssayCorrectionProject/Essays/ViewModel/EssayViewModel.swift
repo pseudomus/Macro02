@@ -59,6 +59,12 @@ class EssayViewModel: ObservableObject {
         }
     }
     
+    func logout() {
+        self.essays.removeAll()
+        self.shouldFetchEssays = true
+        
+    }
+    
     // MARK: - ENVIAR PARA CORREÇÃO
     func sendEssayToCorrection(text: String, title: String, theme: String, userId: Int) {
         isLoading = true

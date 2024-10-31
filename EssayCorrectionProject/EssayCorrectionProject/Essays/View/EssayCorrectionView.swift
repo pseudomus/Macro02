@@ -9,13 +9,17 @@ import SwiftUI
 
 struct EssayCorrectionView: View {
     @EnvironmentObject var authManager: AuthManager
+    @EnvironmentObject var essayViewModel: EssayViewModel
     
     private let noAccountText: String = "Preciso que você entre na sua conta da apple para eu poder corrigir e salvar sua redação"
     
     var body: some View {
         if authManager.isAuthenticated {
             // TODO: - FLUXO BRUNO TRANSCRIÇÃO
-            Button("Logout") { AuthManager.shared.logout() } // BOTAO TEMPORARIO DE LOGOUT REMOVER
+            Button("Logout") {
+                AuthManager.shared.logout()
+                essayViewModel.logout()
+            } // BOTAO TEMPORARIO DE LOGOUT REMOVER
             EssayInputView()
         } else {
             VStack {
