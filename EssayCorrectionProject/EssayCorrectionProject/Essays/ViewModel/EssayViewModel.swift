@@ -61,7 +61,8 @@ class EssayViewModel: ObservableObject {
     
     func logout() {
         self.essays.removeAll()
-        self.shouldFetchEssays = true 
+        self.shouldFetchEssays = true
+        
     }
     
     // MARK: - ENVIAR PARA CORREÇÃO

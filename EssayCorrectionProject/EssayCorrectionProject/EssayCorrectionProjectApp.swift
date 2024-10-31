@@ -53,12 +53,14 @@ struct EssayCorrectionProjectApp: App {
 struct OverlayView: View {
     var body: some View {
         ZStack {
-            Color.black.opacity(0.4)
+            Color.gray
                 .ignoresSafeArea()
-            Image(systemName: "star.fill")
-                .resizable()
-                .frame(width: 100, height: 100)
-                .foregroundColor(.yellow)
+            Text("Disserta")
+                .font(.largeTitle)
+                .fontDesign(.rounded)
+                .bold()
+                .frame(width: 300, height: 100)
+                .foregroundColor(.white)
         }
         .transition(.opacity)
         .animation(.easeOut(duration: 0.5), value: UUID())

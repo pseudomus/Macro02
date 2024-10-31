@@ -37,6 +37,7 @@ struct ProfileView: View {
                     LogoutButton(buttonTitle: "Sair da conta", action: {
                         AuthManager.shared.logout()
                         essayViewModel.logout()
+                        user.user = nil
                         navigate(.back)
                     })
                     .padding(.bottom,20)
