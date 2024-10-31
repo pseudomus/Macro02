@@ -32,11 +32,12 @@ struct TranscriptionReviewView: View {
     @EnvironmentObject var essayViewModel: EssayViewModel
     @EnvironmentObject var userViewModel: UserViewModel
     @Environment(\.navigate) var navigate
-
+    @State var isTabBarHidden: Bool = false
     
     var body: some View {
         ZStack {
             TopBarCorrectionComponent() {
+                
                 essayViewModel.sendEssayToCorrection(text: essayViewModel.fullTranscribedText, title: essayViewModel.title, theme: essayViewModel.theme, userId: userViewModel.user?.id ?? 105)
             }
 
@@ -88,9 +89,10 @@ struct TranscriptionReviewView: View {
             }
         }
         .toolbar(.hidden, for: .navigationBar)
-        .toolbar(.hidden, for: .tabBar)
+        .toolbar(isTabBarHidden ? .hidden : .visible, for: .tabBar)
         .onChange(of: essayViewModel.isLoading) {
             navigate(.essays(.esssayCorrected(text: essayViewModel.fullTranscribedText)))
+            isTabBarHidden = false
         }
     }
 }
