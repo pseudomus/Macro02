@@ -23,17 +23,18 @@ struct EssayNavigationStack: View {
                 .sheet(isPresented: $isPresented) {
                     EssayCorrectionFlowView().interactiveDismissDisabled(true)
                 }
-                .fullScreenCover(isPresented: $isScannerPresented) {
+                .fullScreenCover(isPresented: $isScannerPresented, onDismiss: {
+                    if essayViewModel.scannedImage != nil {
+                        router.append(.profile)
+                        router.removeAll(where: {$0 == .wait })
+                        
+                    } else {
+                        router.removeAll()
+                    }
+                }) {
                     DocumentScannerCoordinator()
                         .background{
                             Color.black.ignoresSafeArea()
-                        }
-                        .onDisappear{
-                            if essayViewModel.scannedImage != nil {
-//                                navigate(.essays(.))
-                            } else {
-                                router.removeAll()
-                            }
                         }
                 }
         }.environment(\.navigate, NavigateAction(action: { route in
