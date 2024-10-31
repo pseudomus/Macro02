@@ -11,6 +11,7 @@ struct TopBarCorrectionComponent: View {
     
     @Environment(\.navigate) private var navigate // Access the dismiss action
     var callback: (() -> Void)?
+    @State var isPresented: Bool = false
     
     var body: some View {
         VStack {
@@ -18,7 +19,8 @@ struct TopBarCorrectionComponent: View {
                 Spacer()
                 HStack {
                     Button(action: {
-                        navigate(.back)
+                        navigate(.popBackToRoot)
+                        
                     }) {
                         Text("Cancelar")
                             .foregroundStyle(Color.primary)
@@ -43,6 +45,10 @@ struct TopBarCorrectionComponent: View {
             .cornerRadius(20)
             Spacer()
         }.ignoresSafeArea()
+            .alert("Tem certeza que deseja desistir?", isPresented: $isPresented) {
+                
+            }
+            
     }
 }
 
