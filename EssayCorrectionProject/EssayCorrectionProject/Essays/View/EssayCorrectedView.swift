@@ -65,41 +65,14 @@ struct EssayCorrectedView: View {
             }
             .padding()
         }
-//        .toolbar {
-//            ToolbarItem(placement: .topBarLeading) {
-//                Button {
-//                    navigate(.back)
-//                } label: {
-//                    HStack {
-//                        Image(systemName: "chevron.left")
-//                        Text("Redações")
-//                    }
-//                }
-//            }
-//        }
         .navigationBarBackButtonHidden()
         .onChange(of: essayViewModel.isLoading) { _, newValue in
             if !newValue {
                 essayResponse = essayViewModel.essayResponse
-                // Busca a última redação corrigida (isCorrected = true)
-//                if let lastCorrectedEssay = essayViewModel.essays.last(where: { $0.isCorrected == true }) {
-//                    essayResponse = lastCorrectedEssay
-//                    print("DEBUG: essayresponse3: \(String(describing: lastCorrectedEssay))")
-//                }
             }
         }
     }
-    
-    // Função para rolar até a palavra-chave
-    private func scrollToKeyword(_ keyword: String) {
-        highlightedKeyword = keyword
-        for (index, paragraph) in essayText.split(separator: "\n").enumerated() {
-            if paragraph.contains(keyword) {
-                scrollProxy?.scrollTo("paragraph\(index)", anchor: .bottom) // Rolando para o parágrafo que contém a palavra-chave
-                break
-            }
-        }
-    }
+
     
     @ViewBuilder
     private func essayExpandableView() -> some View {
@@ -133,29 +106,6 @@ struct EssayCorrectedView: View {
             }
         }
     }
-
-    // Função que gera o AttributedString com sublinhado na palavra-chave
-    private func generateAttributedText(fullText: String, keyword: String?) -> AttributedString? {
-        guard let keyword = keyword, !keyword.isEmpty else {
-            return nil
-        }
-        
-        var attributedText = AttributedString(fullText)
-        
-        if let range = attributedText.range(of: keyword) {
-            attributedText[range].underlineStyle = .single
-        }
-        
-        return attributedText
-    }
-
-
-
-
-
-
-
-    
     @ViewBuilder
     private func competencesWithCardsView(essayResponse: EssayResponse) -> some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -222,6 +172,34 @@ struct EssayCorrectedView: View {
                 SemiCircularGraphCardComponentView(value: essayResponse.metrics.citations, minValue: 0, maxValue: 10, range: (3, 11), title: "Citações")
                 SemiCircularGraphCardComponentView(value: essayResponse.metrics.argumentativeOperators, minValue: 0, maxValue: 30, range: (10, 17), title: "Operadores argumentativos")
                             
+            }
+        }
+    }
+    
+    // MARK: - FUNCTIONS
+    // Função que gera o AttributedString com sublinhado na palavra-chave
+    private func generateAttributedText(fullText: String, keyword: String?) -> AttributedString? {
+        guard let keyword = keyword, !keyword.isEmpty else {
+            return nil
+        }
+        
+        var attributedText = AttributedString(fullText)
+        
+        if let range = attributedText.range(of: keyword) {
+            attributedText[range].underlineStyle = .single
+        }
+        
+        return attributedText
+    }
+
+    
+    // Função para rolar até a palavra-chave
+    private func scrollToKeyword(_ keyword: String) {
+        highlightedKeyword = keyword
+        for (index, paragraph) in essayText.split(separator: "\n").enumerated() {
+            if paragraph.contains(keyword) {
+                scrollProxy?.scrollTo("paragraph\(index)", anchor: .bottom) // Rolando para o parágrafo que contém a palavra-chave
+                break
             }
         }
     }
@@ -396,7 +374,7 @@ struct ExpandableCompetenceCardView: View {
                                                         [Competency(resume: "A redação apresenta alguns desvios ortográficos e gramaticais, como a falta de acentuação em algumas palavras, além de erros de concordância verbal e de pontuação. É importante revisar esses aspectos para garantir uma escrita mais precisa e correta.",
                                                                     cards: [Card(title: "Titulo do card",
                                                                                  element: "Elemento",
-                                                                                 context: "contexto",
+                                                                                 context: "...contexto",
                                                                                  suggestion: "Sugestao, aoaoaoao",
                                                                                  message: "Mesagem"),
                                                                             Card(title: "Titulo do card",
