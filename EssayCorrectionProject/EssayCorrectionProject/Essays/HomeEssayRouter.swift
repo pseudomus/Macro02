@@ -10,6 +10,7 @@ import SwiftUI
 enum HomeEssayRoute: RouteProtocol {
     case correct
     case scanner
+    case review
     case profile
     case wait
     case esssayCorrected(essayResponse: EssayResponse? = nil, text: String)
@@ -28,6 +29,8 @@ enum HomeEssayRoute: RouteProtocol {
                 .ignoresSafeArea(.all)
         case .esssayCorrected(let essayResponse, let text):
             EssayCorrectedView(essayResponse: essayResponse, essayText: text)
+        case .review:
+            TranscriptionReviewView()
         }
     }
 }

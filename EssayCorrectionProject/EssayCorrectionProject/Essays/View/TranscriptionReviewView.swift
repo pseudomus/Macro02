@@ -2,12 +2,11 @@ import SwiftUI
 
 struct TranscriptionReviewView: View {
     
-    @State var isTranscriptionReady: Bool = true
-    @State var text: String = "Teste"
-        
+    @EnvironmentObject var essayViewModel: EssayViewModel
+    
     var body: some View {
         ZStack {
-            TopBarCorrectionComponent() // Ensure it doesn't cover the content
+            TopBarCorrectionComponent() 
 
             VStack {
                 HStack {
@@ -24,10 +23,10 @@ struct TranscriptionReviewView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(EdgeInsets(top: 0, leading: 15, bottom: 0, trailing: 0))
 
-                if isTranscriptionReady {
+                if essayViewModel.isTranscriptionReady {
                     ScrollView {
                         BorderedContainerComponent{
-                            TextField("", text: $text, axis: .vertical)
+                            TextField("", text: $essayViewModel.fullTranscribedText, axis: .vertical)
                         }.padding()
                     }
                 } else {
@@ -38,10 +37,13 @@ struct TranscriptionReviewView: View {
                     }
                 }
             }
-        }
+        }.toolbar(.hidden, for: .navigationBar)
+            .toolbar(.hidden, for: .tabBar)
     }
 }
 
 #Preview {
-    TranscriptionReviewView()
+    @Previewable @StateObject var essayViewModel = EssayViewModel()
+    return TranscriptionReviewView()
+          .environmentObject(essayViewModel)
 }
