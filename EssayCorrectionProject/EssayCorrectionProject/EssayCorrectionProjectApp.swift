@@ -52,16 +52,25 @@ struct EssayCorrectionProjectApp: App {
 
 struct OverlayView: View {
     var body: some View {
-        ZStack {
-            Color.gray
-                .ignoresSafeArea()
+        VStack {
+            Spacer()
+            Image(.dissserta)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(width: 120)
+            Spacer()
             Text("Disserta")
-                .font(.largeTitle)
+                .font(.title)
                 .fontDesign(.rounded)
                 .bold()
-                .frame(width: 300, height: 100)
-                .foregroundColor(.white)
-        }
+                .foregroundStyle(.gray)
+                .padding(.bottom, 70)
+        }.frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background {
+                Color.white
+                    .ignoresSafeArea()
+            }
+            .ignoresSafeArea()
         .transition(.opacity)
         .animation(.easeOut(duration: 0.5), value: UUID())
     }
