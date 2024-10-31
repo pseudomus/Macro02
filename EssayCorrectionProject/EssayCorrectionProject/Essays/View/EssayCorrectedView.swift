@@ -37,7 +37,6 @@ struct EssayCorrectedView: View {
                         // Redação
                         essayExpandableView()
                             .id("REDACAO")
-                            
                         
                         // competências e cards
                         competencesWithCardsView(essayResponse: essayResponse)
@@ -62,7 +61,7 @@ struct EssayCorrectedView: View {
                 HStack {
                     Image(systemName: "chevron.left")
                     Text("Redações")
-                }
+                }.foregroundStyle(.white)
             }
             .padding()
         }
@@ -175,8 +174,15 @@ struct EssayCorrectedView: View {
             
             // Exibe o título da competência com base na seleção do Picker
             let selectedKey = Array(competences.keys.sorted())[selectedCompetenceIndex]
-            if let competenceTitle = competences[selectedKey] {
-                Text(competenceTitle)
+            
+            if competences.keys.contains(selectedKey) {
+                if let competenceTitle = competences[selectedKey] {
+                    Text(competenceTitle)
+                        .font(.footnote)
+                        .fontWeight(.semibold)
+                }
+            } else {
+                Text("Sem título para a competência selecionada.")
                     .font(.footnote)
                     .fontWeight(.semibold)
             }

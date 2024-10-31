@@ -36,7 +36,7 @@ struct EssayCorrectionFlowView: View {
                         isActive: .constant(essayViewModel.theme != ""),
                         index: $currentIndex
                     ){
-                        CustomTextFieldCorrectionModal(text: $essayViewModel.theme, mode: .small)
+                        CustomTextFieldCorrectionModal(text: $essayViewModel.theme, placeholderText: "Ex: Desafios para combater a pirataria", mode: .small)
                             .padding(.top)
                             .onAppear {
                                 essayViewModel.text = ""
@@ -59,7 +59,7 @@ struct EssayCorrectionFlowView: View {
                         isActive: .constant(essayViewModel.title != ""),
                         index: $currentIndex
                     ){
-                        CustomTextFieldCorrectionModal(text: $essayViewModel.title, mode: .small)
+                        CustomTextFieldCorrectionModal(text: $essayViewModel.title, placeholderText: "Ex: Colocar ex de título pirataria...", mode: .small)
                             .padding(.top)
                     }
                     .tag(1)
@@ -157,7 +157,7 @@ struct EssayCorrectionFlowView: View {
                                     .padding(35)
                             }.padding(.top)
                         } else {
-                            CustomTextFieldCorrectionModal(text: $essayViewModel.text, mode: .big)
+                            CustomTextFieldCorrectionModal(text: $essayViewModel.text, placeholderText: "Escreva sua redação", mode: .big)
                                 .focused($isFocused)
                                 .onTapGesture {
                                     if !isFocused {
