@@ -15,4 +15,5 @@ struct Endpoints {
     static let sendEssayToCorrection = "\(baseURL)/correction"
     static let allEssays = "\(baseURL)/essay/getAll"
     static let deleteEssay = "\(baseURL)/essay/delete"
+    static let transcription = "\(baseURL)/transcription"
 }

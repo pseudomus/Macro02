@@ -15,6 +15,9 @@ class EssayViewModel: ObservableObject {
     @Published var title: String = ""
     @Published var theme: String = ""
     @Published var scannedImage: UIImage?
+    @Published var transcription: Transcription?
+    @Published var isTranscriptionReady: Bool = false
+    @Published var fullTranscribedText: String = ""
     
     
     @Published var errorMessage: String?
@@ -25,6 +28,7 @@ class EssayViewModel: ObservableObject {
     @Published var essayResponse: EssayResponse?
 
     private let essayService: EssayService
+    let transcriptionService = TranscriptionService()
     
     init(container: DependencyContainer = .shared) {
         self.essayService = container.essayService

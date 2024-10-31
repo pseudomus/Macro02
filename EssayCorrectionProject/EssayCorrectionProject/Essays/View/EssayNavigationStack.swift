@@ -25,8 +25,20 @@ struct EssayNavigationStack: View {
                 }
                 .fullScreenCover(isPresented: $isScannerPresented, onDismiss: {
                     if essayViewModel.scannedImage != nil {
-                        router.append(.profile)
+                        router.append(.review)
                         router.removeAll(where: {$0 == .wait })
+                        guard let image = essayViewModel.scannedImage else { return }
+                        guard let imageData = image.jpegData(compressionQuality: 0) else { return }
+                        Task {
+                            do {
+                                essayViewModel.transcription = try await essayViewModel.transcriptionService.makeTranscriptionRequest(imageData: imageData)
+                                essayViewModel.isTranscriptionReady = true
+                                guard let transcription = essayViewModel.transcription else { return }
+                                essayViewModel.fullTranscribedText = transcription.joinParagraphText()
+                            } catch {
+                                print("deu ruim: \(error.localizedDescription)")
+                            }
+                        }
                         
                     } else {
                         router.removeAll()
