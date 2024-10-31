@@ -16,6 +16,7 @@ enum CorrectionMode: String{
 struct EssayCorrectionFlowView: View {
     
     @EnvironmentObject var essayViewModel: EssayViewModel
+    @EnvironmentObject var userViewModel: UserViewModel
     @Environment(\.navigate) var navigate
     @State var currentIndex: Int = 0
     @Namespace var namespace
@@ -78,10 +79,8 @@ struct EssayCorrectionFlowView: View {
                             navigate(.exitSheet)
                             navigate(.sheet2)
                         } else if essayViewModel.correctionMode == .write {
-                            essayViewModel.sendEssayToCorrection(text: essayViewModel.text, title: essayViewModel.title, theme: essayViewModel.theme, userId: 105)
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0){
-                                navigate(.exitSheet)
-                            }
+                            essayViewModel.sendEssayToCorrection(text: essayViewModel.text, title: essayViewModel.title, theme: essayViewModel.theme, userId: userViewModel.user?.id ?? 105)
+                            navigate(.exitSheet)
                         }
                     }
                     .onTapGesture {

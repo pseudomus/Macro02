@@ -127,9 +127,14 @@ class TranscriptionService {
 
         do {
             let decoder = JSONDecoder()
-            return try decoder.decode(Transcription.self, from: data)
+            let transcription = try decoder.decode(Transcription.self, from: data)
+            print("Decoded transcription:", transcription)
+            return transcription
         } catch {
-            print("Failed to decode JSON: \(error)")
+            print("Failed to decode JSON. Error: \(error)")
+            if let responseString = String(data: data, encoding: .utf8) {
+                print("Response JSON: \(responseString)")
+            }
             throw error
         }
     }
