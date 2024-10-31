@@ -9,8 +9,9 @@ import SwiftUI
 
 enum HomeEssayRoute: RouteProtocol {
     case correct
-    case scanner(Binding<Bool>)
+    case scanner
     case profile
+    case wait
     case esssayCorrected(essayResponse: EssayResponse? = nil, text: String)
     
     @ViewBuilder
@@ -18,13 +19,13 @@ enum HomeEssayRoute: RouteProtocol {
         switch self {
         case .correct:
             EssayCorrectionView()
-        case .scanner(let isPresented):
-            DocumentScannerCoordinator(isPresented: isPresented)
-                .toolbar(.hidden, for: .tabBar)
-                .toolbar(.hidden, for: .navigationBar)
-                .ignoresSafeArea()
+        case .scanner:
+            EmptyView()
         case .profile:
             ProfileView()
+        case .wait:
+            DocumentScannerView()
+                .ignoresSafeArea(.all)
         case .esssayCorrected(let essayResponse, let text):
             EssayCorrectedView(essayResponse: essayResponse, essayText: text)
         }

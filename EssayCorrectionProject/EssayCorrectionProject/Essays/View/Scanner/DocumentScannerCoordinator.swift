@@ -11,7 +11,6 @@ import VisionKit
 struct DocumentScannerCoordinator: UIViewControllerRepresentable {
     @EnvironmentObject var vm: EssayViewModel
     @Environment(\.dismiss) var dismiss
-    @Binding var isPresented: Bool
 
     func makeUIViewController(context: Context) -> VNDocumentCameraViewController {
         let scannerViewController = VNDocumentCameraViewController()
@@ -29,7 +28,6 @@ struct DocumentScannerCoordinator: UIViewControllerRepresentable {
     
     class Coordinator: NSObject, VNDocumentCameraViewControllerDelegate {
         var parent: DocumentScannerCoordinator
-        @Environment(\.dismiss) var dismiss
 
         init(_ parent: DocumentScannerCoordinator) {
             self.parent = parent
@@ -45,7 +43,6 @@ struct DocumentScannerCoordinator: UIViewControllerRepresentable {
 
         func documentCameraViewControllerDidCancel(_ controller: VNDocumentCameraViewController) {
             controller.dismiss(animated: true, completion: nil)
-            dismiss()
         }
 
         func documentCameraViewController(_ controller: VNDocumentCameraViewController, didFailWithError error: Error) {
@@ -54,8 +51,3 @@ struct DocumentScannerCoordinator: UIViewControllerRepresentable {
         }
     }
 }
-
-
-
-
-

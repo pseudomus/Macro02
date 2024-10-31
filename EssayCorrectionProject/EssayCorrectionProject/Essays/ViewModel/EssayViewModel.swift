@@ -9,18 +9,20 @@ import SwiftUI
 
 class EssayViewModel: ObservableObject {
 
+    //DADOS TEMPORARIOS PARA O FLUXO DE CORREÇÃO
     @Published var correctionMode: CorrectionMode = .none
     @Published var text: String = ""
     @Published var title: String = ""
     @Published var theme: String = ""
+    @Published var scannedImage: UIImage?
+    
+    
     @Published var errorMessage: String?
     @Published var essays: [EssayResponse] = []
     @Published var isFirstTime: Bool = false
     @Published var isLoading = false
     @Published var shouldFetchEssays: Bool = false
     @Published var essayResponse: EssayResponse?
-    @Published var scannedImage: UIImage?
-    @Published var isPresented: Bool = false
 
     private let essayService: EssayService
     

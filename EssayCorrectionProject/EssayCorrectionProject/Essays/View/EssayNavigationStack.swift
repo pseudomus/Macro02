@@ -8,8 +8,11 @@
 import SwiftUI
 
 struct EssayNavigationStack: View {
-    @State var router = [HomeEssayRoute]()
+    @State var router: [HomeEssayRoute] = []
     @State var isPresented: Bool = false
+    @State var isScannerPresented: Bool = false
+    @Environment(\.navigate) var navigate
+    @EnvironmentObject var essayViewModel: EssayViewModel
     
     var body: some View {
         NavigationStack(path: $router) {
@@ -19,6 +22,19 @@ struct EssayNavigationStack: View {
                 }
                 .sheet(isPresented: $isPresented) {
                     EssayCorrectionFlowView().interactiveDismissDisabled(true)
+                }
+                .fullScreenCover(isPresented: $isScannerPresented) {
+                    DocumentScannerCoordinator()
+                        .background{
+                            Color.black.ignoresSafeArea()
+                        }
+                        .onDisappear{
+                            if essayViewModel.scannedImage != nil {
+//                                navigate(.essays(.))
+                            } else {
+                                router.removeAll()
+                            }
+                        }
                 }
         }.environment(\.navigate, NavigateAction(action: { route in
             if case let .essays(route) = route {
@@ -31,6 +47,8 @@ struct EssayNavigationStack: View {
                 isPresented = true
             } else if route == .exitSheet {
                 isPresented = false
+            } else if route == .sheet2 {
+                isScannerPresented = true
             }
         }))
     }

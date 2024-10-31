@@ -17,7 +17,7 @@ struct EssayCorrectionFlowView: View {
     
     @EnvironmentObject var essayViewModel: EssayViewModel
     @Environment(\.navigate) var navigate
-    @State var currentIndex: Int = 0
+    @State var currentIndex: Int = 2
     @Namespace var namespace
     @FocusState var isFocused: Bool
     @State var isPresented: Bool = false
@@ -42,6 +42,7 @@ struct EssayCorrectionFlowView: View {
                                 essayViewModel.title = ""
                                 essayViewModel.theme = ""
                                 essayViewModel.correctionMode = .none
+                                essayViewModel.scannedImage = nil
                             }
                     }
                     .tag(0)
@@ -68,11 +69,9 @@ struct EssayCorrectionFlowView: View {
                             .toolbar(.hidden, for: .tabBar)
                     } callback: {
                         if essayViewModel.correctionMode == .transciption {
-
-                            navigate(.essays(.scanner($essayViewModel.isPresented)))
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0){
-                                navigate(.exitSheet)
-                            }
+                            navigate(.essays(.wait))
+                            navigate(.exitSheet)
+                            navigate(.sheet2)
                         } else if essayViewModel.correctionMode == .write {
                             essayViewModel.sendEssayToCorrection(text: essayViewModel.text, title: essayViewModel.title, theme: essayViewModel.theme, userId: 105)
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0){
