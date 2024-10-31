@@ -12,7 +12,8 @@ class UserViewModel: ObservableObject {
     @Published var user: User? // Modelo de usuário
     @Published var errorMessage: String?
     @Published var isLoading = false
-
+    
+    
     let userService: UserService
 
     init(container: DependencyContainer = .shared) {

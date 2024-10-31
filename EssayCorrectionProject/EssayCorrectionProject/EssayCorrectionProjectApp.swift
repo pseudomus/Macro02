@@ -21,7 +21,16 @@ struct EssayCorrectionProjectApp: App {
                 .environmentObject(userViewModel)
                 .environmentObject(essayViewModel)
                 .environmentObject(authManager)
-                .onAppear { if userViewModel.user == nil { userViewModel.fetchUserData() } } // Fetch user data when opening again without login
+                .onAppear {
+                    if userViewModel.user == nil {
+                        userViewModel.fetchUserData()
+                        
+                        // verificar se é nil ainda dps de 1s
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                            if userViewModel.user == nil { essayViewModel.fetchEssays(userId: "105") }
+                        }
+                    }
+                }
                 .preferredColorScheme(.light)
         }
     }
