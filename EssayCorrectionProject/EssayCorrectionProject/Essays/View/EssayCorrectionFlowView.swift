@@ -17,7 +17,7 @@ struct EssayCorrectionFlowView: View {
     
     @EnvironmentObject var essayViewModel: EssayViewModel
     @Environment(\.navigate) var navigate
-    @State var currentIndex: Int = 2
+    @State var currentIndex: Int = 0
     @Namespace var namespace
     @FocusState var isFocused: Bool
     @State var isPresented: Bool = false
