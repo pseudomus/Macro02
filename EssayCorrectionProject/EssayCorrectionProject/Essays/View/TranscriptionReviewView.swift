@@ -90,7 +90,7 @@ struct TranscriptionReviewView: View {
         .toolbar(.hidden, for: .navigationBar)
         .toolbar(.hidden, for: .tabBar)
         .onChange(of: essayViewModel.isLoading) {
-            navigate(.essays(.esssayCorrected(text: essayViewModel.text)))
+            navigate(.essays(.esssayCorrected(text: essayViewModel.fullTranscribedText)))
         }
     }
 }

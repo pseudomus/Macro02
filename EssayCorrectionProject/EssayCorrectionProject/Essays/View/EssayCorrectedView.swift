@@ -55,6 +55,17 @@ struct EssayCorrectedView: View {
                 }
             }
         }
+        .overlay(alignment: .topLeading){
+            Button {
+                navigate(.popBackToRoot)
+            } label: {
+                HStack {
+                    Image(systemName: "chevron.left")
+                    Text("Redações")
+                }
+            }
+            .padding()
+        }
 //        .toolbar {
 //            ToolbarItem(placement: .topBarLeading) {
 //                Button {
@@ -69,11 +80,7 @@ struct EssayCorrectedView: View {
 //        }
         .navigationBarBackButtonHidden()
         .onChange(of: essayViewModel.isLoading) { _, newValue in
-            print("DEBUG: ENTROU 1")
             if !newValue {
-                print("DEBUG: ENTROU 2")
-                print("DEBUG: essayresponse: \(String(describing: essayResponse))")
-                print("DEBUG: essayresponse2: \(String(describing: essayViewModel.essayResponse))")
                 essayResponse = essayViewModel.essayResponse
                 // Busca a última redação corrigida (isCorrected = true)
 //                if let lastCorrectedEssay = essayViewModel.essays.last(where: { $0.isCorrected == true }) {
