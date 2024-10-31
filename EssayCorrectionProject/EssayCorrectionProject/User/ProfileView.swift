@@ -11,6 +11,7 @@ struct ProfileView: View {
     
     @EnvironmentObject var authManager: AuthManager
     @EnvironmentObject var user: UserViewModel
+    @EnvironmentObject var essayViewModel: EssayViewModel
     @Environment(\.navigate) var navigate
     
     var body: some View {
@@ -35,6 +36,7 @@ struct ProfileView: View {
                     
                     LogoutButton(buttonTitle: "Sair da conta", action: {
                         AuthManager.shared.logout()
+                        essayViewModel.logout()
                         navigate(.back)
                     })
                     .padding(.bottom,20)

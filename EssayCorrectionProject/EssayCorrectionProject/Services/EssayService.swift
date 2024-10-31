@@ -56,14 +56,33 @@ class EssayService: NetworkService {
                 // Decodifica a resposta em um objeto EssayResponse
                 let essayResponse = try JSONDecoder().decode(EssayResponse.self, from: data)
                 print("Resposta do servidor: \(essayResponse)")
-                completion(.success(essayResponse))
+                
+                // Valida a resposta
+                if self.isResponseValid(essayResponse) {
+                    completion(.success(essayResponse))
+                } else {
+                    print("Resposta inválida, realizando nova requisição...")
+                    // Tente enviar novamente
+                    self.sendEssayToCorrection(text: text, title: title, theme: theme, userId: userId, completion: completion)
+                }
             } catch {
-                print("Erro ao processar a resposta1: \(error)")
+                print("Erro ao processar a resposta: \(error)")
                 completion(.failure(.decodingError))
             }
         }
         .resume()
     }
+
+    // Função para validar a resposta
+    private func isResponseValid(_ response: EssayResponse) -> Bool {
+        // Verifica se todos os campos obrigatórios estão presentes
+        
+        if response.competencies.count != 5 {
+            return false
+        }
+        return true
+    }
+
     
     // MARK: FETCH USER ESSAYS - POST METHOD
     func fetchEssays(id: String, completion: @escaping (Result<[EssayResponse], NetworkError>) -> Void) {
