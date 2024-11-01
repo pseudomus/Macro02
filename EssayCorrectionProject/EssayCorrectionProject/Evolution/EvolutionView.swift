@@ -51,7 +51,7 @@ struct EvolutionCardView: View {
                 .padding(.bottom, 10)
                 .padding(.top, 4)
             HStack {
-                CircularGraphView(data: CircularGraphData.init(values: [1,2,3]))
+                CircularGraphView(data: CircularGraphData.init(values: [5,2,3]))
                     .frame(height: 110)
                 Spacer()
                 VStack(alignment: .leading) {
