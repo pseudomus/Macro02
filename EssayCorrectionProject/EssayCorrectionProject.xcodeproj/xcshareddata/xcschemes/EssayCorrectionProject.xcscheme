@@ -50,6 +50,9 @@
             ReferencedContainer = "container:EssayCorrectionProject.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
+      <StoreKitConfigurationFileReference
+         identifier = "../../EssayCorrectionProject/Helpers/StoreKit/CreditsConfigurationFile.storekit">
+      </StoreKitConfigurationFileReference>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"
