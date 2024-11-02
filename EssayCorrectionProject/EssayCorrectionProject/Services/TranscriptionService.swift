@@ -110,7 +110,13 @@ class TranscriptionService {
 
     func makeTranscriptionRequest(imageData: Data) async throws -> Transcription {
         
-        var request = URLRequest(url: URL(string: endpoint)!)
+        guard let url = URL(string: endpoint) else {
+            let errorMessage = "Invalid URL"
+            print("Error response from server: \(errorMessage)")
+            throw URLError(.badURL)
+        }
+        
+        var request = URLRequest(url: url)
         request.httpMethod = "POST"
         
         request.setValue("application/octet-stream", forHTTPHeaderField: "Content-Type")
