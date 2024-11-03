@@ -9,7 +9,7 @@
       }
     ]
   },
-  "identifier" : "79878E99",
+  "identifier" : "487B4CAE",
   "nonRenewingSubscriptions" : [
 
   ],
@@ -17,11 +17,11 @@
     {
       "displayPrice" : "0.99",
       "familyShareable" : false,
-      "internalID" : "DE2B19B1",
+      "internalID" : "9BAEA379",
       "localizations" : [
         {
-          "description" : "São 10 créditos ",
-          "displayName" : "10 Créditos",
+          "description" : "",
+          "displayName" : "10 Credits",
           "locale" : "en_US"
         }
       ],
@@ -32,8 +32,6 @@
   ],
   "settings" : {
     "_failTransactionsEnabled" : false,
-    "_locale" : "en_US",
-    "_storefront" : "USA",
     "_storeKitErrors" : [
       {
         "current" : null,

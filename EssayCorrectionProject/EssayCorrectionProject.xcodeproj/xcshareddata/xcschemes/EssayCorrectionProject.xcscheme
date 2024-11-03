@@ -51,7 +51,7 @@
          </BuildableReference>
       </BuildableProductRunnable>
       <StoreKitConfigurationFileReference
-         identifier = "../../EssayCorrectionProject/Helpers/StoreKit/CreditsConfigurationFile.storekit">
+         identifier = "../../CreditsConfigurationFile.storekit">
       </StoreKitConfigurationFileReference>
    </LaunchAction>
    <ProfileAction

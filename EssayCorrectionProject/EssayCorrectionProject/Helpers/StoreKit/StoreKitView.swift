@@ -21,18 +21,14 @@ struct StoreKitView: View {
                     Button {
                         _ = Task<Void, Never> {
                             do {
-                                print("Attempting to purchase product: \(product.displayName)")
                                 try await storeKitManager.buy(product)
-                                print("Successfully purchased: \(product.displayName)")
-                                
-                                await storeKitManager.updatePurchasedProducts() // Força atualização
                             } catch {
                                 print("Error occurred during purchase of \(product.displayName): \(error)")
                             }
                         }
                     } label: {
                         Text("\(product.displayPrice) - \(product.displayName)")
-                            .foregroundColor(.white)
+                            .foregroundStyle(.white)
                             .padding()
                             .background(.blue)
                             .clipShape(Capsule())
@@ -41,16 +37,12 @@ struct StoreKitView: View {
             }
         }
         .task {
-            print("Starting product update...")
             await storeKitManager.updatePurchasedProducts()
-            print("Product update completed.")
         }
         .task {
             _ = Task<Void, Never> {
                 do {
-                    print("Loading products...")
                     try await storeKitManager.loadProducts()
-                    print("Products loaded successfully.")
                 } catch {
                     print("Error loading products: \(error)")
                 }
@@ -73,29 +65,17 @@ class StoreKitManager: ObservableObject {
     }
     
     init() {
-        print("StoreKitManager initialized.")
         self.updates = observeTransactionUpdates()
     }
     
     deinit {
         self.updates?.cancel()
-        print("StoreKitManager deinitialized.")
     }
     
     func loadProducts() async throws {
-        guard !self.productsLoaded else {
-            print("Products already loaded, skipping load.")
-            return
-        }
-        
-        do {
-            self.products = try await Product.products(for: productIds)
-            self.productsLoaded = true
-            print("Products successfully loaded: \(self.products.map { $0.displayName })")
-        } catch {
-            print("Error loading products from StoreKit: \(error)")
-            throw error
-        }
+        guard !self.productsLoaded else { return }
+        self.products = try await Product.products(for: productIds)
+        self.productsLoaded = true
     }
     
     func buy(_ product: Product) async throws {
@@ -104,21 +84,17 @@ class StoreKitManager: ObservableObject {
             
             switch result {
             case let .success(.verified(transaction)):
-                print("Transaction verified for product: \(transaction.productID)")
                 await transaction.finish()
                 await self.updatePurchasedProducts()
                 
             case let .success(.unverified(_, error)):
-                print("Unverified transaction for \(product.displayName), possible issue: \(error)")
-                
+                break
             case .pending:
-                print("Transaction pending for product: \(product.displayName)")
-                
+                break
             case .userCancelled:
-                print("Transaction cancelled by user for product: \(product.displayName)")
-                
+                break
             @unknown default:
-                print("Unknown transaction result for product: \(product.displayName)")
+                break
             }
         } catch {
             print("Error during purchase attempt for \(product.displayName): \(error)")
@@ -130,21 +106,20 @@ class StoreKitManager: ObservableObject {
         print("Updating purchased products...")
         for await result in Transaction.currentEntitlements {
             guard case .verified(let transaction) = result else {
-                print("Unverified transaction encountered during update.")
                 continue
             }
             
             if transaction.revocationDate == nil {
+                print("to aqui")
                 self.purchasedProductIDs.insert(transaction.productID)
-                print("Added product ID to purchased products: \(transaction.productID)")
             } else {
                 self.purchasedProductIDs.remove(transaction.productID)
-                print("Removed product ID from purchased products: \(transaction.productID)")
+                print("to aqui agora")
             }
         }
     }
     
-    private func observeTransactionUpdates() -> Task<Void, Never> {
+    func observeTransactionUpdates() -> Task<Void, Never> {
         Task(priority: .background) { [unowned self] in
             print("Observing transaction updates...")
             for await verificationResult in Transaction.updates {
