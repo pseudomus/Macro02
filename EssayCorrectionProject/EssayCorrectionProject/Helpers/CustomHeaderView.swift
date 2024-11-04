@@ -176,7 +176,7 @@ struct CustomHeaderView<Content: View>: View {
 
             if searchFieldIsFocused {
                 Button("Cancel", action: cancelSearch)
-                    .foregroundColor(.blue)
+                    .foregroundStyle(.blue)
                     .transition(.move(edge: .trailing))
             }
         }

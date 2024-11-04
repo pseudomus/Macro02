@@ -193,18 +193,18 @@ struct ButtonModeCorrectionModal: View {
             } label: {
                 RoundedRectangle(cornerRadius: size.width / 5)
                     .stroke(style: .init(lineWidth: size.width / 40 ))
-                    .foregroundStyle(mode == buttonMode ? .white : .blue.mix(with: .green, by: 0.45).mix(with: .black, by: 0.25))
+                    .foregroundStyle(mode == buttonMode ? .white : .blue)
                     .aspectRatio(contentMode: .fit)
                     .overlay {
                         Image(buttonMode == .write ? .write : .scanner)
                             .resizable()
                             .renderingMode(.template)
                             .aspectRatio(contentMode: .fit)
-                            .foregroundStyle(mode == buttonMode ? .white : .blue.mix(with: .green, by: 0.45).mix(with: .black, by: 0.25))
+                            .foregroundStyle(mode == buttonMode ? .white : .blue)
                             .frame(width: size.width / 3)
                     }
                     .background{
-                        Color.blue.mix(with: .green, by: 0.45).mix(with: .black, by: 0.25).opacity(mode == buttonMode ? 1 : 0)
+                        Color.blue.opacity(mode == buttonMode ? 1 : 0)
                             .clipShape(.rect(cornerRadius: size.width / 5))
                     }
                     .padding(.vertical, 15)

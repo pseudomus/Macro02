@@ -23,21 +23,28 @@ struct HomeEssayView: View {
     var groupedEssays: [String: [EssayResponse]] {
         // Filtra as redações que possuem uma creationDate válida
         let essaysWithValidDate = essayViewModel.essays.filter { $0.creationDate != nil }
+        
+        
 
         // Agrupa as redações válidas
-        let grouped = Dictionary(grouping: essaysWithValidDate, by: { monthYear(from: $0.creationDate!) })
+        let grouped = Dictionary(grouping: essaysWithValidDate, by: {
+            monthYear(from: $0.creationDate ?? "") })
         
         // Ordena as redações dentro de cada grupo
         return grouped.mapValues { $0.sorted(by: {
+            
+            guard let creationDate1 = $0.creationDate, let creationDate2 = $1.creationDate else { return false }
+            
             // Utiliza um desempacotamento seguro com uma data padrão
-            (dateFromString($0.creationDate!) ?? Date.distantPast) > (dateFromString($1.creationDate!) ?? Date.distantPast)
+            return (dateFromString(creationDate1) ?? Date.distantPast) > (dateFromString(creationDate2) ?? Date.distantPast)
         }) }
     }
 
     var sortedMonths: [String] {
         // Ordena as chaves do dicionário baseado nas datas
         let sortedKeys = groupedEssays.keys.sorted {
-            dateFromMonthYear($0)! > dateFromMonthYear($1)!
+            guard let dateFromMY1 = dateFromMonthYear($0), let dateFromMY2 = dateFromMonthYear($1) else { return false }
+            return dateFromMY1 > dateFromMY2
         }
         
         return sortedKeys
@@ -149,7 +156,7 @@ struct HomeEssayView: View {
                 Section(header: Text(monthYear)
                     .font(.headline)
                     .textCase(nil)
-                    .foregroundColor(.primary)
+                    .foregroundStyle(.primary)
                 ) {
                     ForEach(groupedEssays[monthYear]!.filter { $0.isCorrected == true }, id: \.id) { essay in
                         essayButton(for: essay)
@@ -166,7 +173,8 @@ struct HomeEssayView: View {
             if essay.isCorrected ?? false {
                 navigate(.essays(.esssayCorrected(essayResponse: essay, text: essay.content!))) // redação pronta
             } else {
-                navigate(.essays(.esssayCorrected(text: essay.content!))) // redação carregando
+                guard let content = essay.content else { return }
+                navigate(.essays(.esssayCorrected(text: content))) // redação carregando
             }
         } label: {
             CorrectedEssayCardView(

@@ -66,13 +66,13 @@ struct EssayCorrectedView: View {
             .padding()
         }
         .navigationBarBackButtonHidden()
-        .onChange(of: essayViewModel.isLoading) { _, newValue in
+        .onChange(of: essayViewModel.isLoading){ _, newValue in
             if !newValue {
                 essayResponse = essayViewModel.essayResponse
             }
         }
-    }
 
+    }
     
     @ViewBuilder
     private func essayExpandableView() -> some View {
@@ -454,14 +454,14 @@ struct EssayInputView: View {
                     .padding()
                     .frame(maxWidth: .infinity)
                     .background(Color.gray)
-                    .foregroundColor(.white)
+                    .foregroundStyle(.white)
                     .cornerRadius(8)
             }
         }
         .padding()
         .navigationTitle("Criar Redação")
         .navigationBarTitleDisplayMode(.inline)
-        .onChange(of: essayViewModel.isLoading) { oldValue, newValue in
+        .onChange(of: essayViewModel.isLoading) { _, newValue in
             navigate(.essays(.esssayCorrected(text: essay)))
         }
     }

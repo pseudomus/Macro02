@@ -46,7 +46,7 @@ struct SemiCircularGraphCardComponentView: View {
                 }.offset(y: semiCircularSize.width / 10)
                     .padding(.horizontal, semiCircularSize.width / 6)
                     .padding(.vertical, semiCircularSize.width / 6)
-                    .background(Color.gray.mix(with: .white, by: 0.6))
+                    .background(Color.gray)
                     .clipShape(.rect(cornerRadius: semiCircularSize.width / 7))
                     .overlay {
                         VStack{
@@ -69,7 +69,7 @@ struct SemiCircularGraphCardComponentView: View {
                     .animation(isFlipped ? .linear(duration: 0.2) : .linear(duration: 0.2).delay(0.2), value: isFlipped)
                 
                 RoundedRectangle(cornerRadius: semiCircularSize.width / 7)
-                    .foregroundStyle(Color.gray.mix(with: .white, by: 0.6))
+                    .foregroundStyle(Color.gray)
                     .frame(width: graphSize.width, height: graphSize.height)
                     .overlay {
                         ZStack{
@@ -114,12 +114,12 @@ private struct SemiCircularGraphView: View {
                 .rotationEffect(.degrees(10))
             Circle()
                 .trim(from: data.trimRange.0, to: data.trimRange.1)
-                .stroke(Color.pink.mix(with: .black, by: 0.4).opacity(0.8), style: StrokeStyle(lineWidth: size.width / 13, lineCap: .round))
+                .stroke(Color.pink.opacity(0.8), style: StrokeStyle(lineWidth: size.width / 13, lineCap: .round))
                 .rotationEffect(.degrees(10))
             
             Circle()
                 .trim(from: 0.5, to: 0.50000003)
-                .stroke(Color.pink.mix(with: .black, by: 0.5), style: StrokeStyle(lineWidth: (size.width / 13) * 1.9, lineCap: .round))
+                .stroke(Color.pink, style: StrokeStyle(lineWidth: (size.width / 13) * 1.9, lineCap: .round))
                 .rotationEffect(.degrees(data.rotation))
                 .rotationEffect(.degrees(0))
                 .getSize { size in
