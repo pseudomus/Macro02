@@ -125,4 +125,35 @@ class EssayViewModel: ObservableObject {
             }
         }
     }
+    
+
+    func getTopEssayMistakes(in responses: [EssayResponse]) -> [(title: String, averageCount: Int)] {
+
+        var titleCounts: [String: Int] = [:]
+        
+        for response in responses {
+            for competency in response.competencies {
+                for card in competency.cards {
+
+                    if let title = card.title {
+
+                        titleCounts[title, default: 0] += 1
+                    }
+                }
+            }
+        }
+        
+        let totalResponses = responses.count
+        
+        let averageTitleCounts = titleCounts.mapValues { count in
+            return count / totalResponses
+        }
+        
+        let topThree = averageTitleCounts.sorted(by: { $0.value > $1.value })
+                                          .prefix(3)
+                                          .map { (title: $0.key, averageCount: $0.value) }
+        
+        return topThree
+    }
+
 }
