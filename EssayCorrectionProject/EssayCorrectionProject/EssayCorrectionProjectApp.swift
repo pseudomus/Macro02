@@ -13,17 +13,22 @@ struct EssayCorrectionProjectApp: App {
     @StateObject private var userViewModel = UserViewModel()
     @StateObject private var essayViewModel = EssayViewModel()
     @StateObject private var authManager = AuthManager.shared
+    @StateObject var storeKitManager = StoreKitManager()
+    
     
     // Estado para controlar a exibição da overlay
     @State private var showOverlay = true
 
     var body: some Scene {
         WindowGroup {
+//            CreditsView()
+//                .environmentObject(storeKitManager)
             ContentView()
                 .modelContainer(for: [RepertoireFixedFilter.self])
                 .environmentObject(userViewModel)
                 .environmentObject(essayViewModel)
                 .environmentObject(authManager)
+                .environmentObject(storeKitManager)
                 .onAppear {
                     if userViewModel.user == nil {
                         userViewModel.fetchUserData()
