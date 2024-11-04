@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+
+
 // MARK: - CustomHeaderView
 struct CustomHeaderView<Content: View>: View {
 
@@ -73,9 +75,12 @@ struct CustomHeaderView<Content: View>: View {
         .background(.gray.opacity(0.05))
         .overlay(alignment: .topTrailing){
             if !shouldAnimate {
-                ProfileButton()
-                    .ignoresSafeArea()
-                    .padding(10)
+                HStack {
+                    CreditsButton()
+                    ProfileButton()
+                }
+                .ignoresSafeArea()
+                .padding(10)
             }
         }
         

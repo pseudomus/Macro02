@@ -13,40 +13,44 @@ struct EssayCorrectionProjectApp: App {
     @StateObject private var userViewModel = UserViewModel()
     @StateObject private var essayViewModel = EssayViewModel()
     @StateObject private var authManager = AuthManager.shared
+    @StateObject var storeKitManager = StoreKitManager()
+    
     
     // Estado para controlar a exibição da overlay
     @State private var showOverlay = true
 
     var body: some Scene {
         WindowGroup {
-            CreditsView()
-//            ContentView()
-//                .modelContainer(for: [RepertoireFixedFilter.self])
-//                .environmentObject(userViewModel)
-//                .environmentObject(essayViewModel)
-//                .environmentObject(authManager)
-//                .onAppear {
-//                    if userViewModel.user == nil {
-//                        userViewModel.fetchUserData()
-//                        
-//                        // Verificar se o usuário ainda é nil depois de 1 segundo
-//                        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-//                            if userViewModel.user == nil {
-//                                essayViewModel.fetchEssays(userId: "105")
-//                            }
-//                        }
-//                    }
-//                    
-//                    // Oculta a overlay após 2 segundos
-//                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-//                        showOverlay = false
-//                    }
-//                }
-//                .preferredColorScheme(.light)
-//                // Overlay condicional com uma imagem
-//                .overlay(
-//                    showOverlay ? OverlayView() : nil
-//                )
+//            CreditsView()
+//                .environmentObject(storeKitManager)
+            ContentView()
+                .modelContainer(for: [RepertoireFixedFilter.self])
+                .environmentObject(userViewModel)
+                .environmentObject(essayViewModel)
+                .environmentObject(authManager)
+                .environmentObject(storeKitManager)
+                .onAppear {
+                    if userViewModel.user == nil {
+                        userViewModel.fetchUserData()
+                        
+                        // Verificar se o usuário ainda é nil depois de 1 segundo
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                            if userViewModel.user == nil {
+                                essayViewModel.fetchEssays(userId: "105")
+                            }
+                        }
+                    }
+                    
+                    // Oculta a overlay após 2 segundos
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                        showOverlay = false
+                    }
+                }
+                .preferredColorScheme(.light)
+                // Overlay condicional com uma imagem
+                .overlay(
+                    showOverlay ? OverlayView() : nil
+                )
         }
     }
 }

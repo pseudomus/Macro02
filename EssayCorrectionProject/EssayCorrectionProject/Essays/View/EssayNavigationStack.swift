@@ -11,6 +11,7 @@ struct EssayNavigationStack: View {
     @State var router: [HomeEssayRoute] = []
     @State var isPresented: Bool = false
     @State var isScannerPresented: Bool = false
+    @State var isCreditsViewPresented: Bool = false
     @Environment(\.navigate) var navigate
     @EnvironmentObject var essayViewModel: EssayViewModel
     
@@ -22,6 +23,10 @@ struct EssayNavigationStack: View {
                 }
                 .sheet(isPresented: $isPresented) {
                     EssayCorrectionFlowView().interactiveDismissDisabled(true)
+                }
+                // MARK: - CREDITS VIEW
+                .fullScreenCover(isPresented: $isCreditsViewPresented) {
+                    CreditsView()
                 }
                 .fullScreenCover(isPresented: $isScannerPresented, onDismiss: {
                     if essayViewModel.scannedImage != nil {
@@ -61,8 +66,11 @@ struct EssayNavigationStack: View {
                 isPresented = true
             } else if route == .exitSheet {
                 isPresented = false
+                isCreditsViewPresented = false
             } else if route == .sheet2 {
                 isScannerPresented = true
+            } else if route == .creditsSheet {
+                isCreditsViewPresented = true 
             }
         }))
     }

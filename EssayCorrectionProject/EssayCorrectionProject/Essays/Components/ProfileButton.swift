@@ -19,7 +19,7 @@ struct ProfileButton: View {
                 Image(systemName: "person.crop.circle.fill")
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                    .foregroundStyle(.white)
+                    .foregroundStyle(.black)
                     .frame(width: 33)
             }
         }

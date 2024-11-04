@@ -198,7 +198,7 @@ import StoreKit
 import SwiftUI
 
 @MainActor
-class StoreKitManager: NSObject, ObservableObject {
+class StoreKitManager: ObservableObject {
     // identificadores dos produtos de créditos
     private let productIds = ["credits_10", "credits_20", "credits_50"]
 
@@ -206,15 +206,13 @@ class StoreKitManager: NSObject, ObservableObject {
     @Published private(set) var products: [Product] = []
     @Published private(set) var purchasedProductIDs = Set<String>()
 
-    private let entitlementManager: EntitlementManager
-    private var productsLoaded = false  // define se os produtos já foram atribuídos
-    
+    // Saldo de créditos
+    @Published private(set) var creditBalance: Int = 0
+    private var productsLoaded = false
     private var updates: Task<Void, Never>? = nil
 
-    init(entitlementManager: EntitlementManager) {
-        self.entitlementManager = entitlementManager
-        super.init()
-        
+
+    init() {
         // observa as atualizações de transações de compra
         self.updates = observeTransactionUpdates()
     }
@@ -258,7 +256,7 @@ class StoreKitManager: NSObject, ObservableObject {
                            productID == "credits_50" ? 50 : 0
         
         if creditsToAdd > 0 {
-            entitlementManager.creditBalance += creditsToAdd
+            creditBalance += creditsToAdd
         }
     }
 
@@ -274,9 +272,9 @@ class StoreKitManager: NSObject, ObservableObject {
                                    transaction.productID == "credits_20" ? 20 :
                                    transaction.productID == "credits_50" ? 50 : 0
                 
-                // atualizar o saldo de créditos no EntitlementManager
+                // atualizar o saldo de créditos
                 await MainActor.run {
-                    entitlementManager.creditBalance += creditsToAdd
+                    creditBalance += creditsToAdd
                 }
 
                 // termina a transação para que não seja processada novamente
@@ -304,42 +302,39 @@ import SwiftUI
 import StoreKit
 
 struct CreditsView: View {
-    @StateObject var storeKitManager: StoreKitManager
-    @StateObject var entitlementManager = EntitlementManager()
-
-    init() {
-        let entitlementManager = EntitlementManager()
-        _entitlementManager = StateObject(wrappedValue: entitlementManager)
-        _storeKitManager = StateObject(wrappedValue: StoreKitManager(entitlementManager: entitlementManager))
-}
+    @EnvironmentObject var storeKitManager: StoreKitManager
+    @Environment(\.navigate) var navigate
+    
     @State private var isLoading = false
     @State private var purchaseError: String?
 
     var body: some View {
         VStack(alignment: .leading) {
-            // CRÉDITOS
+            // MARK: - TOP VIEW
+            /// créditos + x
             HStack {
-                Image(systemName: "square.3.stack.3d")
-                Text("\(entitlementManager.hasCredits ? 1 : 0) \(entitlementManager.hasCredits ? "crédito" : "créditos")")
+                HStack {
+                    Image(systemName: "square.3.stack.3d")
+                    Text("\(storeKitManager.creditBalance) \(storeKitManager.creditBalance == 1 ? "crédito" : "créditos")")
+                }
+                .fontWeight(.bold)
+                .foregroundStyle(.white)
+                .padding(5)
+                .background(Color.gray)
+                .clipShape(.rect(cornerRadius: 10))
+                
+                Spacer()
+                Button(action: {
+                    navigate(.exitSheet)
+                }) {
+                    Image(systemName: "xmark")
+                }
             }
-            .fontWeight(.bold)
-            .foregroundStyle(.white)
-            .padding(8)
-            .background(Color.gray)
-            .clipShape(.rect(cornerRadius: 10))
-            
             
             Text("Loja")
                 .font(.title2)
                 .padding(.top)
             Text("Compre créditos para corrigir suas redações")
-            Text("Você tem \(entitlementManager.creditBalance) crédito(s)")
-                .fontWeight(.bold)
-                .foregroundStyle(.white)
-                .padding(8)
-                .background(Color.gray)
-                .clipShape(RoundedRectangle(cornerRadius: 10))
-
             
             if isLoading {
                 ProgressView("Processando compra...")
@@ -374,7 +369,9 @@ struct CreditsView: View {
                     .multilineTextAlignment(.center)
                     .padding()
             }
+            Spacer()
         }
+        .padding()
         // INICIO DO APP
         .task {
             await storeKitManager.updatePurchasedProducts()
@@ -392,25 +389,9 @@ struct CreditsView: View {
 }
 
 
-// Gerenciador de Entitlement (para status de créditos)
-class EntitlementManager: ObservableObject {
-    static let userDefaults = UserDefaults(suiteName: "group.your.app")!
-    
-    @AppStorage("credits", store: userDefaults)
-    var creditBalance: Int = 0 // número total de créditos comprados
-    
-    var hasCredits: Bool {
-        return creditBalance > 0
-    }
-    func consumeCredits(amount: Int) {
-        guard creditBalance >= amount else { return }
-        creditBalance -= amount
-    }
-
-}
-
 
 
 #Preview {
     CreditsView()
+        .environmentObject(StoreKitManager())
 }
