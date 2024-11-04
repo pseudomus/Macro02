@@ -38,6 +38,6 @@ struct ProgressBarComponent: View {
     
     var body: some View {
         RoundedRectangle(cornerRadius: cornerRadius / 2)
-            .foregroundStyle(isActive ? .blue.mix(with: .green, by: 0.45).mix(with: .black, by: 0.25) : .gray.mix(with: .white, by: 0.6))
+            .foregroundStyle(isActive ? .blue : .gray)
     }
 }

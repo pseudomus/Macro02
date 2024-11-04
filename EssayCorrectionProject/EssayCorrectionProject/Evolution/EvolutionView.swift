@@ -32,7 +32,7 @@ struct EvolutionView: View {
                 
             } else {
                 VStack{
-                    ContentUnavailableView("Parece que você não corrigiu nenhuma redação ainda.", systemImage: "pencil.and.outline")
+                    Text("Parece que você não corrigiu nenhuma redação ainda.")
                 }
             }
         }
@@ -84,7 +84,7 @@ struct EvolutionCardView: View {
             }
         }
         .padding()
-        .background(Color.gray.mix(with: .white, by: 0.5))
+        .background(Color.gray)
         .clipShape(.rect(cornerRadius: 17))
         .overlay(content: {
             RoundedRectangle(cornerRadius: 17)
@@ -119,7 +119,7 @@ struct WarningInterventionCardView: View {
         }
         .padding(.horizontal, 10)
         .padding(.vertical, 10)
-        .background(Color.gray.mix(with: .white, by: 0.5))
+        .background(Color.gray)
         .clipShape(.rect(cornerRadius: 15))
         .overlay{
             RoundedRectangle(cornerRadius: 15)
@@ -145,7 +145,7 @@ struct EssayQuantityCardView: View {
         }
         .padding(.horizontal, 15)
         .padding(.vertical, 10)
-        .background(Color.gray.mix(with: .white, by: 0.5))
+        .background(Color.gray)
         .clipShape(.rect(cornerRadius: 15))
         .overlay{
             RoundedRectangle(cornerRadius: 15)

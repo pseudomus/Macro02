@@ -156,7 +156,7 @@ struct HomeEssayView: View {
                 Section(header: Text(monthYear)
                     .font(.headline)
                     .textCase(nil)
-                    .foregroundColor(.primary)
+                    .foregroundStyle(.primary)
                 ) {
                     ForEach(groupedEssays[monthYear]!.filter { $0.isCorrected == true }, id: \.id) { essay in
                         essayButton(for: essay)

@@ -67,7 +67,7 @@ struct CorrectionModalBaseView<Content: View>: View {
                     Image(systemName: "arrowshape.right.circle.fill")
                         .resizable()
                         .aspectRatio(contentMode: .fit)
-                        .foregroundStyle(isActive ? .blue.mix(with: .green, by: 0.45).mix(with: .black, by: 0.25) : .gray.mix(with: .white, by: 0.5))
+                        .foregroundStyle(isActive ? .blue : .gray)
                         .frame(width: 36)
                         .padding(.trailing, 5)
                         .padding(.top)
