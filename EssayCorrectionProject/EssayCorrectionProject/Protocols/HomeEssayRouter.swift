@@ -8,10 +8,10 @@
 import SwiftUI
 
 enum HomeEssayRoute: RouteProtocol {
+    case profile
     case correct
     case scanner
     case review
-    case profile
     case wait
     case esssayCorrected(essayResponse: EssayResponse? = nil, text: String)
     
@@ -31,6 +31,18 @@ enum HomeEssayRoute: RouteProtocol {
             EssayCorrectedView(essayResponse: essayResponse, essayText: text)
         case .review:
             TranscriptionReviewView()
+        }
+    }
+}
+
+enum BaseRoute: RouteProtocol {
+    case profile
+    
+    @ViewBuilder
+    var destination: some View {
+        switch self {
+        case .profile:
+            ProfileView()
         }
     }
 }

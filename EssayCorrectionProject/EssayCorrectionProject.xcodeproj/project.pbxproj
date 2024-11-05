@@ -411,7 +411,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"EssayCorrectionProject/Preview Content\"";
-				DEVELOPMENT_TEAM = CKX23Y9XSA;
+				DEVELOPMENT_TEAM = 5GYXF2FP9Y;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = EssayCorrectionProject/Info.plist;

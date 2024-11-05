@@ -63,6 +63,8 @@ struct EssayNavigationStack: View {
                 isPresented = false
             } else if route == .sheet2 {
                 isScannerPresented = true
+            } else if case .profile = route {
+                router.append(HomeEssayRoute.profile)
             }
         }))
     }
