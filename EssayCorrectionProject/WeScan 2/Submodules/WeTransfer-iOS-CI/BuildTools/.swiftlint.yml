@@ -1,0 +1,128 @@
+disabled_rules: # Rule identifiers to exclude from running
+  - identifier_name
+  - force_unwrapping
+  - force_cast
+  - force_try
+  - orphaned_doc_comment
+  - opening_brace
+  - switch_case_alignment
+  - trailing_comma
+  - todo
+opt_in_rules:
+  - block_based_kvo
+  - class_delegate_protocol
+  - contains_over_first_not_nil
+  - convenience_type
+  - empty_count
+  - empty_string
+  - explicit_init
+  - fallthrough
+  - fatal_error_message
+  - first_where
+  - identical_operands
+  - joined_default_parameter
+  - object_literal
+  - operator_usage_whitespace
+  - overridden_super_call
+  - private_outlet
+  - prohibited_super_call
+  - redundant_nil_coalescing
+  - switch_case_on_newline
+  - toggle_bool
+  - type_contents_order
+  - multiline_function_chains
+
+  - accessibility_trait_for_button
+  - accessibility_label_for_image
+  - shorthand_optional_binding
+  - anyobject_protocol
+  - capture_variable
+  - contains_over_filter_count
+  - contains_over_filter_is_empty
+  - contains_over_range_nil_comparison
+  - discouraged_assert
+  - empty_xctest_method
+  - flatmap_over_map_reduce
+  - last_where
+  - let_var_whitespace
+  - reduce_into
+  - redundant_type_annotation
+  - self_binding
+  - sorted_first_last
+  - sorted_imports
+  - unneeded_parentheses_in_closure_argument
+  - untyped_error_in_catch
+  - unused_import
+  - xct_specific_matcher
+syntactic_sugar: error
+unused_closure_parameter: error
+unused_optional_binding:
+  severity: error
+line_length:
+  warning: 140
+  error: 160
+file_length:
+  warning: 660
+  error: 1320
+function_body_length:
+  warning: 60
+  error: 90
+type_body_length:
+  warning: 400
+  error: 500
+type_name:
+  max_length: # warning and error
+    warning: 50
+    error: 60
+object_literal:
+  color_literal: false
+type_contents_order:
+  order:
+    - case
+    - subtype
+    - associated_type
+    - type_alias
+    - ib_outlet
+    - ib_inspectable
+    - type_property
+    - [initializer, instance_property]
+    - view_life_cycle_method
+    - [subscript, other_method, ib_action]
+    - type_method
+
+custom_rules:
+  overridden_only_calls_super:
+    included: ".*.swift"
+    regex: 'override func [^\n]*\{\n(\s*super\.[^\n]*\n(\s*\/\/[^\n]*\n)*|(\s*\/\/[^\n]*\n)+)\s*\}'
+    message: "Overridden methods which only call super can be removed"
+
+  final_class:
+    included: ".*.swift"
+    regex: "^class|^private class|^public class|^internal class"
+    message: "Consider using final for this class, or use a struct"
+
+  unowned_self:
+    included: ".*.swift"
+    regex: "unowned self"
+    message: "It is safer to use weak instead of unowned"
+
+excluded:
+  # We add ../../../ to work with the way Danger is expanding paths based on the config file.
+  - ${SRCROOT}/Carthage
+  - ${SRCROOT}/.build
+  - ${SRCROOT}/.spm-build
+  - ${SRCROOT}/Playgrounds
+  - ${SRCROOT}/Submodules
+  - ${SRCROOT}/SourcePackages
+  - ${SRCROOT}/*/SourcePackages
+  - ${SRCROOT}/*/*/SourcePackages
+  - ${SRCROOT}/*/*/*/SourcePackages
+  - ${SRCROOT}/Vendor
+  - ${SRCROOT}/Pods
+  - ${SRCROOT}/bundle
+  - ${SRCROOT}/scripts/genstrings.swift
+  - ${SRCROOT}/danger/DangerTests.swift
+  - ${SRCROOT}/*UITests
+  - ${SRCROOT}/.rbenv
+  - ${SRCROOT}/*/*/*/*/main.swift # App Store Connect SDK structure
+  - ${SRCROOT}/*/*/*/*/PackageJSON.swift

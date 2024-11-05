@@ -24,6 +24,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		E0B790382CDA9AEE00741509 /* WeScan 2 */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = "WeScan 2"; sourceTree = "<group>"; };
 		E8BAA93C2CB7026C001C0418 /* EssayCorrectionProject.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EssayCorrectionProject.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E8BAA94C2CB7026E001C0418 /* EssayCorrectionProjectTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EssayCorrectionProjectTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		E8BAA9562CB7026E001C0418 /* EssayCorrectionProjectUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EssayCorrectionProjectUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -88,6 +89,7 @@
 		E8BAA9332CB7026C001C0418 = {
 			isa = PBXGroup;
 			children = (
+				E0B790382CDA9AEE00741509 /* WeScan 2 */,
 				E8BAA93E2CB7026C001C0418 /* EssayCorrectionProject */,
 				E8BAA94F2CB7026E001C0418 /* EssayCorrectionProjectTests */,
 				E8BAA9592CB7026E001C0418 /* EssayCorrectionProjectUITests */,

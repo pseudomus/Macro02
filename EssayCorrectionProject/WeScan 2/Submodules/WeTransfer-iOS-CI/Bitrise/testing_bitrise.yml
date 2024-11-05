@@ -1,0 +1,163 @@
+---
+format_version: '8'
+default_step_lib_source: https://github.com/bitrise-io/bitrise-steplib.git
+project_type: ios
+trigger_map:
+- pull_request_source_branch: "*"
+  workflow: wetransfer_pr_testing
+workflows:
+  pr_testing:
+    steps:
+    - script:
+        title: Assign PR author and configure CI Testing mode
+        inputs:
+        - content: |-
+            #!/bin/bash
+
+            if [ ! -d "Submodules/WeTransfer-iOS-CI" ] ; then
+                echo 'Running inside the submodule itself'
+
+                # Assign a PR owner if not existing.
+                ./Bitrise/Scripts/pr_assignments.sh
+
+                # Configure CI_TESTING environment variable.
+                ./Bitrise/Scripts/configure_environment_for_pr.sh
+            else
+                echo 'Running from another package using a submodule'
+
+                # Assign a PR owner if not existing.
+                ./Submodules/WeTransfer-iOS-CI/Bitrise/Scripts/pr_assignments.sh
+
+                # Configure CI_TESTING environment variable.
+                ./Submodules/WeTransfer-iOS-CI/Bitrise/Scripts/configure_environment_for_pr.sh
+            fi
+    - script:
+        run_if: '{{enveq "CI_TESTING" "false"}}'
+        title: Skip running for Draft PRs
+        inputs:
+        - content: |-
+            #!/usr/bin/env bash
+            if [ "$GITHUB_PR_IS_DRAFT" = true ] ; then
+                echo 'Cancelling CI run since the PR is in draft'
+                exit 1
+            fi
+    - restore-cache@1:          
+        run_if: '{{enveq "SKIP_TESTS" "false" | and .IsCI }}'
+        inputs:          
+        - key: spm-cache-{{ checksum "Package.resolved" "*.xcodeproj/**/Package.resolved" "WeTransferPRLinter/Package.resolved" }}
+    - script:
+        run_if: '{{enveq "CI_TESTING" "false" | and .IsCI }}'
+        inputs:
+        - content: |-
+            #!/usr/bin/env bash
+            set -ex
+
+            if [ ! -d "Submodules/WeTransfer-iOS-CI" ] ; then
+              echo 'file does not exist - simply exit with success'
+              exit 0
+            fi
+
+            # Get the latest master branch for WeTransfer-iOS-CI if the submodule exists
+            git submodule update --remote --no-fetch Submodules/WeTransfer-iOS-CI
+        title: Update WeTransfer-iOS-CI submodule
+    - script:
+        run_if: .IsCI
+        title: Force SSH
+        inputs:
+        - content: |-
+            #!/usr/bin/env bash
+            # As we work with submodules, make sure we use SSH for this config so we can push our PR later on.
+            # See for more info: https://discuss.bitrise.io/t/git-force-to-use-ssh-url-instead-of-https-for-github-com/4384
+            # git config --global url."git@github.com:".insteadOf "https://github.com/"
+            for ip in $(dig @8.8.8.8 github.com +short); do ssh-keyscan github.com,$ip; ssh-keyscan $ip; done 2>/dev/null >> ~/.ssh/known_hosts
+    - script:
+        run_if: '{{enveq "SKIP_TESTS" "false"}}'
+        timeout: 2400
+        title: Run Fastlane
+        inputs:
+        - content: |-
+            #!/usr/bin/env bash
+            # Use the environment FASTLANE_LANE if available. Otherwise, fallback to "test"
+            lane=${FASTLANE_LANE:=test}
+            fastlane $lane
+    - deploy-to-bitrise-io@2:
+        run_if: '{{enveq "CREATE_SIMULATOR_BUILD" "true"}}'
+        title: Deploy Simulator Build to Bitrise
+        is_skippable: true
+        inputs:
+        - notify_user_groups: none
+        - is_enable_public_page: 'false'
+        - is_compress: 'true'
+        - debug_mode: 'true'
+        - deploy_path: build/derived_data/Build/Products/Debug-iphonesimulator/${XCODE_TARGET}.app/  
+    - deploy-to-bitrise-io@2:
+        run_if: '{{enveq "SKIP_TESTS" "false"}}'
+        is_skippable: true
+        inputs:
+        - notify_user_groups: none
+        - is_enable_public_page: 'false'
+        - is_compress: 'true'
+        - debug_mode: 'true'
+        - deploy_path: build/reports/
+    - deploy-to-bitrise-io@2:
+        run_if: '{{enveq "SKIP_TESTS" "false"}}'
+        title: Deploy pipeline test reports
+        inputs:
+        - pipeline_intermediate_files: |-
+            build/reports/:BITRISE_TEST_REPORTS_${FASTLANE_LANE:=DEFAULT}
+    - save-cache@1:
+        is_always_run: true
+        inputs:
+        - key: spm-cache-{{ checksum "Package.resolved" "*.xcodeproj/**/Package.resolved" "WeTransferPRLinter/Package.resolved" }}
+        - paths: .spm-build
+        - is_key_unique: 'true'
+
+  wetransfer_pr_testing:
+    before_run:
+    - pr_testing
+    after_run:
+    - workflow_danger
+    
+  workflow_danger:
+    steps:
+    - script:
+        title: Set up Danger Caching
+        inputs:
+        - content: |-
+            if [ "$BITRISEIO_GIT_REPOSITORY_SLUG" == "WeTransfer-iOS-CI" ]; then
+                envman add --key DANGER_CHECKSUM_PATH --value "Package.resolved"
+                envman add --key DANGER_BUILD_DIRECTORY --value ".build"
+            else
+                envman add --key DANGER_CHECKSUM_PATH --value "Submodules/WeTransfer-iOS-CI/Package.resolved"
+                envman add --key DANGER_BUILD_DIRECTORY --value "Submodules/WeTransfer-iOS-CI/.build"
+            fi
+    - restore-cache@1:      
+        inputs:          
+        - key: danger-build-cache-{{ checksum "$DANGER_CHECKSUM_PATH" }}
+    - script:
+        title: Run Danger
+        inputs:
+        - content: |-
+            #!/usr/bin/env bash
+            # debug log
+            set -x
+
+            # By changing directory into WeTransfer-iOS-CI, we can run Danger from there.
+            # Caching is still done per repository which is why we add the build and cache paths.
+            # --cwd makes sure to run Danger in the current repository directory
+            # The Dangerfile.swift from within the WeTransfer-iOS-CI repo is used.
+            #
+            # This all allows us to not define Danger dependencies in every repo. It also optimises reusing the SPM cache on CI systems.
+
+            if [ "$BITRISEIO_GIT_REPOSITORY_SLUG" == "WeTransfer-iOS-CI" ]; then
+                chmod +x danger-swift
+                ./danger-swift ci
+            else
+                cd Submodules/WeTransfer-iOS-CI
+                ./danger-swift ci --cwd ../../
+            fi
+    - save-cache@1:
+        inputs:
+        - key: danger-build-cache-{{ checksum "$DANGER_CHECKSUM_PATH" }}
+        - paths: "$DANGER_BUILD_DIRECTORY"
+        - is_key_unique: 'true'
