@@ -86,36 +86,6 @@ struct HighlightedTextView: UIViewRepresentable {
     }
 }
 
-
-struct TextTouchView: View {
-    @State private var text = "Digite algo aqui para testar o highlight no SwiftUI"
-    @State private var searchText = ["highlight", "aqui", "SwiftUI"]
-    @State private var isPresented: Bool = false
-    @State private var word = ""
-    @State private var height: CGFloat = 400
-    
-    var body: some View {
-        VStack {
-            HighlightedTextView(
-                text: $text, height: $height,
-                searchTexts: searchText
-            ) { i in
-                word = i
-                print(word)
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    isPresented = true
-                }
-            }
-            .frame(height: height)
-            .padding()
-            
-        }
-        
-        .padding()
-    }
-}
-
-
 struct WordSuggestionModalView: View {
 
 //    @Environment var vm: EssayViewModel
@@ -153,18 +123,18 @@ struct WordSuggestionModalView: View {
 
             // Use LazyVGrid to display suggestions in a grid layout
             LazyVGrid(columns: columns, spacing: 10) {
-//                ForEach(vm.wordSuggestions, id: .self) { word in
-//                    Button {
-//                        vm.isSuggestionPresented.toggle()
-//                    } label: {
-//                        Text(word)
-//                            .padding(5)
-//                            .foregroundColor(.white)
-//                            .background(Color.blue.opacity(0.8))
-//                            .cornerRadius(5)
-//                    }
-//                    .frame(maxWidth: .infinity)
-//                }
+                ForEach(0...3, id: \.self) { word in
+                    Button {
+                        
+                    } label: {
+                        Text("\(word)")
+                            .padding(5)
+                            .foregroundColor(.white)
+                            .background(Color.blue.opacity(0.8))
+                            .cornerRadius(5)
+                    }
+                    .frame(maxWidth: .infinity)
+                }
             }
             .padding()
 
@@ -173,6 +143,3 @@ struct WordSuggestionModalView: View {
     }
 }
 
-#Preview {
-    TextTouchView()
-}
