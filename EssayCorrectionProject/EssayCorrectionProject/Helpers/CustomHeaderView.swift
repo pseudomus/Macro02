@@ -13,6 +13,7 @@ import SwiftUI
 struct CustomHeaderView<Content: View>: View {
 
     // MARK: - Properties
+    var showCredits: Bool
     var title: String                                       // TÍTULO
     var filters: [String]?                                  // FILTROS (opcional)
     var showFiltersBeforeSwipingUp: Bool?                   // MOSTRAR FILTROS ANTES DE SCROLLAR (opcional) - para notícias
@@ -82,7 +83,7 @@ struct CustomHeaderView<Content: View>: View {
         .overlay(alignment: .topTrailing){
             if !shouldAnimate {
                 HStack {
-                    CreditsButton()
+                    if showCredits { CreditsButton() }
                     ProfileButton()
                 }
                 .ignoresSafeArea()
@@ -283,7 +284,7 @@ struct CustomHeaderView<Content: View>: View {
 }
 
 #Preview {
-    CustomHeaderView(title: "Redações",
+    CustomHeaderView(showCredits: false, title: "Redações",
                      filters: ["Filtro 1", "Filtro 2"],
                      showFiltersBeforeSwipingUp: true,
                      distanceContentFromTop: 90,

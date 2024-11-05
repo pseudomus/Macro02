@@ -52,7 +52,7 @@ struct HomeEssayView: View {
     
     var body: some View {
         
-        CustomHeaderView(title: "Redações", filters: [],
+        CustomHeaderView(showCredits: true, title: "Redações", filters: [],
                          distanceContentFromTop: 110,
                          showSearchBar: true,
                          isScrollable: !essayViewModel.isFirstTime,
