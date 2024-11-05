@@ -84,8 +84,8 @@ struct HomeEssayView: View {
         }
         .onChange(of: essayViewModel.shouldFetchEssays) { _, newValue in
             if newValue {
-                // verifica se há um usuário logado - caso contrário, usa o ID de teste
-                let userId = userViewModel.user?.id ?? 105
+                guard let userId = userViewModel.user?.id else { return }
+                // verifica se há um usuário logado
                 essayViewModel.fetchEssays(userId: "\(userId)")
                 
                 // redefine shouldFetchEssays para evitar buscas repetidas
@@ -102,7 +102,12 @@ struct HomeEssayView: View {
     // MARK: - VIEWS
     private var correctionButton: some View {
         Button {
-            navigate(.sheet)
+            if userViewModel.user != nil {
+                navigate(.sheet)
+            } else {
+                navigate(.essays(.profile))
+            }
+            
         } label: {
             HStack(alignment: .bottom) {
                 Text("Corrigir")

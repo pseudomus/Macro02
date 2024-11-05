@@ -63,7 +63,6 @@ struct NewsView: View {
         "science": "Ciência",
         "sports": "Esporte",
         "technology": "Tecnologia",
-        "top": "Em alta",
         "world": "Mundo",
     ]
     
@@ -71,24 +70,24 @@ struct NewsView: View {
         GeometryReader { proxy in
             VStack {
                 if viewModel.isLoading {
-                    ProgressView("Carregando artigos...") // Indicador de carregamento
+                    ProgressView("Carregando artigos...") // indicador de carregamento
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else if let errorMessage = viewModel.errorMessage {
-                    Text(errorMessage) // Exibir mensagem de erro
+                    Text(errorMessage) // exibir mensagem de erro
                         .foregroundColor(.red)
                         .multilineTextAlignment(.center)
                         .padding()
                 } else {
                     CustomHeaderView(
                         title: "Notícias",
-                        filters: uniqueCategories(from: viewModel.articles), // Pegando categorias únicas
+                        filters: uniqueCategories(from: viewModel.articles), // pegando categorias únicas
                         showFiltersBeforeSwipingUp: true,
                         distanceContentFromTop: 120,
                         showSearchBar: false,
                         isScrollable: true,
                         numOfItems: viewModel.articles.count,
                         onSelectFilter: { filter in
-                            toggleFilter(filter) // Alternar seleção de filtros
+                            toggleFilter(filter) // alternar seleção de filtros
                         }
                     ) { _ in
                         LazyVStack(spacing: 30) {
@@ -116,16 +115,21 @@ struct NewsView: View {
     // OBTER CATEGORIAS DOS FILTROS (Traduzindo as categorias)
     func uniqueCategories(from articles: [Article]) -> [String] {
         let allCategories = articles.flatMap { $0.category }
-        let uniqueCategories = Array(Set(allCategories)).sorted() // Eliminar duplicatas e ordenar
-        return uniqueCategories.map { translateCategory($0) } // Traduzir categorias
+        let uniqueCategories = Array(Set(allCategories)).sorted()
+        // remover o "top" - api problemas
+        let filteredCategories = uniqueCategories.filter { $0 != "top" }
+        return filteredCategories.map { translateCategory($0) }
     }
+
     
-    // Função para traduzir a categoria
+    // traduzir a categoria
     func translateCategory(_ category: String) -> String {
-        return categoryTranslations[category, default: category.capitalized]
+        let translated = categoryTranslations[category, default: category.capitalized]
+        return translated
     }
+
     
-    // Função para formatar a data
+    // formatar a data
     func formattedDate(_ dateString: String) -> String {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
@@ -152,9 +156,9 @@ struct NewsView: View {
     // Alternar seleção de filtros
     private func toggleFilter(_ filter: String) {
         if selectedFilters.contains(filter) {
-            selectedFilters.remove(filter) // Se já está selecionado, remove
+            selectedFilters.remove(filter) // se já está selecionado, remove
         } else {
-            selectedFilters.insert(filter) // Se não está selecionado, adiciona
+            selectedFilters.insert(filter) // se não está selecionado, adiciona
         }
     }
 }
@@ -198,8 +202,15 @@ struct NewsCardView: View {
                     } else {
                         // Placeholder se não houver URL
                         UnevenRoundedRectangle(cornerRadii: .init(topLeading: 6, topTrailing: 6))
-                            .foregroundStyle(.gray)
-                            .frame(width: geometry.size.width - 50, height: geometry.size.height * 0.75) // Largura do card
+                            .foregroundStyle(.backgroundBlue)
+                            .overlay {
+                                Image(.lapisinho) // Ícone padrão como placeholder
+                                    .resizable() // Permite redimensionar a imagem
+                                    .scaledToFit() // Mantém a proporção da imagem
+                                    .foregroundColor(.white.opacity(0.6))
+                                        
+                            }
+                            .frame(width: geometry.size.width - 50, height: geometry.size.height * 0.75)
                     }
 
                     // TEXTOS E PIN
@@ -227,4 +238,5 @@ struct NewsCardView: View {
 
 #Preview {
     NewsView()
+        .environmentObject(StoreKitManager())
 }

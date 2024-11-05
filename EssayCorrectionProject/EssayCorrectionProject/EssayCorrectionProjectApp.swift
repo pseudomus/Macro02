@@ -30,18 +30,9 @@ struct EssayCorrectionProjectApp: App {
                 .environmentObject(authManager)
                 .environmentObject(storeKitManager)
                 .onAppear {
-                    if userViewModel.user == nil {
-                        userViewModel.fetchUserData()
-                        
-                        // Verificar se o usuário ainda é nil depois de 1 segundo
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                            if userViewModel.user == nil {
-                                essayViewModel.fetchEssays(userId: "105")
-                            }
-                        }
-                    }
+                    if userViewModel.user == nil { userViewModel.fetchUserData() }
                     
-                    // Oculta a overlay após 2 segundos
+                    // oculta a overlay após 2 segundos
                     DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                         showOverlay = false
                     }

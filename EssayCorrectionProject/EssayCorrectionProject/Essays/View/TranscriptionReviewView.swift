@@ -37,8 +37,8 @@ struct TranscriptionReviewView: View {
     var body: some View {
         ZStack {
             TopBarCorrectionComponent() {
-                
-                essayViewModel.sendEssayToCorrection(text: essayViewModel.fullTranscribedText, title: essayViewModel.title, theme: essayViewModel.theme, userId: userViewModel.user?.id ?? 105)
+                guard let userId = userViewModel.user?.id else { return }
+                essayViewModel.sendEssayToCorrection(text: essayViewModel.fullTranscribedText, title: essayViewModel.title, theme: essayViewModel.theme, userId: userId)
             }
 
             VStack {

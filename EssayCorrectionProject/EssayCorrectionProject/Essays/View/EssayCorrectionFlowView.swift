@@ -79,7 +79,8 @@ struct EssayCorrectionFlowView: View {
                             navigate(.exitSheet)
                             navigate(.sheet2)
                         } else if essayViewModel.correctionMode == .write {
-                            essayViewModel.sendEssayToCorrection(text: essayViewModel.text, title: essayViewModel.title, theme: essayViewModel.theme, userId: userViewModel.user?.id ?? 105)
+                            guard let userId = userViewModel.user?.id else { return }
+                            essayViewModel.sendEssayToCorrection(text: essayViewModel.text, title: essayViewModel.title, theme: essayViewModel.theme, userId: userId)
                             navigate(.exitSheet)
                         }
                     }
