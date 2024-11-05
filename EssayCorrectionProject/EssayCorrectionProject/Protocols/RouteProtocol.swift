@@ -10,10 +10,10 @@ import SwiftUI
 //Enum responsável pelo gerenciamento das routers para cada navigationStack
 enum Route: Hashable {
     case essays(HomeEssayRoute)
-    case repertoire(HomeEssayRoute)
-    case evolution(HomeEssayRoute)
-    case news(HomeEssayRoute)
-    case back, popBackToRoot, sheet, sheet2, creditsSheet, exitSheet
+    case repertoire(BaseRoute)
+    case evolution(BaseRoute)
+    case news(BaseRoute)
+    case back, popBackToRoot, sheet, sheet2, exitSheet, profile, creditsSheet
     
     @ViewBuilder
     var destination: some View {
@@ -35,6 +35,7 @@ enum Route: Hashable {
 protocol RouteProtocol: Equatable, Hashable {
     static func == (lhs: Self, rhs: Self) -> Bool
     func hash(into hasher: inout Hasher)
+    static var profile: Self { get }
 }
 
 extension RouteProtocol {

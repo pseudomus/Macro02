@@ -7,49 +7,27 @@
 
 import SwiftUI
 
-struct EvolutionView: View {
+struct EvolutionNavigationStackView: View {
     
     @EnvironmentObject var essayViewModel: EssayViewModel
-    @State var correctedEssays: Int = 0
-    @State var topMistakes: [(title: String, averageCount: Int)] = []
+
+    @State var baseRouter: [BaseRoute] = []
+    @Environment(\.navigate) var navigate
 
     var body: some View {
-        VStack {
-            if correctedEssays > 0 {
-                CustomHeaderView(title: "Evolução", distanceContentFromTop: 50, showSearchBar: false, isScrollable: true) { shouldAnimate in
-                    VStack(alignment: .leading, spacing: 20) {
-                        
-                        EssayQuantityCardView(correctedEssays: correctedEssays)
-                        
-                        EvolutionCardView(text: "Pontos fortes")
-                        
-                        if !topMistakes.isEmpty {
-                            EvolutionCardView(text: "Pontos fracos", graphValues: topMistakes.map { $0.averageCount }, cardTitles: topMistakes.map { $0.title })
-                        } else {
-                            Text("Nenhum erro comum encontrado.")
-                                .font(.footnote)
-                                .padding(.leading)
-                        }
-                        
-                        WarningInterventionCardView()
-                        
-                        Text("Média de Métricas")
-                            .padding(.leading)
-                    }
+        NavigationStack(path: $baseRouter) {
+            EvolutionView()
+                .navigationDestination(for: BaseRoute.self) { node in
+                    node.destination
                 }
-            } else {
-                VStack {
-                    ContentUnavailableView("Parece que você não corrigiu nenhuma redação ainda.", systemImage: "pencil.and.outline")
-                }
-            }
         }
-        .onAppear {
-            correctedEssays = essayViewModel.getCount()
-            
-            if !essayViewModel.essays.isEmpty {
-                topMistakes = essayViewModel.getTopEssayMistakes(in: essayViewModel.essays)
+        .environment(\.navigate, NavigateAction(action: { route in
+            if case .profile = route {
+                baseRouter.append(BaseRoute.profile)
+            } else if route == .back && baseRouter.count >= 1 {
+                baseRouter.removeLast()
             }
-        }
+        }))
     }
 }
 
@@ -158,3 +136,49 @@ struct EssayQuantityCardView: View {
         .environmentObject(EssayViewModel())
 }
 
+
+struct EvolutionView: View {
+    
+    @EnvironmentObject var essayViewModel: EssayViewModel
+    @State var correctedEssays: Int = 0
+    @State var topMistakes: [(title: String, averageCount: Int)] = []
+    
+    var body: some View {
+        VStack {
+            if correctedEssays > 0 {
+                CustomHeaderView(title: "Evolução", distanceContentFromTop: 50, showSearchBar: false, isScrollable: true) { shouldAnimate in
+                    VStack(alignment: .leading, spacing: 20) {
+                        
+                        EssayQuantityCardView(correctedEssays: correctedEssays)
+                        
+                        EvolutionCardView(text: "Pontos fortes")
+                        
+                        if !topMistakes.isEmpty {
+                            EvolutionCardView(text: "Pontos fracos", graphValues: topMistakes.map { $0.averageCount }, cardTitles: topMistakes.map { $0.title })
+                        } else {
+                            Text("Nenhum erro comum encontrado.")
+                                .font(.footnote)
+                                .padding(.leading)
+                        }
+                        
+                        WarningInterventionCardView()
+                        
+                        Text("Média de Métricas")
+                            .padding(.leading)
+                    }
+                }
+            } else {
+                VStack {
+                    ContentUnavailableView("Parece que você não corrigiu nenhuma redação ainda.", systemImage: "pencil.and.outline")
+                }
+            }
+        }
+        .onAppear {
+            correctedEssays = essayViewModel.getCount()
+            
+            if !essayViewModel.essays.isEmpty {
+                topMistakes = essayViewModel.getTopEssayMistakes(in: essayViewModel.essays)
+            }
+        }
+    }
+}
