@@ -12,9 +12,9 @@ struct ProfileButton: View {
     @Environment(\.navigate) var navigate
     
     var body: some View {
-        VStack{
-            Button{
-                navigate(.essays(.profile))
+        VStack {
+            Button {
+                navigate(.profile)
             } label: {
                 Image(systemName: "person.crop.circle.fill")
                     .resizable()

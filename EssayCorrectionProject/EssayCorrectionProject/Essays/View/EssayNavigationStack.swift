@@ -71,6 +71,8 @@ struct EssayNavigationStack: View {
                 isScannerPresented = true
             } else if route == .creditsSheet {
                 isCreditsViewPresented = true 
+            } else if case .profile = route {
+                router.append(HomeEssayRoute.profile)
             }
         }))
     }

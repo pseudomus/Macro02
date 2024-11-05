@@ -13,6 +13,7 @@ struct ProfileView: View {
     @EnvironmentObject var user: UserViewModel
     @EnvironmentObject var essayViewModel: EssayViewModel
     @Environment(\.navigate) var navigate
+    @State var isTabBarHidden: Bool = true
     
     var body: some View {
         ZStack {
@@ -48,7 +49,17 @@ struct ProfileView: View {
             }
             .padding(.top, 50)
             
-        }
+        }.toolbar(isTabBarHidden ? .hidden : .visible, for: .tabBar)
+            .onDisappear{
+                withAnimation {
+                    isTabBarHidden = false
+                }
+            }
+            .onAppear{
+                withAnimation {
+                    isTabBarHidden = true
+                }
+            }
     }
 }
 

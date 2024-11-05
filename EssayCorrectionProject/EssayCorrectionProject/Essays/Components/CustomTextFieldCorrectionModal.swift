@@ -24,17 +24,17 @@ struct CustomTextFieldCorrectionModal: View {
                 .foregroundStyle(.gray), axis: .vertical)
             .padding()
             .frame(minHeight: 450, alignment: .topLeading)
-            .background(Color.gray)
+            .background(Color.gray.opacity(0.2))
             .clipShape(.rect(cornerRadius: 15))
-            .foregroundStyle(.gray)
+            .foregroundStyle(.black)
             
         } else {
             TextField("", text: $text, prompt: Text(placeholderText))
                 .foregroundStyle(.gray)
             .padding()
-            .background(Color.gray)
+            .background(Color.gray.secondary)
             .clipShape(.rect(cornerRadius: 15))
-            .foregroundStyle(.gray)
+            .foregroundStyle(.black)
         }
     }
 }
