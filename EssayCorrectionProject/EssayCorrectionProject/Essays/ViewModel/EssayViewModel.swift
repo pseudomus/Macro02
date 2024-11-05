@@ -51,7 +51,9 @@ class EssayViewModel: ObservableObject {
                 switch result {
                 case .success(let essays):
                     self.essays = essays
-                    self.isFirstTime = essays.isEmpty
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                        self.isFirstTime = essays.isEmpty
+                    }
                 case .failure(let error):
                     self.errorMessage = "Erro ao buscar redações: \(error.localizedDescription)"
                 }

@@ -14,6 +14,7 @@ struct HomeEssayView: View {
     @EnvironmentObject var essayViewModel: EssayViewModel
     
     @State private var screenSize: CGSize = .zero
+    @State private var itemHeight: CGFloat = .zero
     @Namespace private var animation
     @State private var showingDeleteAlert = false
     @State private var essayToDelete: EssayResponse?
@@ -24,8 +25,6 @@ struct HomeEssayView: View {
         // Filtra as redações que possuem uma creationDate válida
         let essaysWithValidDate = essayViewModel.essays.filter { $0.creationDate != nil }
         
-        
-
         // Agrupa as redações válidas
         let grouped = Dictionary(grouping: essaysWithValidDate, by: {
             monthYear(from: $0.creationDate ?? "") })
@@ -56,12 +55,14 @@ struct HomeEssayView: View {
         CustomHeaderView(title: "Redações", filters: [],
                          distanceContentFromTop: 110,
                          showSearchBar: true,
-                         isScrollable: !essayViewModel.isFirstTime) { shouldAnimate in
+                         isScrollable: !essayViewModel.isFirstTime,
+                         numOfItems: essayViewModel.essays.count,
+                         itemsHeight: itemHeight) { shouldAnimate in
             
             VStack {
-                if !shouldAnimate {
-                    correctionButton
-                }
+                correctionButton
+                    .offset(y: shouldAnimate ? -250 : 0)
+                    .animation(.easeInOut(duration: 0.3), value: shouldAnimate)
                 
                 if essayViewModel.isFirstTime {
                     firstTimeView
@@ -69,6 +70,9 @@ struct HomeEssayView: View {
                     essayListView
                 }
             }
+            .animation(.easeInOut(duration: 0.2), value: shouldAnimate)
+            
+            .padding(.bottom, 100) // para tabbar nao cobrir
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .getSize { size in
@@ -169,6 +173,9 @@ struct HomeEssayView: View {
                 }
             }
         }
+        .getSize { size in
+            itemHeight = size.height
+        }
     }
 
 
@@ -192,6 +199,7 @@ struct HomeEssayView: View {
         .simultaneousGesture(LongPressGesture().onEnded { _ in
             showDeleteConfirmation(for: essay)
         })
+        
     }
 
     
@@ -245,6 +253,7 @@ struct HomeEssayView: View {
 #Preview {
     HomeEssayView()
         .environmentObject(UserViewModel())
+        .environmentObject(StoreKitManager())
         .environmentObject(EssayViewModel())
 }
 

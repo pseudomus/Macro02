@@ -20,6 +20,7 @@ struct CustomHeaderView<Content: View>: View {
     var showSearchBar: Bool                                 // MOSTRAR A SEARCHBAR
     var isScrollable: Bool                                  // É CONTEÚDO COM SCROLL
     var numOfItems: Int?                                    // NUMERO DE ITENS (opcional) *para a tela redações*
+    var itemsHeight: CGFloat?                               // ALTURA DOS ITENS PARA ANIMACAO (opcional) *para a tela redações*
     var onSearch: ((String) -> Void)?                       // CLOSURE - pesquisa da searchbar (opcional)
     var onCancelSearch: (() -> Void)?                       // CLOSURE - cancelamento da pesquisa (opcional)
     var onSelectFilter: ((String) -> Void)?                 // CLOSURE - ao clicar em filtro (opcional)
@@ -55,6 +56,11 @@ struct CustomHeaderView<Content: View>: View {
                         let target = newValue ? "scrollTop" : "scrollBottom"
                         withAnimation { scrollProxy.scrollTo(target, anchor: .top) }
                     }
+//                    .onChange(of: shouldAnimate) { _, newValue in
+//                        if newValue {
+//                            withAnimation { scrollProxy.scrollTo("scrollTop", anchor: .top) }
+//                        }
+//                    }
                     .scrollDisabled(!isScrollable)
 
                 }
@@ -148,8 +154,13 @@ struct CustomHeaderView<Content: View>: View {
     // MARK: - Helper Methods
     private func totalContentHeight() -> CGFloat {
         let numberOfItems = numOfItems ?? 0
-        let itemHeight: CGFloat = 140 + 50
-        return CGFloat(numberOfItems) * itemHeight + distanceContentFromTop
+        if let itemsHeight = itemsHeight {
+            return (itemsHeight + 180) + distanceContentFromTop
+        } else {
+            let numberOfItems = numOfItems ?? 0
+            let itemHeight: CGFloat = 140 + 50
+            return CGFloat( numberOfItems) * itemHeight + distanceContentFromTop
+        }
     }
 
     // MARK: - Search Bar
