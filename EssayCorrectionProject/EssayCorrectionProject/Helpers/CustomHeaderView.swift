@@ -11,6 +11,7 @@ import SwiftUI
 
 // MARK: - CustomHeaderView
 struct CustomHeaderView<Content: View>: View {
+    @EnvironmentObject var essayViewModel: EssayViewModel
 
     // MARK: - Properties
     var showCredits: Bool
@@ -57,11 +58,15 @@ struct CustomHeaderView<Content: View>: View {
                         let target = newValue ? "scrollTop" : "scrollBottom"
                         withAnimation { scrollProxy.scrollTo(target, anchor: .top) }
                     }
-//                    .onChange(of: shouldAnimate) { _, newValue in
-//                        if newValue {
-//                            withAnimation { scrollProxy.scrollTo("scrollTop", anchor: .top) }
-//                        }
-//                    }
+                    .onChange(of: essayViewModel.shouldFetchEssays) { _, newValue in
+                        if essayViewModel.essays.isEmpty, newValue {
+                            withAnimation {
+                                scrollProxy.scrollTo("scrollBottom", anchor: .top)
+                                essayViewModel.isFirstTime = true
+                            }
+                        }
+                    }
+
                     .scrollDisabled(!isScrollable)
 
                 }

@@ -51,9 +51,7 @@ class EssayViewModel: ObservableObject {
                 switch result {
                 case .success(let essays):
                     self.essays = essays
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                        self.isFirstTime = essays.isEmpty
-                    }
+                    self.isFirstTime = essays.isEmpty
                 case .failure(let error):
                     self.errorMessage = "Erro ao buscar redações: \(error.localizedDescription)"
                 }
@@ -84,8 +82,8 @@ class EssayViewModel: ObservableObject {
         
         // adiciona o card temporário à lista
         essays.append(temporaryEssayResponse)
-        print("DEBUG: sendessay")
-
+        isFirstTime = false
+        
         essayService.sendEssayToCorrection(text: text, title: title, theme: theme, userId: userId) { [weak self] result in
             print("DEBUG: CLOSURE")
             guard let self = self else { return }
@@ -120,6 +118,10 @@ class EssayViewModel: ObservableObject {
                 
                 switch result {
                 case .success:
+                    self.essays.removeAll {
+                        if let essayId = $0.id { return String(essayId) == id }
+                        return false
+                    }
                     self.shouldFetchEssays = true
                 case .failure(let failure):
                     self.errorMessage = failure.localizedDescription
@@ -127,8 +129,6 @@ class EssayViewModel: ObservableObject {
             }
         }
     }
-    
-
     func getTopEssayMistakes(in responses: [EssayResponse]) -> [(title: String, averageCount: Int)] {
 
         var titleCounts: [String: Int] = [:]
