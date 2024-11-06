@@ -15,7 +15,7 @@ struct DocumentScannerView: View {
     
     var body: some View {
         VStack {
-            Color.black.ignoresSafeArea()
+            Color.gray.ignoresSafeArea()
                 .toolbar(.hidden, for: .tabBar)
                 .toolbar(.hidden, for: .navigationBar)
         }.onAppear{

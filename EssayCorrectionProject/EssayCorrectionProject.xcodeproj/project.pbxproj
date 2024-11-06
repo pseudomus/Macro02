@@ -11,6 +11,7 @@
 		26C25DC12CD83E6400CB06A7 /* StoreKitConfiguration.storekit in Resources */ = {isa = PBXBuildFile; fileRef = 26C25DC02CD83E6400CB06A7 /* StoreKitConfiguration.storekit */; };
 		26C25DC22CD83E6400CB06A7 /* StoreKitConfiguration.storekit in Resources */ = {isa = PBXBuildFile; fileRef = 26C25DC02CD83E6400CB06A7 /* StoreKitConfiguration.storekit */; };
 		26C25DC32CD83E6400CB06A7 /* StoreKitConfiguration.storekit in Resources */ = {isa = PBXBuildFile; fileRef = 26C25DC02CD83E6400CB06A7 /* StoreKitConfiguration.storekit */; };
+		E0922FA42CDBE2FD002DC4F1 /* WeScan in Frameworks */ = {isa = PBXBuildFile; productRef = E0922FA32CDBE2FD002DC4F1 /* WeScan */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -75,6 +76,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				26C25DBF2CD83DFB00CB06A7 /* StoreKit.framework in Frameworks */,
+				E0922FA42CDBE2FD002DC4F1 /* WeScan in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -145,6 +147,7 @@
 			);
 			name = EssayCorrectionProject;
 			packageProductDependencies = (
+				E0922FA32CDBE2FD002DC4F1 /* WeScan */,
 			);
 			productName = EssayCorrectionProject;
 			productReference = E8BAA93C2CB7026C001C0418 /* EssayCorrectionProject.app */;
@@ -228,6 +231,9 @@
 			);
 			mainGroup = E8BAA9332CB7026C001C0418;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				E0922FA22CDBE2FD002DC4F1 /* XCRemoteSwiftPackageReference "WeScan" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = E8BAA93D2CB7026C001C0418 /* Products */;
 			projectDirPath = "";
@@ -434,7 +440,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"EssayCorrectionProject/Preview Content\"";
-				DEVELOPMENT_TEAM = 5GYXF2FP9Y;
+				DEVELOPMENT_TEAM = SRXHT55569;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = EssayCorrectionProject/Info.plist;
@@ -451,7 +457,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.1;
-				PRODUCT_BUNDLE_IDENTIFIER = Leo.EssayCorrectionProject;
+				PRODUCT_BUNDLE_IDENTIFIER = Leo.EssayCorrectionProject1;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -473,7 +479,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"EssayCorrectionProject/Preview Content\"";
-				DEVELOPMENT_TEAM = 5GYXF2FP9Y;
+				DEVELOPMENT_TEAM = SRXHT55569;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = EssayCorrectionProject/Info.plist;
@@ -490,7 +496,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.1;
-				PRODUCT_BUNDLE_IDENTIFIER = Leo.EssayCorrectionProject;
+				PRODUCT_BUNDLE_IDENTIFIER = Leo.EssayCorrectionProject1;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -614,6 +620,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		E0922FA22CDBE2FD002DC4F1 /* XCRemoteSwiftPackageReference "WeScan" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/pseudomus/WeScan";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		E0922FA32CDBE2FD002DC4F1 /* WeScan */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E0922FA22CDBE2FD002DC4F1 /* XCRemoteSwiftPackageReference "WeScan" */;
+			productName = WeScan;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = E8BAA9342CB7026C001C0418 /* Project object */;
 }
