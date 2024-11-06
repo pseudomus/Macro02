@@ -40,7 +40,15 @@ struct RepertoireView: View {
                 ProgressView("Carregando repertórios...")
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
-                CustomHeaderView(showCredits: false, title: "Repertories", filters: Theme.getArray(), distanceContentFromTop: 45, showSearchBar: false, isScrollable: true, numOfItems: viewModel.repertories.count, onSelectFilter: toggleFilter) { _ in
+                CustomHeaderView(showCredits: false,
+                                 title: "Repertories",
+                                 filters: Theme.getArray(),
+                                 showFiltersBeforeSwipingUp: true,
+                                 distanceContentFromTop: 100,
+                                 showSearchBar: false,
+                                 isScrollable: true,
+                                 numOfItems: viewModel.repertories.count,
+                                 onSelectFilter: toggleFilter) { _ in
                     VStack(spacing: 15) {
                         
                         Button{
@@ -76,9 +84,6 @@ struct RepertoireView: View {
             }
         }.onAppear{
             viewModel.fetchRepertoires()
-//            DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-//                print(viewModel.repertories)
-//            }
         }
     }
     
