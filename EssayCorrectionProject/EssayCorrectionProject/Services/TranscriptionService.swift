@@ -14,14 +14,14 @@ struct Transcription: Decodable {
     let numberOfLines: Int
     let numberOfWords: Int
     
-    func numberOfPossibleTranscriptionMistakes() -> Int {
-        var numberOfPossibleMistakes = 0
+    func getPossibleTranscriptionMistakes() -> [String]{
+        var possibleMistakes = [""]
         for word in self.words {
-            if word.confidence < 0.3 {
-                numberOfPossibleMistakes += 1
+            if word.confidence < 0.5 {
+                possibleMistakes.append(word.text)
             }
         }
-        return numberOfPossibleMistakes
+        return possibleMistakes
     }
     
     func joinParagraphText() -> String {
@@ -145,7 +145,3 @@ class TranscriptionService {
         }
     }
 }
-
-
-
-

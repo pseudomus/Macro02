@@ -10,7 +10,6 @@ import SwiftUI
 struct AppTabView: View {
     @Binding var selection: AppScreenNavigation?
 
-    
     var body: some View {
         TabView(selection: $selection) {
             ForEach(AppScreenNavigation.allCases) { screen in
@@ -28,11 +27,13 @@ struct AppTabView: View {
     @Previewable @StateObject var userViewModel = UserViewModel()
     @Previewable @StateObject var essayViewModel = EssayViewModel()
     @Previewable @StateObject var authManager = AuthManager.shared
+    @Previewable @StateObject var storeKitManager = StoreKitManager()
     
     return ContentView()
         .environmentObject(userViewModel)
         .environmentObject(essayViewModel)
         .environmentObject(authManager)
+        .environmentObject(storeKitManager)
         .onAppear { if userViewModel.user == nil { userViewModel.fetchUserData() } } // Fetch user data when opening again without login
         .modelContainer(for: [RepertoireFixedFilter.self])
 }
