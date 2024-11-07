@@ -53,8 +53,8 @@ struct HomeEssayView: View {
     var body: some View {
         
         CustomHeaderView(showCredits: true, title: "Redações", filters: [],
-                         distanceContentFromTop: 110,
-                         showSearchBar: true,
+                         distanceContentFromTop: essayViewModel.isFirstTime ? 100 : 110,
+                         showSearchBar: !essayViewModel.isFirstTime,
                          isScrollable: !essayViewModel.isFirstTime,
                          numOfItems: essayViewModel.essays.count,
                          itemsHeight: itemHeight) { shouldAnimate in
@@ -119,7 +119,8 @@ struct HomeEssayView: View {
             HStack(alignment: .bottom) {
                 Text("Corrigir")
                     .font(.title3)
-                    .foregroundStyle(.black)
+                    .foregroundStyle(.white)
+                    .fontWeight(.bold)
                 Spacer(minLength: screenSize.width / 2.7)
                 if !essayViewModel.isFirstTime {
                     Image(.lapisinho)
@@ -130,7 +131,7 @@ struct HomeEssayView: View {
             }
             .padding()
             .padding(.top, essayViewModel.isFirstTime ? screenSize.height / 9 : 0)
-            .background(Color.gray.opacity(0.5))
+            .background(Color(.colorBrandPrimary700))
             .clipShape(RoundedRectangle(cornerRadius: 10))
             .padding(.horizontal, 22)
             .padding(.bottom, 22)
