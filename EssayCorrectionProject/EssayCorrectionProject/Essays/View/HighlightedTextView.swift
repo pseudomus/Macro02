@@ -11,8 +11,8 @@ import UIKit
 struct HighlightedTextView: UIViewRepresentable {
     @Binding var text: String
     @Binding var height: CGFloat
-    var searchTexts: [String] // Alterado para aceitar múltiplas palavras
-    var onHighlightTap: (String) -> Void // Passa a palavra clicada
+    @State var searchTexts: [String]
+    var onHighlightTap: (String) -> Void 
 
     func makeUIView(context: Context) -> UITextView {
         let textView = UITextView()
@@ -20,7 +20,7 @@ struct HighlightedTextView: UIViewRepresentable {
         textView.delegate = context.coordinator
         textView.attributedText = createHighlightedText(from: text)
         textView.linkTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.black]
-        textView.textContainer.lineBreakMode = .byTruncatingMiddle        
+        textView.textContainer.lineBreakMode = .byTruncatingMiddle
         
         return textView
     }
@@ -85,61 +85,3 @@ struct HighlightedTextView: UIViewRepresentable {
         }
     }
 }
-
-struct WordSuggestionModalView: View {
-
-//    @Environment var vm: EssayViewModel
-
-    // Define grid columns
-    let columns = [
-        GridItem(.flexible()),
-        GridItem(.flexible()), // Adjust the number of columns as needed
-        GridItem(.flexible())
-    ]
-
-    var body: some View {
-        VStack {
-            HStack {
-                Text("Revisão")
-                    .font(.title2)
-                    .bold()
-                Spacer()
-                Button {
-//                    vm.isSuggestionPresented.toggle()
-                } label: {
-                    Image(systemName: "x.circle.fill")
-                        .font(.largeTitle)
-                        .foregroundStyle(Color.gray)
-                }
-            }.padding()
-
-            BorderedContainerComponent {
-                Text("Erro de transcrição identificado")
-                    .font(.title2)
-                    .lineLimit(0)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding()
-
-            // Use LazyVGrid to display suggestions in a grid layout
-            LazyVGrid(columns: columns, spacing: 10) {
-                ForEach(0...3, id: \.self) { word in
-                    Button {
-                        
-                    } label: {
-                        Text("\(word)")
-                            .padding(5)
-                            .foregroundColor(.white)
-                            .background(Color.blue.opacity(0.8))
-                            .cornerRadius(5)
-                    }
-                    .frame(maxWidth: .infinity)
-                }
-            }
-            .padding()
-
-            Spacer()
-        }
-    }
-}
-

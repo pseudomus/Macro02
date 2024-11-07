@@ -15,7 +15,6 @@ struct EssayCorrectionProjectApp: App {
     @StateObject private var authManager = AuthManager.shared
     @StateObject var storeKitManager = StoreKitManager()
     
-    
     // Estado para controlar a exibição da overlay
     @State private var showOverlay = true
 

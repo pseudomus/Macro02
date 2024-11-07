@@ -35,8 +35,10 @@ struct TranscriptionReviewView: View {
     @State var isTabBarHidden: Bool = false
     @State var isPresented: Bool = false
     @State var selectedText: String = ""
-    @State var text: String = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin porta ipsum ac justo rhoncus, ut pellentesque lectus venenatis. Donec iaculis enim tortor, quis gravida est tempor luctus. Nulla non neque ullamcorper, aliquet libero quis, sagittis sapien. Nam consequat metus sit amet sapien mattis porta. Vivamus pharetra efficitur enim, cursus congue quam. Pellentesque molestie massa vel tellus vehicula facilisis. Mauris eget tempor arcu.\nNulla congue sapien vitae lorem placerat consequat vitae in diam. In ullamcorper, urna vulputate feugiat tincidunt, diam sapien sodales ipsum, eu hendrerit nibh felis sed erat. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut vel leo ut lorem venenatis tempor. Duis vel pharetra justo. Mauris imperdiet, turpis sed posuere convallis, sapien erat commodo nisl, et euismod metus sem sit amet sem. In varius neque et massa dapibus, ut elementum risus sodales. Nunc egestas tincidunt gravida. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.\nDuis at elit tempor, dictum arcu et, fringilla mi. Vestibulum et ex viverra, tempor massa in, imperdiet sapien. Proin maximus condimentum rutrum. Vivamus hendrerit ipsum in libero ultricies consequat. Nam ultrices risus tincidunt, varius risus ac, fermentum arcu. Sed in ante quis tellus elementum ullamcorper. Fusce finibus mauris non mauris ultricies consectetur."
     @State var height: CGFloat = 400
+    @State var wrongTranscription: String = ""
+    @State var possibleErrors: [String] = []
+    @State var numOfPossibleErrors: [String] = []
     
     var body: some View {
         ZStack {
@@ -47,21 +49,24 @@ struct TranscriptionReviewView: View {
 
             VStack {
                 
-//                if essayViewModel.transcriptionError {
-//                    VStack(alignment: .center) {
-//                        Spacer()
-//                        Image(systemName: "exclamationmark.triangle.fill")
-//                            .resizable()
-//                            .aspectRatio(contentMode: .fit)
-//                            .frame(width: 70)
-//                        Text("Erro")
-//                            .fontWeight(.bold)
-//                            .font(.title)
-//                        Text("Parece que algo deu errado na sua transcrição. Tente novamente mais tarde").padding(30)
-//                        Spacer()
-//                    }
-//                    
-//                } else {
+                if essayViewModel.transcriptionError {
+                    VStack(alignment: .center) {
+                        Spacer()
+                        Image(systemName: "exclamationmark.triangle.fill")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 70)
+                        Text("Erro")
+                            .fontWeight(.bold)
+                            .font(.title)
+                        Text("Parece que algo deu errado na sua transcrição. Tente novamente mais tarde")
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal,30)
+                            .padding(.vertical, 5)
+                        Spacer()
+                    }
+                    
+                } else {
                     HStack {
                         Text("Revise o texto")
                             .font(.title)
@@ -78,12 +83,14 @@ struct TranscriptionReviewView: View {
                     
                     if essayViewModel.isTranscriptionReady {
                         ScrollView {
-                            BorderedContainerComponent{
-                                HighlightedTextView(text: $essayViewModel.fullTranscribedText, height: $height, searchTexts: ["dolor", "amet"]) { i in
+                            BorderedContainerComponent {
+                                HighlightedTextView(text: $essayViewModel.fullTranscribedText, height: $height, searchTexts: possibleErrors) { i in
                                     isPresented = true
                                     selectedText = i
                                 }.frame(minHeight: (height < 400) ? 400 : height)
                             }.padding()
+                        }.onAppear {
+                            possibleErrors = essayViewModel.transcription?.getPossibleTranscriptionMistakes() ?? []
                         }
                     } else {
                         VStack {
@@ -92,7 +99,7 @@ struct TranscriptionReviewView: View {
                             Spacer()
                         }
                     }
-                
+                }
             }
         }
         .toolbar(.hidden, for: .navigationBar)
@@ -101,10 +108,92 @@ struct TranscriptionReviewView: View {
             navigate(.essays(.esssayCorrected(text: essayViewModel.fullTranscribedText)))
             isTabBarHidden = false
         }
-        .sheet(isPresented: $isPresented){
-            WordSuggestionModalView()
+        .sheet(isPresented: $isPresented) {
+            WordSuggestionModalView(wrongTranscription: $wrongTranscription)
+        }
+        
+    }
+}
+
+struct WordSuggestionModalView: View {
+    
+    @Environment(\.dismiss) var dismiss
+
+    // Define grid columns
+    let columns = [
+        GridItem(.flexible()),
+        GridItem(.flexible()), // Adjust the number of columns as needed
+        GridItem(.flexible())
+    ]
+    
+    @State var suggestedWords: [String] = []
+    @Binding var wrongTranscription: String
+
+    var body: some View {
+        VStack {
+            HStack {
+                Text("Revisão")
+                    .font(.title2)
+                    .bold()
+                Spacer()
+                Button {
+                    dismiss()
+                } label: {
+                    Image(systemName: "x.circle.fill")
+                        .font(.largeTitle)
+                        .foregroundStyle(Color.gray)
+                }
+            }.padding()
+
+            BorderedContainerComponent {
+                Text("Erro de transcrição identificado")
+                    .font(.title2)
+                    .lineLimit(0)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding()
+
+            // Use LazyVGrid to display suggestions in a grid layout
+            LazyVGrid(columns: columns, spacing: 10) {
+                ForEach(suggestedWords, id: \.self) { word in
+                    Button {
+                        dismiss()
+                    } label: {
+                        Text("\(word)")
+                            .padding(5)
+                            .foregroundColor(.white)
+                            .background(Color.blue.opacity(0.8))
+                            .cornerRadius(5)
+                    }
+                    .frame(maxWidth: .infinity)
+                }
+            }
+            .padding()
+
+            Spacer()
+        }.onAppear {
+            suggestedWords = []
+            suggestedWords = suggestCorrectedWords(to: wrongTranscription)
+            print("\(suggestedWords)")
+            print("\(wrongTranscription)")
         }
     }
+    
+    func suggestCorrectedWords(to word: String) -> [String] {
+        let textChecker = UITextChecker()
+        let range = NSRange(location: 0, length: word.utf16.count)
+        
+        let language = "pt_BR"
+        let misspelledRange = textChecker.rangeOfMisspelledWord(in: word, range: range, startingAt: 0, wrap: false, language: language)
+        
+        if misspelledRange.location != NSNotFound {
+            let suggestions = textChecker.guesses(forWordRange: misspelledRange, in: word, language: language)
+            return suggestions ?? []
+        }
+        
+        return []
+    }
+
 }
 
 #Preview {

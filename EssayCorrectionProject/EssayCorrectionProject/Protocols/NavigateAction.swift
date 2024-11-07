@@ -14,13 +14,18 @@ struct NavigateAction {
     }
 }
 
-struct NavigateEnvironmentKey: EnvironmentKey {
-    static var defaultValue: NavigateAction = NavigateAction { _ in }
+//Nova forma de se criar uma variável de ambiente
+extension EnvironmentValues {
+    @Entry var navigate = NavigateAction { _ in }
 }
 
-extension EnvironmentValues {
-    var navigate: (NavigateAction) {
-        get { self[NavigateEnvironmentKey.self] }
-        set { self[NavigateEnvironmentKey.self] = newValue }
-    }
-}
+//struct NavigateEnvironmentKey: EnvironmentKey {
+//    static var defaultValue: NavigateAction = NavigateAction { _ in }
+//}
+//
+//extension EnvironmentValues {
+//    var navigate: (NavigateAction) {
+//        get { self[NavigateEnvironmentKey.self] }
+//        set { self[NavigateEnvironmentKey.self] = newValue }
+//    }
+//}
