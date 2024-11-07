@@ -8,26 +8,25 @@ import SwiftUI
 
 struct ProgressBar: View {
     @State var viewSize: CGSize = .zero
-    @State var cornerRadius: CGFloat = 13
+    @State var width: CGFloat = 15
+    @State var cornerRadius: CGFloat = 15
     @Binding var progressIndex: Int
     @Binding var mode: CorrectionMode
     
     var body: some View {
-        HStack(spacing: cornerRadius / 1.3) {
-            HStack(spacing: cornerRadius / 1.3) {
+        HStack(spacing: width / 1.3) {
+            HStack(spacing: width / 1.7) {
                 ProgressBarComponent(cornerRadius: $cornerRadius, isActive: .constant(progressIndex >= 0))
                 ProgressBarComponent(cornerRadius: $cornerRadius, isActive: .constant(progressIndex >= 1))
-            }
-            .frame(width: cornerRadius * 9)
-            HStack(spacing: cornerRadius / 2.4) {
                 ProgressBarComponent(cornerRadius: $cornerRadius, isActive: .constant(progressIndex >= 2))
                 ProgressBarComponent(cornerRadius: $cornerRadius, isActive: .constant(mode != .none))
             }
-        }.frame(height: (viewSize.width / 15) * 1.2)
+        }.frame(height: (viewSize.width / 15) * 1.22)
             .getSize { size in
                 if viewSize != .zero { return }
                 viewSize = size
-                cornerRadius = viewSize.width / 15
+                width = viewSize.width / 15
+                cornerRadius = viewSize.width / 10
             }
     }
 }
@@ -38,6 +37,6 @@ struct ProgressBarComponent: View {
     
     var body: some View {
         RoundedRectangle(cornerRadius: cornerRadius / 2)
-            .foregroundStyle(isActive ? .blue : .gray)
+            .foregroundStyle(isActive ? .colorBrandSecondary500 : .colorBrandSecondary300)
     }
 }

@@ -21,7 +21,7 @@ struct EssayNavigationStack: View {
                 .navigationDestination(for: HomeEssayRoute.self) { node in
                     node.destination
                 }
-                .sheet(isPresented: $isPresented) {
+                .fullScreenCover(isPresented: $isPresented) {
                     EssayCorrectionFlowView().interactiveDismissDisabled(true)
                 }
                 // MARK: - CREDITS VIEW

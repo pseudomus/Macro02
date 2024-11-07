@@ -13,7 +13,7 @@ struct ModalHeaderView: View {
     @Binding var mode: CorrectionMode
     
     var body: some View {
-        ZStack(alignment: .top) {
+        ZStack(alignment: .center) {
             ProgressBar(progressIndex: $index, mode: $mode)
                 .padding(.horizontal, 120)
                 .padding(.top, 18)
@@ -26,13 +26,15 @@ struct ModalHeaderView: View {
                     Image(systemName: "xmark")
                         .resizable()
                         .aspectRatio(contentMode: .fit)
-                        .frame(width: 19)
-                    
+                        .fontWeight(.light)
+                        .frame(width: 28)
+                        .foregroundStyle(.colorBrandPrimary700)
                         .padding(.top)
                         .padding(.trailing)
-                        .padding(.top, 8)
+                        .padding(.trailing, 5)
+//                        .padding(.top, 8)
                 }
             }
-        }
+        }.background(Color.colorBgPrimary)
     }
 }

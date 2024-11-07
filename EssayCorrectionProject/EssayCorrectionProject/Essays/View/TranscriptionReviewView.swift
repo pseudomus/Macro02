@@ -87,7 +87,9 @@ struct TranscriptionReviewView: View {
                                 HighlightedTextView(text: $essayViewModel.fullTranscribedText, height: $height, searchTexts: possibleErrors) { i in
                                     isPresented = true
                                     selectedText = i
-                                }.frame(minHeight: (height < 400) ? 400 : height)
+                                }
+                                .frame(minHeight: (height < 400) ? 400 : height)
+                                    
                             }.padding()
                         }.onAppear {
                             possibleErrors = essayViewModel.transcription?.getPossibleTranscriptionMistakes() ?? []

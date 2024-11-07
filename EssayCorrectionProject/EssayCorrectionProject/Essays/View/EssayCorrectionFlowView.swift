@@ -22,87 +22,85 @@ struct EssayCorrectionFlowView: View {
     @Namespace var namespace
     @FocusState var isFocused: Bool
     @State var isPresented: Bool = false
+    @State private var refreshFlag = false
     
     var body: some View {
-        ZStack(alignment: .topLeading) {
-            VStack(alignment: .leading) {
-                ModalHeaderView(index: $currentIndex, mode: $essayViewModel.correctionMode)
-                    .padding(.bottom, 10)
+        VStack(alignment: .leading) {
+            ModalHeaderView(index: $currentIndex, mode: $essayViewModel.correctionMode)
+                .padding(.bottom, 10)
+                .background(Color.colorBgPrimary)
+            
+            TabView(selection: $currentIndex) {
                 
-                TabView(selection: $currentIndex) {
-                    CorrectionModalBaseView(
-                        title: "Tema da redação",
-                        descBody: "O tema da redação influencia na correção.",
-                        isActive: .constant(essayViewModel.theme != ""),
-                        index: $currentIndex
-                    ){
-                        CustomTextFieldCorrectionModal(text: $essayViewModel.theme, placeholderText: "Ex: Desafios para combater a pirataria", mode: .small)
-                            .padding(.top)
-                            .onAppear {
-                                essayViewModel.text = ""
-                                essayViewModel.title = ""
-                                essayViewModel.theme = ""
-                                essayViewModel.correctionMode = .none
-                                essayViewModel.scannedImage = nil
-                                essayViewModel.fullTranscribedText = ""
-                                essayViewModel.transcriptionError = false
-                                essayViewModel.isTranscriptionReady = false
-                                essayViewModel.transcription = nil
-                                
-                            }
-                    }
-                    .tag(0)
-                    
-                    CorrectionModalBaseView(
-                        title: "Título da redação",
-                        descBody: "O título não é obrigatório na redação do ENEM, caso a sua redação não tenha título siga para a próxima etapa.",
-                        isActive: .constant(essayViewModel.title != ""),
-                        index: $currentIndex
-                    ){
-                        CustomTextFieldCorrectionModal(text: $essayViewModel.title, placeholderText: "Ex: Colocar ex de título pirataria...", mode: .small)
-                            .padding(.top)
-                    }
-                    .tag(1)
-                    
-                    CorrectionModalBaseView(
-                        title: "Redação",
-                        descBody: "Escolha a melhor opção para enviar seu texto para correção.",
-                        isActive: .constant(essayViewModel.correctionMode != .none),
-                        index: $currentIndex,
-                        mode: essayViewModel.correctionMode
-                    ) {
-                        lastView
-                            .toolbar(.hidden, for: .tabBar)
-                    } callback: {
-                        if essayViewModel.correctionMode == .transciption {
-                            navigate(.essays(.wait))
-                            navigate(.exitSheet)
-                            navigate(.sheet2)
-                        } else if essayViewModel.correctionMode == .write {
-                            guard let userId = userViewModel.user?.id else { return }
-                            essayViewModel.sendEssayToCorrection(text: essayViewModel.text, title: essayViewModel.title, theme: essayViewModel.theme, userId: userId)
-                            navigate(.exitSheet)
+                CorrectionModalBaseView(
+                    title: "Tema da redação",
+                    descBody: "O tema da redação influencia na correção.",
+                    isActive: .constant(essayViewModel.theme != ""),
+                    index: $currentIndex
+                ){
+                    CustomTextFieldCorrectionModal(text: $essayViewModel.theme, placeholderText: "Ex: Desafios para combater a pirataria", mode: .small)
+                        .padding(.top)
+                        .background(Color.colorBgPrimary)
+                        .onAppear {
+                            essayViewModel.text = ""
+                            essayViewModel.title = ""
+                            essayViewModel.theme = ""
+                            essayViewModel.correctionMode = .none
+                            essayViewModel.scannedImage = nil
+                            essayViewModel.fullTranscribedText = ""
+                            essayViewModel.transcriptionError = false
+                            essayViewModel.isTranscriptionReady = false
+                            essayViewModel.transcription = nil
                         }
+                }
+                .tag(0)
+                
+                CorrectionModalBaseView(
+                    title: "Título da redação",
+                    descBody: "O título não é obrigatório na redação do ENEM, caso a sua redação não tenha título siga para a próxima etapa.",
+                    isActive: .constant(essayViewModel.title != ""),
+                    index: $currentIndex
+                ){
+                    CustomTextFieldCorrectionModal(text: $essayViewModel.title, placeholderText: "Ex: Combate a pirataria...", mode: .small)
+                        .padding(.top)
+                }
+                .tag(1)
+                
+                CorrectionModalBaseView(
+                    title: "Redação",
+                    descBody: "Escolha a melhor opção para enviar seu texto para correção.",
+                    isActive: .constant(essayViewModel.correctionMode != .none),
+                    index: $currentIndex,
+                    mode: essayViewModel.correctionMode
+                ) {
+                    lastView
+                        .toolbar(.hidden, for: .tabBar)
+                } callback: {
+                    if essayViewModel.correctionMode == .transciption {
+                        navigate(.essays(.wait))
+                        navigate(.exitSheet)
+                        navigate(.sheet2)
+                    } else if essayViewModel.correctionMode == .write {
+                        guard let userId = userViewModel.user?.id else { return }
+                        essayViewModel.sendEssayToCorrection(text: essayViewModel.text, title: essayViewModel.title, theme: essayViewModel.theme, userId: userId)
+                        navigate(.exitSheet)
                     }
+                }.animation(.spring, value: isFocused)
                     .onTapGesture {
                         if isFocused {
-                            withAnimation {
-                                isFocused = false
-                            }
+                            isFocused = false
+                            
                         }
                     }
                     .tag(2)
-                    
-                }.tabViewStyle(.automatic)
                 
-                Spacer()
-            }
+            }.tabViewStyle(.automatic)
             
         }.frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-            .ignoresSafeArea()
+            .ignoresSafeArea(edges: .bottom)
             .onChange(of: essayViewModel.isLoading) {
                 navigate(.essays(.esssayCorrected(text: essayViewModel.text)))
-            }
+            }.background(Color.colorBgPrimary)
     }
     
     var writeButton: some View {
@@ -114,7 +112,7 @@ struct EssayCorrectionFlowView: View {
     }
     
     var lastView: some View {
-        VStack {
+        ScrollView {
             if (essayViewModel.correctionMode == .none) {
                 HStack( spacing: 45){
                     VStack {
@@ -147,27 +145,27 @@ struct EssayCorrectionFlowView: View {
                         }
                     }
                     .padding(.top)
-                        if essayViewModel.correctionMode == .transciption {
-                            VStack {
-                                Image(.paper)
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(width: 180)
-                                Text("Tire uma foto da sua folha de redação e revise o texto quando for digitalizado")
-                                    .multilineTextAlignment(.center)
-                                    .padding(35)
-                            }.padding(.top)
-                        } else {
-                            CustomTextFieldCorrectionModal(text: $essayViewModel.text, placeholderText: "Escreva sua redação", mode: .big)
-                                .focused($isFocused)
-                                .onTapGesture {
-                                    if !isFocused {
-                                        isFocused = true
-                                    } else {
-                                        isFocused = false
-                                    }
+                    if essayViewModel.correctionMode == .transciption {
+                        VStack {
+                            Image(.paper)
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: 180)
+                            Text("Tire uma foto da sua folha de redação e revise o texto quando for digitalizado")
+                                .multilineTextAlignment(.center)
+                                .padding(35)
+                        }.padding(.top)
+                    } else {
+                        CustomTextFieldCorrectionModal(text: $essayViewModel.text, placeholderText: "Escreva sua redação", mode: .big)
+                            .focused($isFocused)
+                            .onTapGesture {
+                                if !isFocused {
+                                    isFocused = true
                                 }
-                        }
+                            }
+                            .scrollDisabled(true)
+                        
+                    }
                 }
             }
         }
@@ -194,18 +192,18 @@ struct ButtonModeCorrectionModal: View {
             } label: {
                 RoundedRectangle(cornerRadius: size.width / 5)
                     .stroke(style: .init(lineWidth: size.width / 40 ))
-                    .foregroundStyle(mode == buttonMode ? .white : .blue)
+                    .foregroundStyle(mode == buttonMode ? .white : .colorBrandPrimary700)
                     .aspectRatio(contentMode: .fit)
                     .overlay {
                         Image(buttonMode == .write ? .write : .scanner)
                             .resizable()
                             .renderingMode(.template)
                             .aspectRatio(contentMode: .fit)
-                            .foregroundStyle(mode == buttonMode ? .white : .blue)
+                            .foregroundStyle(mode == buttonMode ? .white : .colorBrandPrimary700)
                             .frame(width: size.width / 3)
                     }
                     .background{
-                        Color.blue.opacity(mode == buttonMode ? 1 : 0)
+                        Color.colorBrandPrimary700.opacity(mode == buttonMode ? 1 : 0)
                             .clipShape(.rect(cornerRadius: size.width / 5))
                     }
                     .padding(.vertical, 15)
@@ -217,4 +215,3 @@ struct ButtonModeCorrectionModal: View {
         }
     }
 }
-

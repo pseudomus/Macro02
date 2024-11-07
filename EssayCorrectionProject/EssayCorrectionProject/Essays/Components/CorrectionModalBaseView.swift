@@ -20,26 +20,33 @@ struct CorrectionModalBaseView<Content: View>: View {
     @Namespace var namespace
     
     var body: some View {
-        ZStack(alignment: .topLeading){
-            VStack(alignment: .leading, spacing: 8) {
-                Text(title)
-                    .font(.title2)
-                    .padding(.horizontal)
-                Text(descBody)
-                    .bold()
-                    .padding(.horizontal)
-                
-                label()
-                    .padding(.horizontal)
-                
-                if !(mode == .write) {
-                    VStack {
-                        button
-                            .matchedGeometryEffect(id: "i", in: namespace)
+        ScrollView {
+            
+            ZStack(alignment: .topLeading){
+                VStack(alignment: .leading, spacing: 8) {
+                    Text(title)
+                        .font(.title2)
+                        .padding(.horizontal)
+                    Text(descBody)
+                        .bold()
+                        .padding(.horizontal)
+                    
+                    label()
+                        .padding(.horizontal)
+                    
+                    if !(mode == .write) {
+                        VStack {
+                            button
+                                .matchedGeometryEffect(id: "i", in: namespace)
+                        }
                     }
                 }
+                
             }
             
+//            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+            
+        }.overlay {
             if mode == .write {
                 VStack{
                     Spacer()
@@ -48,12 +55,15 @@ struct CorrectionModalBaseView<Content: View>: View {
                         .onTapGesture {
                             callback2?()
                         }
+                        .padding(.bottom)
+                        .background {
+                            LinearGradient(colors: [.white, .white.opacity(0)], startPoint: .bottom, endPoint: .top)
+                                .blur(radius: 15)
+                        }
                 }
             }
-            
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .ignoresSafeArea()
+        }.background(.colorBgPrimary)
+        
     }
     
     var button: some View {
@@ -67,17 +77,14 @@ struct CorrectionModalBaseView<Content: View>: View {
                     Image(systemName: "arrowshape.right.circle.fill")
                         .resizable()
                         .aspectRatio(contentMode: .fit)
-                        .foregroundStyle(isActive ? .blue : .gray)
-                        .frame(width: 36)
+                        .foregroundStyle(isActive ? .colorBrandPrimary500 : .gray)
+                        .frame(width: 36, height: 36)
                         .padding(.trailing, 5)
                         .padding(.top)
                         .padding(.top, 3)
                 }.padding(.horizontal)
-                    .padding(.bottom, 35)
+//                    .padding(.bottom, 35)
             }.disabled(!isActive)
-        }.background{
-            LinearGradient(colors: [.white, .white.opacity(0)], startPoint: .bottom, endPoint: .top)
-                .blur(radius: 3.5)
         }
     }
     
