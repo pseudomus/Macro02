@@ -146,7 +146,7 @@ struct EvolutionView: View {
     var body: some View {
         VStack {
             if correctedEssays > 0 {
-                CustomHeaderView(title: "Evolução", distanceContentFromTop: 50, showSearchBar: false, isScrollable: true) { shouldAnimate in
+                CustomHeaderView(showCredits: false, title: "Evolução", distanceContentFromTop: 50, showSearchBar: false, isScrollable: true) { shouldAnimate in
                     VStack(alignment: .leading, spacing: 20) {
                         
                         EssayQuantityCardView(correctedEssays: correctedEssays)

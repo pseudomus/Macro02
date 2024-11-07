@@ -30,7 +30,7 @@ struct EssayCorrectedView: View {
     @State private var fontSize: CGFloat = 16
 
     var body: some View {
-        CustomHeaderView(title: "Correção", distanceContentFromTop: 50, showSearchBar: false, isScrollable: true, numOfItems: competences.count) { _ in
+        CustomHeaderView(showCredits: false, title: "Correção", distanceContentFromTop: 50, showSearchBar: false, isScrollable: true, numOfItems: competences.count) { _ in
             ScrollViewReader { proxy in
                 if let essayResponse = essayResponse {
                     VStack(spacing: 30) {

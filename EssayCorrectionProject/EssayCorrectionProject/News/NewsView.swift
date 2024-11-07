@@ -99,6 +99,7 @@ struct NewsView: View {
                         .padding()
                 } else {
                     CustomHeaderView(
+                        showCredits: false,
                         title: "Notícias",
                         filters: uniqueCategories(from: viewModel.articles), // pegando categorias únicas
                         showFiltersBeforeSwipingUp: true,

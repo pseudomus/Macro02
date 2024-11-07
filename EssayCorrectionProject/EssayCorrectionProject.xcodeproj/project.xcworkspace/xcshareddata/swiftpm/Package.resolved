@@ -1,0 +1,15 @@
+{
+  "originHash" : "080e744f32cd6143ca873e7ba391972faff011b1cb3fe99991ef556768d97661",
+  "pins" : [
+    {
+      "identity" : "wescan",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/pseudomus/WeScan",
+      "state" : {
+        "branch" : "master",
+        "revision" : "e4a508a774aa1dda0946965827754273292a6d80"
+      }
+    }
+  ],
+  "version" : 3
+}
