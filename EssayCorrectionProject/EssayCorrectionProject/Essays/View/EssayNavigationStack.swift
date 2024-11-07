@@ -52,7 +52,7 @@ struct EssayNavigationStack: View {
                 }) {
                     DocumentScannerCoordinator()
                         .background{
-                            Color.black.ignoresSafeArea()
+                            Color.gray.ignoresSafeArea()
                         }
                 }
         }.environment(\.navigate, NavigateAction(action: { route in
