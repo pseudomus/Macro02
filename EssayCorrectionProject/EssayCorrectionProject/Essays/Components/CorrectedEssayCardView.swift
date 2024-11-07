@@ -31,7 +31,7 @@ struct CorrectedEssayCardView: View {
                 Text(dateFormatted)
                     .lineLimit(1)
                     .font(.subheadline)
-                    .foregroundStyle(.black)
+                    .foregroundStyle(.black.opacity(0.6))
 
                 Spacer()
                 ForEach(tags.indices, id: \.self) { index in
@@ -49,8 +49,9 @@ struct CorrectedEssayCardView: View {
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 10)
-        .background(Color.gray.opacity(0.6))
+        .background(Color.white)
         .clipShape(.rect(cornerRadius: 10))
+        .shadow(color: Color.black.opacity(0.12), radius: 10, x: 0, y: 4)
         .overlay{
             if !isCorrected {
                 Rectangle()
@@ -70,26 +71,31 @@ struct CorrectedEssayCardView: View {
     
     var dateFormatted: String {
         let dateFormatter = DateFormatter()
-
-        // Set Date Format (2024-10-23T21:01:10.547Z)
-        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
-
-        // Convert String to Date
-        dateFormatter.date(from: dayOfCorrection)
         
+        // Define o formato da data da string original (2024-10-23T21:01:10.547Z)
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
+        
+        // Converte a string para um objeto Date
         if let date = dateFormatter.date(from: dayOfCorrection) {
             
-            let reducedFormatter = DateFormatter()
-                reducedFormatter.dateFormat = "dd/MM/yyyy"
-                
-                let reducedDateString = reducedFormatter.string(from: date)
+            // Cria um novo DateFormatter para extrair apenas o dia (dd)
+            let dayFormatter = DateFormatter()
+            dayFormatter.dateFormat = "d" // "d" para pegar apenas o dia (sem leading zero)
             
-            return reducedDateString
+            // Converte a data para o formato de dia
+            let dayString = dayFormatter.string(from: date)
+            
+            return "Corrigida dia \(dayString)"
         } else {
             print("Erro ao converter a string para Date.")
         }
         
-        return ""
+        return "" // Retorna uma string vazia caso a conversão falhe
     }
+
+
 }
 
+#Preview {
+    CorrectedEssayCardView(dayOfCorrection: "2024-10-23T21:01:10.547Z")
+}

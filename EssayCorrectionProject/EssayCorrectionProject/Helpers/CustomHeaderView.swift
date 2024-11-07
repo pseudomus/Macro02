@@ -28,6 +28,7 @@ struct CustomHeaderView<Content: View>: View {
     var onSelectFilter: ((String) -> Void)?                 // CLOSURE - ao clicar em filtro (opcional)
     var content: (Bool) -> Content                          // CONTEÚDO INSERIDO (A VIEW EM SI)
 
+    @State private var isUserScrollDisabled = false // para controlar o scroll quando há a animação
     @State private var searchQuery: String = ""
     @FocusState private var searchFieldIsFocused: Bool 
     @State private var selectedFilters: Set<String> = []   // Estado para armazenar filtros selecionados
@@ -66,8 +67,27 @@ struct CustomHeaderView<Content: View>: View {
                             }
                         }
                     }
-
-                    .scrollDisabled(!isScrollable)
+                    // CONTROLAR SCROLL AUTOMÁTICO, BLOQUEANDO O SCROLL MANUAL DO USUÁRIO
+//                    .onChange(of: shouldAnimate) { oldValue, newValue in
+//                        if newValue {
+//                            isUserScrollDisabled = true
+//                            withAnimation {
+//                                scrollProxy.scrollTo("scrollTop", anchor: .top)
+//                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+//                                    isUserScrollDisabled = false
+//                                }
+//                            }
+//                        } else {
+//                            isUserScrollDisabled = true
+//                            withAnimation {
+//                                scrollProxy.scrollTo("scrollBottom", anchor: .top)
+//                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+//                                    isUserScrollDisabled = false
+//                                }
+//                            }
+//                        }
+//                    }
+                    .scrollDisabled(!isScrollable || isUserScrollDisabled)
 
                 }
                 // Distância entre filtro e o título
@@ -78,6 +98,7 @@ struct CustomHeaderView<Content: View>: View {
                         filtersView(filters: filters)
                     }
                 }
+                .offset(y: !shouldAnimate ? scrollOffset : 0)
                 
 
             }
@@ -98,48 +119,52 @@ struct CustomHeaderView<Content: View>: View {
         
     }
 
-    // MARK: - Header Background
+    // MARK: - HEADER GRANDE
     @ViewBuilder
     private func headerBackground(in geometry: GeometryProxy) -> some View {
         GeometryReader { reader in
             let minY = reader.frame(in: .global).minY
             let height = geometry.size.height / 5
+            let scale = max(1.0, 1 + minY / height)
 
-            UnevenRoundedRectangle(cornerRadii: .init(bottomLeading: 20, bottomTrailing: 20)) // IMAGEM DO HEADER
-                .foregroundStyle(.gray)
-                .frame(height: minY > 0 ? minY + height : height * (1 - opacity))
-                .offset(y: -minY)
-                .id("scrollBottom")
-                .onChange(of: minY) { _, value in
-                    updateOpacity(for: value, height: height)
-                }
+            ZStack {
+                // IMAGEM DO HEADER
+                Image(.headerBGimage)
+                    .resizable()
+                    .scaledToFit()
+                    .scaleEffect(scale)
+                    .frame(height: minY > 0 ? minY + height : height * (1 - opacity))
+                    .clipShape(UnevenRoundedRectangle(cornerRadii: .init(bottomLeading: 20, bottomTrailing: 20)))
+                    .offset(y: -minY)
+                
+                // COR DE FUNDO SOBRE A IMAGEM
+                UnevenRoundedRectangle(cornerRadii: .init(bottomLeading: 20, bottomTrailing: 20))
+                    .foregroundStyle(Color(.headerBackground).opacity(0.5)) // Ajuste a opacidade para o efeito desejado
+                    .frame(height: minY > 0 ? minY + height : height * (1 - opacity))
+                    .offset(y: -minY)
+                    .id("scrollBottom")
+                    .onChange(of: minY) { _, value in
+                        updateOpacity(for: value, height: height)
+                    }
+            }
         }
         .frame(height: geometry.size.height / 5)
     }
 
-    // MARK: - Content View
-    @ViewBuilder
-    private func contentView(geometry: GeometryProxy) -> some View {
-        VStack {
-            content(shouldAnimate).id("scrollTop")
-            // Placeholder invisível para ajustar a rolagem
-            Spacer()
-                .frame(height: max(geometry.size.height - totalContentHeight(), 0))
-        }
-        .padding(.top, distanceContentFromTop) // Distância do conteúdo do topo
-    }
-
-    // MARK: - Header Title View
+    
+    // MARK: - HEADER PEQUENO
     @ViewBuilder
     private func headerTitleView(in geometry: GeometryProxy) -> some View {
         VStack(spacing: 10) {
             ZStack(alignment: shouldAnimate ? .center : .leading) {
                 if !shouldAnimate {
-                    RoundedRectangle(cornerRadius: 15)
+                    // Retangulo que comporta titulo
+                    BlurView(style: .systemUltraThinMaterial)
                         .frame(height: 80)
-                        .foregroundStyle(.ultraThinMaterial)
+                        .clipShape(.rect(cornerRadius: 15))
+                        .shadow(color: Color.black.opacity(0.12), radius: 10, x: 0, y: 4)
                 }
-
+                // titulo
                 Text(title)
                     .font(shouldAnimate ? .callout : .largeTitle)
                     .foregroundStyle(.black)
@@ -154,8 +179,30 @@ struct CustomHeaderView<Content: View>: View {
         .padding(.top, shouldAnimate ? geometry.safeAreaInsets.top + geometry.size.height * 0.08 : geometry.size.height * 0.14) // Distância do título do topo
         .padding(.bottom)
         .frame(maxWidth: .infinity)
-        .background(Color.white.opacity(opacity))
+        .background(
+            ZStack {
+                if shouldAnimate {
+                    BlurView(style: .systemUltraThinMaterial)
+                    Color.headerBackground
+                }
+            }
+        )
     }
+
+    // MARK: - Content View
+    @ViewBuilder
+    private func contentView(geometry: GeometryProxy) -> some View {
+        VStack {
+            content(shouldAnimate).id("scrollTop")
+
+            // Placeholder invisível para ajustar a rolagem
+            Spacer()
+                .frame(height: max(geometry.size.height - totalContentHeight(), 0))
+        }
+        .padding(.top, distanceContentFromTop) // Distância do conteúdo do topo
+    }
+
+
 
     // MARK: - Helper Methods
     private func totalContentHeight() -> CGFloat {
@@ -292,8 +339,8 @@ struct CustomHeaderView<Content: View>: View {
     CustomHeaderView(showCredits: false, title: "Redações",
                      filters: ["Filtro 1", "Filtro 2"],
                      showFiltersBeforeSwipingUp: true,
-                     distanceContentFromTop: 90,
-                     showSearchBar: false,
+                     distanceContentFromTop: 120,
+                     showSearchBar: true,
                      isScrollable: true) { _ in
         // CONTEÚDO DA VIEW AQUI
         VStack {
@@ -301,5 +348,17 @@ struct CustomHeaderView<Content: View>: View {
                 Text("Conteúdo aqui")
             }
         }
+    }
+     .environmentObject(EssayViewModel())
+}
+struct BlurView: UIViewRepresentable {
+    var style: UIBlurEffect.Style
+
+    func makeUIView(context: Context) -> UIVisualEffectView {
+        return UIVisualEffectView(effect: UIBlurEffect(style: style))
+    }
+
+    func updateUIView(_ uiView: UIVisualEffectView, context: Context) {
+        uiView.effect = UIBlurEffect(style: style)
     }
 }
