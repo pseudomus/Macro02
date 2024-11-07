@@ -78,9 +78,6 @@ struct HomeEssayView: View {
         .getSize { size in
             screenSize = size
         }
-        // DEBUG APAGAR
-        //.onAppear {essayViewModel.fetchEssays(userId: "101")}
-        
         // MARK: - isLoading changes (fetch essays)
         .onChange(of: userViewModel.isLoading) { _, newValue in
             if !newValue {
