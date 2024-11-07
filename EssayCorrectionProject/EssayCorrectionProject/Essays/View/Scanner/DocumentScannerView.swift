@@ -18,7 +18,9 @@ struct DocumentScannerView: View {
             Color.gray.ignoresSafeArea()
                 .toolbar(.hidden, for: .tabBar)
                 .toolbar(.hidden, for: .navigationBar)
-        }.onAppear{
+        }
+        .toolbar(.hidden)
+        .onAppear{
             if isFirtTime {
                 isFirtTime = false
             } else {

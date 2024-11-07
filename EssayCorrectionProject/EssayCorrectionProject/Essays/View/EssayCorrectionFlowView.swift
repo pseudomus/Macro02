@@ -10,7 +10,7 @@ import SwiftUI
 enum CorrectionMode: String{
     case transciption = "Escanear texto"
     case write = "Escrever Texto"
-    case none
+    case none 
 }
 
 struct EssayCorrectionFlowView: View {
