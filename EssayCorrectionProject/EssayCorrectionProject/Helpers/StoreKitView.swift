@@ -193,6 +193,11 @@
 //    }
 //}
 
+// Defina o modelo para a resposta do saldo de créditos
+struct CreditResponse: Decodable {
+    let updatedBalance: Int
+}
+
 import Foundation
 import StoreKit
 import SwiftUI
@@ -233,12 +238,14 @@ class StoreKitManager: ObservableObject {
         let result = try await product.purchase()
 
         switch result {
+        // Compra bem-sucedida
         case let .success(.verified(transaction)):
-            // Compra bem-sucedida
             await transaction.finish()
-            await addCredits(for: product.id)
-            print("purchase \(product.id) successful")
-        case .success(.unverified(_, _)):
+            
+            await sendTransactionToServer(transaction)
+
+        case .success(.unverified(let transaction, _)):
+            
             break
         case .pending:
             break
@@ -249,6 +256,43 @@ class StoreKitManager: ObservableObject {
         }
     }
 
+    private func sendTransactionToServer(_ transaction: StoreKit.Transaction) async {
+        guard let url = URL(string: Endpoints.sendTransaction) else { return }
+        
+        // BODY
+        let transactionData: [String: Any] = [
+            "transactionId": transaction.id,
+            "originalTransactionId": transaction.originalID,
+            "productId": transaction.productID,
+            "purchaseDate": transaction.purchaseDate.timeIntervalSince1970
+        ]
+        
+        guard let jsonData = try? JSONSerialization.data(withJSONObject: transactionData) else { return }
+
+        var request = URLRequest(url: url)
+            request.httpMethod = "POST"
+            request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+            request.httpBody = jsonData
+            
+            // Fazer a requisição e processar a resposta
+            do {
+                let (data, _) = try await URLSession.shared.data(for: request)
+                
+                // Decodificar a resposta para atualizar o saldo de créditos
+                if let response = try? JSONDecoder().decode(CreditResponse.self, from: data) {
+                    await MainActor.run {
+                        self.creditBalance = response.updatedBalance
+                    }
+                }
+                
+            } catch {
+                print("Erro ao enviar a transação para o servidor: \(error)")
+            }
+    }
+    
+    
+    
+    
     private func addCredits(for productID: String) async {
         // Defina os créditos com base no produto comprado
         let creditsToAdd = productID == "credits_10" ? 10 :
@@ -287,15 +331,16 @@ class StoreKitManager: ObservableObject {
 
     private func observeTransactionUpdates() -> Task<Void, Never> {
         Task(priority: .background) { [unowned self] in
-            for await _ in Transaction.updates {
-                await self.updatePurchasedProducts()
+            for await result in Transaction.updates {
+                guard case .verified(let transaction) = result else { continue }
+                guard let product = products.first(where: { product in
+                    product.id == transaction.productID
+                }) else { continue }
+                await sendTransactionToServer(transaction)
             }
         }
     }
 }
-
-
-
 
 
 import SwiftUI
