@@ -36,6 +36,7 @@ struct AppleLoginView: View {
                         .frame(width: 200, height: 50)
                         .signInWithAppleButtonStyle(.black)
                         .padding(.bottom, 10)
+                        .cornerRadius(10)
                     Text("Ao continuar, você concorda com nossos\n Termos de Serviço e Política de Privacidade")
                         .multilineTextAlignment(.center)
                         .font(.caption)

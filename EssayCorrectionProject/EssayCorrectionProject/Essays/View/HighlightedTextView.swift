@@ -12,16 +12,22 @@ struct HighlightedTextView: UIViewRepresentable {
     @Binding var text: String
     @Binding var height: CGFloat
     @State var searchTexts: [String]
-    var onHighlightTap: (String) -> Void 
-
+    var onHighlightTap: (String) -> Void
+    let textView = UITextView()
+    
     func makeUIView(context: Context) -> UITextView {
-        let textView = UITextView()
+        let toolbar = UIToolbar()
+        toolbar.sizeToFit()
+        let flexible = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        let doneButton = UIBarButtonItem(title: "Done", style: .done, target: context.coordinator, action: #selector(context.coordinator.doneButtonTapped))
+        toolbar.setItems([flexible, doneButton], animated: false)
+        
         textView.backgroundColor = .clear
         textView.delegate = context.coordinator
         textView.attributedText = createHighlightedText(from: text)
         textView.linkTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.black]
         textView.textContainer.lineBreakMode = .byTruncatingMiddle
-        
+        textView.inputAccessoryView = toolbar
         return textView
     }
     
@@ -37,7 +43,7 @@ struct HighlightedTextView: UIViewRepresentable {
     
     private func createHighlightedText(from text: String) -> NSAttributedString {
         let attributedText = NSMutableAttributedString(string: text)
-
+        
         // Destaca todas as palavras a serem procuradas
         for searchText in searchTexts {
             print(searchText)
@@ -57,11 +63,12 @@ struct HighlightedTextView: UIViewRepresentable {
     
     class Coordinator: NSObject, UITextViewDelegate {
         var parent: HighlightedTextView
-
+        
         init(_ parent: HighlightedTextView) {
             self.parent = parent
+            super.init()
         }
-
+        
         func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange) -> Bool {
             let tappedText = URL.absoluteString
             print("\(URL.absoluteString) URL TAPPED")
@@ -74,7 +81,7 @@ struct HighlightedTextView: UIViewRepresentable {
             
             return true
         }
-
+        
         func textViewDidChange(_ textView: UITextView) {
             // Atualiza o valor do texto no Binding
             parent.text = textView.text
@@ -83,5 +90,11 @@ struct HighlightedTextView: UIViewRepresentable {
             
             parent.height = estimatedSize.height
         }
+        
+        @objc func doneButtonTapped() {
+            print("apertou")
+            self.parent.textView.endEditing(true)
+        }
+        
     }
 }
