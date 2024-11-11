@@ -11,8 +11,9 @@ import UIKit
 struct HighlightedTextView: UIViewRepresentable {
     @Binding var text: String
     @Binding var height: CGFloat
-    @State var searchTexts: [String]
-    var onHighlightTap: (String) -> Void 
+    @Binding var searchTexts: [String]
+    var rangeOfWords: [NSRange] = []
+    var onHighlightTap: (String) -> Void
 
     func makeUIView(context: Context) -> UITextView {
         let textView = UITextView()

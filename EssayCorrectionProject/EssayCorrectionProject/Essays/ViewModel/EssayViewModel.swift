@@ -20,7 +20,6 @@ class EssayViewModel: ObservableObject {
     @Published var transcriptionError: Bool = false
     @Published var fullTranscribedText: String = ""
     
-    
     @Published var errorMessage: String?
     @Published var essays: [EssayResponse] = []
     @Published var isFirstTime: Bool = false
