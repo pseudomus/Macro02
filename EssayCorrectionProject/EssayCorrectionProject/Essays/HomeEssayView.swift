@@ -168,8 +168,10 @@ struct HomeEssayView: View {
                     .textCase(nil)
                     .foregroundStyle(.primary)
                 ) {
-                    ForEach(groupedEssays[monthYear]!.filter { $0.isCorrected == true }, id: \.id) { essay in
-                        essayButton(for: essay)
+                    if let essaysForMonth = groupedEssays[monthYear]?.filter({ $0.isCorrected == true }) {
+                        ForEach(essaysForMonth, id: \.id) { essay in
+                            essayButton(for: essay)
+                        }
                     }
                 }
             }
