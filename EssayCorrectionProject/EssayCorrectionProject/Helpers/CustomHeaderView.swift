@@ -139,7 +139,7 @@ struct CustomHeaderView<Content: View>: View {
                 
                 // COR DE FUNDO SOBRE A IMAGEM
                 UnevenRoundedRectangle(cornerRadii: .init(bottomLeading: 20, bottomTrailing: 20))
-                    .foregroundStyle(Color(.headerBackground).opacity(0.5)) // Ajuste a opacidade para o efeito desejado
+                    .foregroundStyle(Color(.colorFillsPrimary).opacity(0.5)) // Ajuste a opacidade para o efeito desejado
                     .frame(height: minY > 0 ? minY + height : height * (1 - opacity))
                     .offset(y: -minY)
                     .id("scrollBottom")
@@ -183,7 +183,7 @@ struct CustomHeaderView<Content: View>: View {
             ZStack {
                 if shouldAnimate {
                     BlurView(style: .systemUltraThinMaterial)
-                    Color.headerBackground
+                    Color.colorFillsPrimary
                 }
             }
         )
