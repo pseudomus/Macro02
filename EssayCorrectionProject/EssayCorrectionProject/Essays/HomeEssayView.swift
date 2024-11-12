@@ -20,36 +20,6 @@ struct HomeEssayView: View {
     @State private var essayToDelete: EssayResponse?
 
     
-    // Filters
-    var groupedEssays: [String: [EssayResponse]] {
-        // Filtra as redações que possuem uma creationDate válida
-        let essaysWithValidDate = essayViewModel.essays.filter { $0.creationDate != nil }
-        
-        // Agrupa as redações válidas
-        let grouped = Dictionary(grouping: essaysWithValidDate, by: {
-            monthYear(from: $0.creationDate ?? "") })
-        
-        // Ordena as redações dentro de cada grupo
-        return grouped.mapValues { $0.sorted(by: {
-            
-            guard let creationDate1 = $0.creationDate, let creationDate2 = $1.creationDate else { return false }
-            
-            // Utiliza um desempacotamento seguro com uma data padrão
-            return (dateFromString(creationDate1) ?? Date.distantPast) > (dateFromString(creationDate2) ?? Date.distantPast)
-        }) }
-    }
-
-    var sortedMonths: [String] {
-        // Ordena as chaves do dicionário baseado nas datas
-        let sortedKeys = groupedEssays.keys.sorted {
-            guard let dateFromMY1 = dateFromMonthYear($0), let dateFromMY2 = dateFromMonthYear($1) else { return false }
-            return dateFromMY1 > dateFromMY2
-        }
-        
-        return sortedKeys
-    }
-
-    
     var body: some View {
         
         CustomHeaderView(showCredits: true, title: "Redações", filters: [],
@@ -77,8 +47,7 @@ struct HomeEssayView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .getSize { size in
             screenSize = size
-        }
-        // MARK: - isLoading changes (fetch essays)
+        }        // MARK: - isLoading changes (fetch essays)
         .onChange(of: userViewModel.isLoading) { _, newValue in
             if !newValue {
                 // quando o loading do usuário parar, faça o fetch se o usuário estiver disponível
@@ -162,14 +131,16 @@ struct HomeEssayView: View {
             }
             
             // REDAÇÕES PRONTAS
-            ForEach(sortedMonths, id: \.self) { monthYear in
+            ForEach(self.essayViewModel.sortedMonths, id: \.self) { monthYear in
                 Section(header: Text(monthYear)
                     .font(.headline)
                     .textCase(nil)
                     .foregroundStyle(.primary)
                 ) {
-                    ForEach(groupedEssays[monthYear]!.filter { $0.isCorrected == true }, id: \.id) { essay in
-                        essayButton(for: essay)
+                    if let essaysForMonth = self.essayViewModel.groupedEssays[monthYear]?.filter({ $0.isCorrected == true }) {
+                        ForEach(essaysForMonth, id: \.id) { essay in
+                            essayButton(for: essay)
+                        }
                     }
                 }
             }
@@ -202,8 +173,6 @@ struct HomeEssayView: View {
         })
         
     }
-
-    
     // MARK: - ALERT
     private var deleteEssayAlert: Alert {
         Alert(title: Text("Deletar redação"),
@@ -220,33 +189,6 @@ struct HomeEssayView: View {
     private func showDeleteConfirmation(for essay: EssayResponse) {
         essayToDelete = essay
         showingDeleteAlert = true
-    }
-    
-    private func monthYear(from dateString: String) -> String {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
-        
-        guard let date = dateFormatter.date(from: dateString) else {
-            return "Data Inválida"
-        }
-        
-        let outputFormatter = DateFormatter()
-        outputFormatter.dateFormat = "MMMM 'de' yyyy"
-        outputFormatter.locale = Locale(identifier: "pt_BR")
-        return outputFormatter.string(from: date).capitalized
-    }
-    
-    private func dateFromString(_ dateString: String) -> Date? {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
-        return dateFormatter.date(from: dateString)
-    }
-    
-    private func dateFromMonthYear(_ monthYear: String) -> Date? {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "MMMM 'de' yyyy"
-        dateFormatter.locale = Locale(identifier: "pt_BR")
-        return dateFormatter.date(from: monthYear)
     }
 }
 

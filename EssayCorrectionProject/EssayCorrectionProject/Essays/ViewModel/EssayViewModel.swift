@@ -8,6 +8,10 @@
 import SwiftUI
 
 class EssayViewModel: ObservableObject {
+    
+    //DADOS PARA A HOMEVIEW
+    @Published var groupedEssays: [String: [EssayResponse]] = [:]
+    @Published var sortedMonths: [String] = []
 
     //DADOS TEMPORARIOS PARA O FLUXO DE CORREÇÃO
     @Published var correctionMode: CorrectionMode = .none
@@ -22,7 +26,11 @@ class EssayViewModel: ObservableObject {
     
     
     @Published var errorMessage: String?
-    @Published var essays: [EssayResponse] = []
+    @Published var essays: [EssayResponse] = [] {
+        didSet {
+            self.updateGroupedEssaysAndMonths()
+        }
+    }
     @Published var isFirstTime: Bool = false
     @Published var isLoading = false
     @Published var shouldFetchEssays: Bool = false
@@ -64,6 +72,55 @@ class EssayViewModel: ObservableObject {
         self.shouldFetchEssays = true
         
     }
+    
+    //MARK: - ORGANIZACAO DAS REDACOES
+    
+    
+    private func updateGroupedEssaysAndMonths() {
+        // Cache grouped essays
+        let essaysWithValidDate = essays.filter { $0.creationDate != nil }
+        let grouped = Dictionary(grouping: essaysWithValidDate, by: { monthYear(from: $0.creationDate ?? "") })
+             groupedEssays = grouped.mapValues {
+            $0.sorted {
+                guard let date1 = dateFromString($0.creationDate!), let date2 = dateFromString($1.creationDate!) else { return false }
+                return date1 > date2
+            }
+        }
+
+        // Cache sorted months
+        sortedMonths = groupedEssays.keys.sorted {
+            guard let date1 = dateFromMonthYear($0), let date2 = dateFromMonthYear($1) else { return false }
+            return date1 > date2
+        }
+    }
+    
+    private func monthYear(from dateString: String) -> String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
+        
+        guard let date = dateFormatter.date(from: dateString) else {
+            return "Data Inválida"
+        }
+        
+        let outputFormatter = DateFormatter()
+        outputFormatter.dateFormat = "MMMM 'de' yyyy"
+        outputFormatter.locale = Locale(identifier: "pt_BR")
+        return outputFormatter.string(from: date).capitalized
+    }
+    
+    private func dateFromString(_ dateString: String) -> Date? {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
+        return dateFormatter.date(from: dateString)
+    }
+    
+    private func dateFromMonthYear(_ monthYear: String) -> Date? {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "MMMM 'de' yyyy"
+        dateFormatter.locale = Locale(identifier: "pt_BR")
+        return dateFormatter.date(from: monthYear)
+    }
+    
     
     // MARK: - ENVIAR PARA CORREÇÃO
     func sendEssayToCorrection(text: String, title: String, theme: String, userId: Int) {
