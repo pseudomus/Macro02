@@ -11,6 +11,8 @@
 		26C25DC12CD83E6400CB06A7 /* StoreKitConfiguration.storekit in Resources */ = {isa = PBXBuildFile; fileRef = 26C25DC02CD83E6400CB06A7 /* StoreKitConfiguration.storekit */; };
 		26C25DC22CD83E6400CB06A7 /* StoreKitConfiguration.storekit in Resources */ = {isa = PBXBuildFile; fileRef = 26C25DC02CD83E6400CB06A7 /* StoreKitConfiguration.storekit */; };
 		26C25DC32CD83E6400CB06A7 /* StoreKitConfiguration.storekit in Resources */ = {isa = PBXBuildFile; fileRef = 26C25DC02CD83E6400CB06A7 /* StoreKitConfiguration.storekit */; };
+		C395533C2CE3DCBE0043EA1B /* GoogleMobileAds.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = C395533B2CE3DCBE0043EA1B /* GoogleMobileAds.xcframework */; };
+		C395533D2CE3DCBE0043EA1B /* GoogleMobileAds.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C395533B2CE3DCBE0043EA1B /* GoogleMobileAds.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		E0922FA42CDBE2FD002DC4F1 /* WeScan in Frameworks */ = {isa = PBXBuildFile; productRef = E0922FA32CDBE2FD002DC4F1 /* WeScan */; };
 /* End PBXBuildFile section */
 
@@ -31,9 +33,24 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		C395533E2CE3DCBE0043EA1B /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				C395533D2CE3DCBE0043EA1B /* GoogleMobileAds.xcframework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		26C25DBE2CD83DFB00CB06A7 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		26C25DC02CD83E6400CB06A7 /* StoreKitConfiguration.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = StoreKitConfiguration.storekit; sourceTree = "<group>"; };
+		C395533B2CE3DCBE0043EA1B /* GoogleMobileAds.xcframework */ = {isa = PBXFileReference; expectedSignature = "AppleDeveloperProgram:EQHXZ8M8AV:Google LLC"; lastKnownFileType = wrapper.xcframework; name = GoogleMobileAds.xcframework; path = "../../../../Downloads/GoogleMobileAdsSdkiOS-11.12.0/GoogleMobileAds.xcframework"; sourceTree = "<group>"; };
 		E8BAA93C2CB7026C001C0418 /* EssayCorrectionProject.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EssayCorrectionProject.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E8BAA94C2CB7026E001C0418 /* EssayCorrectionProjectTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EssayCorrectionProjectTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		E8BAA9562CB7026E001C0418 /* EssayCorrectionProjectUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EssayCorrectionProjectUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -76,6 +93,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				26C25DBF2CD83DFB00CB06A7 /* StoreKit.framework in Frameworks */,
+				C395533C2CE3DCBE0043EA1B /* GoogleMobileAds.xcframework in Frameworks */,
 				E0922FA42CDBE2FD002DC4F1 /* WeScan in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -100,6 +118,7 @@
 		26C25DBD2CD83DFB00CB06A7 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				C395533B2CE3DCBE0043EA1B /* GoogleMobileAds.xcframework */,
 				26C25DBE2CD83DFB00CB06A7 /* StoreKit.framework */,
 			);
 			name = Frameworks;
@@ -137,6 +156,7 @@
 				E8BAA9382CB7026C001C0418 /* Sources */,
 				E8BAA9392CB7026C001C0418 /* Frameworks */,
 				E8BAA93A2CB7026C001C0418 /* Resources */,
+				C395533E2CE3DCBE0043EA1B /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -440,7 +460,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"EssayCorrectionProject/Preview Content\"";
-				DEVELOPMENT_TEAM = SRXHT55569;
+				DEVELOPMENT_TEAM = CKX23Y9XSA;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = EssayCorrectionProject/Info.plist;
@@ -457,7 +477,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.1;
-				PRODUCT_BUNDLE_IDENTIFIER = Leo.EssayCorrectionProject1;
+				PRODUCT_BUNDLE_IDENTIFIER = Leo.EssayCorrectionProject10;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
