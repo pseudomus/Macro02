@@ -7,10 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2679946D2CE14D8B009D961F /* StoreKitConfigurationFile.storekit in Resources */ = {isa = PBXBuildFile; fileRef = 2679946C2CE14D8B009D961F /* StoreKitConfigurationFile.storekit */; };
+		2679946E2CE14D8B009D961F /* StoreKitConfigurationFile.storekit in Resources */ = {isa = PBXBuildFile; fileRef = 2679946C2CE14D8B009D961F /* StoreKitConfigurationFile.storekit */; };
+		2679946F2CE14D8B009D961F /* StoreKitConfigurationFile.storekit in Resources */ = {isa = PBXBuildFile; fileRef = 2679946C2CE14D8B009D961F /* StoreKitConfigurationFile.storekit */; };
+		267994712CE14F45009D961F /* StoreKitTestCertificate.cer in Resources */ = {isa = PBXBuildFile; fileRef = 267994702CE14F45009D961F /* StoreKitTestCertificate.cer */; };
+		267994722CE14F45009D961F /* StoreKitTestCertificate.cer in Resources */ = {isa = PBXBuildFile; fileRef = 267994702CE14F45009D961F /* StoreKitTestCertificate.cer */; };
+		267994732CE14F45009D961F /* StoreKitTestCertificate.cer in Resources */ = {isa = PBXBuildFile; fileRef = 267994702CE14F45009D961F /* StoreKitTestCertificate.cer */; };
 		26C25DBF2CD83DFB00CB06A7 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26C25DBE2CD83DFB00CB06A7 /* StoreKit.framework */; };
-		26C25DC12CD83E6400CB06A7 /* StoreKitConfiguration.storekit in Resources */ = {isa = PBXBuildFile; fileRef = 26C25DC02CD83E6400CB06A7 /* StoreKitConfiguration.storekit */; };
-		26C25DC22CD83E6400CB06A7 /* StoreKitConfiguration.storekit in Resources */ = {isa = PBXBuildFile; fileRef = 26C25DC02CD83E6400CB06A7 /* StoreKitConfiguration.storekit */; };
-		26C25DC32CD83E6400CB06A7 /* StoreKitConfiguration.storekit in Resources */ = {isa = PBXBuildFile; fileRef = 26C25DC02CD83E6400CB06A7 /* StoreKitConfiguration.storekit */; };
 		E0922FA42CDBE2FD002DC4F1 /* WeScan in Frameworks */ = {isa = PBXBuildFile; productRef = E0922FA32CDBE2FD002DC4F1 /* WeScan */; };
 /* End PBXBuildFile section */
 
@@ -32,8 +35,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		2679946C2CE14D8B009D961F /* StoreKitConfigurationFile.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = StoreKitConfigurationFile.storekit; sourceTree = "<group>"; };
+		267994702CE14F45009D961F /* StoreKitTestCertificate.cer */ = {isa = PBXFileReference; lastKnownFileType = file; name = StoreKitTestCertificate.cer; path = ../../../../Desktop/StoreKitTestCertificate.cer; sourceTree = "<group>"; };
 		26C25DBE2CD83DFB00CB06A7 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
-		26C25DC02CD83E6400CB06A7 /* StoreKitConfiguration.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = StoreKitConfiguration.storekit; sourceTree = "<group>"; };
 		E8BAA93C2CB7026C001C0418 /* EssayCorrectionProject.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EssayCorrectionProject.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E8BAA94C2CB7026E001C0418 /* EssayCorrectionProjectTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EssayCorrectionProjectTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		E8BAA9562CB7026E001C0418 /* EssayCorrectionProjectUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EssayCorrectionProjectUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -108,7 +112,8 @@
 		E8BAA9332CB7026C001C0418 = {
 			isa = PBXGroup;
 			children = (
-				26C25DC02CD83E6400CB06A7 /* StoreKitConfiguration.storekit */,
+				2679946C2CE14D8B009D961F /* StoreKitConfigurationFile.storekit */,
+				267994702CE14F45009D961F /* StoreKitTestCertificate.cer */,
 				E8BAA93E2CB7026C001C0418 /* EssayCorrectionProject */,
 				E8BAA94F2CB7026E001C0418 /* EssayCorrectionProjectTests */,
 				E8BAA9592CB7026E001C0418 /* EssayCorrectionProjectUITests */,
@@ -251,7 +256,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				26C25DC12CD83E6400CB06A7 /* StoreKitConfiguration.storekit in Resources */,
+				267994712CE14F45009D961F /* StoreKitTestCertificate.cer in Resources */,
+				2679946D2CE14D8B009D961F /* StoreKitConfigurationFile.storekit in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -259,7 +265,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				26C25DC22CD83E6400CB06A7 /* StoreKitConfiguration.storekit in Resources */,
+				2679946F2CE14D8B009D961F /* StoreKitConfigurationFile.storekit in Resources */,
+				267994722CE14F45009D961F /* StoreKitTestCertificate.cer in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -267,7 +274,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				26C25DC32CD83E6400CB06A7 /* StoreKitConfiguration.storekit in Resources */,
+				2679946E2CE14D8B009D961F /* StoreKitConfigurationFile.storekit in Resources */,
+				267994732CE14F45009D961F /* StoreKitTestCertificate.cer in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -445,6 +453,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = EssayCorrectionProject/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Disserta;
+				INFOPLIST_KEY_LSApplicationCategoryType = "";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Disserta requires camera access to scan your essays.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -484,6 +493,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = EssayCorrectionProject/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Disserta;
+				INFOPLIST_KEY_LSApplicationCategoryType = "";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Disserta requires camera access to scan your essays.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
