@@ -296,8 +296,6 @@ class StoreKitManager: ObservableObject {
 
 
 
-
-
 import SwiftUI
 import StoreKit
 
@@ -319,15 +317,22 @@ struct CreditsView: View {
                 }
                 .fontWeight(.bold)
                 .foregroundStyle(.white)
-                .padding(5)
-                .background(Color.gray)
-                .clipShape(.rect(cornerRadius: 10))
+                .padding(.vertical, 5)
+                .padding(.horizontal, 10)
+                .background(Color(.colorBrandPrimary700))
+                .clipShape(.capsule)
                 
                 Spacer()
-                Button(action: {
+                Button {
                     navigate(.exitSheet)
-                }) {
+                } label: {
                     Image(systemName: "xmark")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .fontWeight(.light)
+                        .frame(width: 28)
+                        .foregroundStyle(.colorBrandPrimary700)
+                        .padding(.trailing, 5)
                 }
             }
             
@@ -335,6 +340,7 @@ struct CreditsView: View {
                 .font(.title2)
                 .padding(.top)
             Text("Compre créditos para corrigir suas redações")
+                .fontWeight(.semibold)
             
             if isLoading {
                 ProgressView("Processando compra...")
@@ -388,6 +394,46 @@ struct CreditsView: View {
     }
 }
 
+struct BuyCreditsButton: View {
+    var number: Int = 1
+    var price: Double = 2.90
+    var icon: Image = Image("coin1")
+    var iconSize: CGFloat = 40       
+    
+    var body: some View {
+        
+        VStack {
+            // QUANTIDADE + ICONE
+            HStack {
+                Text(String(number))
+                icon
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: iconSize)
+                    .padding(.top, 15)
+            }
+            .font(.system(size: 44))
+            .fontWeight(.bold)
+            
+            Spacer()
+            
+            // PREÇO
+            Text("R$ \(Text(String(format: "%.2f", price)).bold())")
+                .font(.largeTitle)
+        }
+        .padding(20)
+        .padding(.vertical, 20)
+        .background(Color.colorBrandPrimary500)
+        .foregroundStyle(.white)
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .frame(height: 150)
+    }
+}
+
+
+#Preview {
+    BuyCreditsButton()
+}
 
 
 
