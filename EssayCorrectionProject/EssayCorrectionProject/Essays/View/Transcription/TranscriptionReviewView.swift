@@ -4,7 +4,7 @@ struct TranscriptionReviewView: View {
     
     @EnvironmentObject var essayViewModel: EssayViewModel
     @EnvironmentObject var userViewModel: UserViewModel
-    @StateObject var transcriptionViewModel: TranscriptionViewModel = TranscriptionViewModel()
+    
     @Environment(\.navigate) var navigate
     @State var isTabBarHidden: Bool = false
     @State var isPresented: Bool = false
@@ -58,15 +58,13 @@ struct TranscriptionReviewView: View {
                     if essayViewModel.isTranscriptionReady {
                         ScrollView {
                             BorderedContainerComponent {
-                                HighlightedTextView(text: $essayViewModel.fullTranscribedText, height: $height, searchTexts: $possibleErrors) { i in
+                                HighlightedTextView(text: $essayViewModel.fullTranscribedText, height: $height) { i in
                                     isPresented = true
                                     selectedText = i
                                 }
                                 .frame(minHeight: (height < 400) ? 400 : height)
                                     
                             }.padding()
-                        }.onAppear {
-                            possibleErrors = transcriptionViewModel.checkMispelledWords(phrase: essayViewModel.fullTranscribedText).map({ $0.word })
                         }
                     } else {
                         VStack {

@@ -18,6 +18,7 @@ struct LogoutButton: View {
                 Spacer()
                 Text(buttonTitle)
                     .bold()
+                    .foregroundStyle(.white)
                 Spacer()
             }
         }
@@ -26,7 +27,7 @@ struct LogoutButton: View {
         }
         .padding()
         .background{
-            Color.red.opacity(0.4)
+            Color.red
         }
         .clipShape(.rect(cornerRadius: 10))
     }

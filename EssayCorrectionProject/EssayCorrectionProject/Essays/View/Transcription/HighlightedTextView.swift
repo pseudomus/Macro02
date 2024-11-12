@@ -9,13 +9,22 @@ import SwiftUI
 import UIKit
 
 struct HighlightedTextView: UIViewRepresentable {
-    @Binding var text: String
+    @Binding var text: String {
+        didSet {
+            let results = transcriptionViewModel.checkMispelledWords(phrase: text)
+            
+            rangeOfWords = results.map({$0.range ?? .init()})
+            searchTexts = results.map({$0.word})
+        }
+    }
     @Binding var height: CGFloat
-    @Binding var searchTexts: [String]
-    var rangeOfWords: [NSRange] = []
+    @State var searchTexts: [String] = []
+    @StateObject var transcriptionViewModel: TranscriptionViewModel = TranscriptionViewModel()
+    @State var rangeOfWords: [NSRange] = []
     var onHighlightTap: (String) -> Void
 
     func makeUIView(context: Context) -> UITextView {
+                
         let textView = UITextView()
         textView.backgroundColor = .clear
         textView.delegate = context.coordinator
@@ -38,19 +47,18 @@ struct HighlightedTextView: UIViewRepresentable {
     
     private func createHighlightedText(from text: String) -> NSAttributedString {
         let attributedText = NSMutableAttributedString(string: text)
-
-        // Destaca todas as palavras a serem procuradas
-        for searchText in searchTexts {
-            print(searchText)
-            if let range = text.range(of: searchText) {
-                let nsRange = NSRange(range, in: text)
+        let nsString = text as NSString
                 
-                attributedText.addAttribute(.backgroundColor, value: UIColor.red.withAlphaComponent(0.3), range: nsRange)
-                attributedText.addAttribute(.underlineColor, value: UIColor.red, range: nsRange)
-                attributedText.addAttribute(.font, value: UIFont.boldSystemFont(ofSize: 16), range: nsRange)
-                attributedText.addAttribute(.underlineStyle, value: NSUnderlineStyle.thick.rawValue, range: nsRange)
-                attributedText.addAttribute(.link, value: searchText, range: nsRange) // Usa a palavra como link
-            }
+        for range in rangeOfWords {
+            let nsRange = range
+            let word = nsString.substring(with: nsRange)
+            
+            attributedText.addAttribute(.backgroundColor, value: UIColor.red.withAlphaComponent(0.3), range: nsRange)
+            attributedText.addAttribute(.underlineColor, value: UIColor.red, range: nsRange)
+            attributedText.addAttribute(.font, value: UIFont.boldSystemFont(ofSize: 16), range: nsRange)
+            attributedText.addAttribute(.underlineStyle, value: NSUnderlineStyle.thick.rawValue, range: nsRange)
+            attributedText.addAttribute(.link, value: word, range: nsRange) // Usa a palavra como link
+            
         }
         
         return attributedText
@@ -67,22 +75,26 @@ struct HighlightedTextView: UIViewRepresentable {
             let tappedText = URL.absoluteString
             print("\(URL.absoluteString) URL TAPPED")
             
-            // Verifica se o link é um dos textos destacados
-            if parent.searchTexts.contains(tappedText) {
-                parent.onHighlightTap(tappedText) // Passa a palavra clicada
-                return false // Impede a navegação padrão do link
-            }
+//            if parent.searchTexts.contains(tappedText) {
+//                parent.onHighlightTap(tappedText)
+//                return false
+//            }
             
-            return true
+            
+            return false
         }
 
         func textViewDidChange(_ textView: UITextView) {
-            // Atualiza o valor do texto no Binding
             parent.text = textView.text
             let size = CGSize(width: textView.frame.width, height: .infinity)
             let estimatedSize = textView.sizeThatFits(size)
             
             parent.height = estimatedSize.height
+            
+            let results = parent.transcriptionViewModel.checkMispelledWords(phrase: parent.text)
+            
+            parent.rangeOfWords = results.map({$0.range ?? .init()})
+            parent.searchTexts = results.map({$0.word})
         }
     }
 }
