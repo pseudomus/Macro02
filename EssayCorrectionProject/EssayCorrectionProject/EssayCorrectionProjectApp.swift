@@ -41,6 +41,7 @@ struct EssayCorrectionProjectApp: App {
                 .overlay(
                     showOverlay ? OverlayView() : nil
                 )
+                .tint(.colorBrandPrimary700)
         }
     }
 }

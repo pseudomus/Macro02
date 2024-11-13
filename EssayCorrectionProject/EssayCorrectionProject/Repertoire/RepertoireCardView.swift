@@ -40,9 +40,10 @@ struct RepertoireCardView: View {
                 
         }.padding()
         .background{
-            Color.white
+            Color.colorBgSecondary
         }
         .clipShape(.rect(cornerRadius: 10))
+        .shadow(color: Color.black.opacity(0.12), radius: 10, x: 0, y: 4)
         .onAppear{
             isPinned = pinnedFunction()
         }
