@@ -46,12 +46,14 @@ class StoreKitManager: ObservableObject {
         let result = try await product.purchase()
 
         switch result {
+        // Compra bem-sucedida
         case let .success(.verified(transaction)):
-            // Compra bem-sucedida
             await transaction.finish()
-            await addCredits(for: product.id)
-            print("purchase \(product.id) successful")
-        case .success(.unverified(_, _)):
+            
+            await sendTransactionToServer(transaction)
+
+        case .success(.unverified(let transaction, _)):
+            
             break
         case .pending:
             break
@@ -62,15 +64,32 @@ class StoreKitManager: ObservableObject {
         }
     }
 
-    private func addCredits(for productID: String) async {
-        // Defina os créditos com base no produto comprado
-        let creditsToAdd = productID == "credits_10" ? 10 :
-                           productID == "credits_20" ? 20 :
-                           productID == "credits_50" ? 50 : 0
+    private func sendTransactionToServer(_ transaction: StoreKit.Transaction) async {
+        guard let url = URL(string: Endpoints.sendTransaction) else { return }
         
-        if creditsToAdd > 0 {
-            creditBalance += creditsToAdd
-        }
+        // BODY
+        let transactionData: [String: Any] = [
+            "transactionId": transaction.id,
+            "originalTransactionId": transaction.originalID,
+            "productId": transaction.productID,
+            "purchaseDate": transaction.purchaseDate.timeIntervalSince1970
+        ]
+        
+        guard let jsonData = try? JSONSerialization.data(withJSONObject: transactionData) else { return }
+
+        var request = URLRequest(url: url)
+            request.httpMethod = "POST"
+            request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+            request.httpBody = jsonData
+            
+            // Fazer a requisição e processar a resposta
+            do {
+                let (data, _) = try await URLSession.shared.data(for: request)
+                
+                
+            } catch {
+                print("Erro ao enviar a transação para o servidor: \(error)")
+            }
     }
 
 
@@ -80,15 +99,15 @@ class StoreKitManager: ObservableObject {
             guard case .verified(let transaction) = result else { continue }
             
             if productIds.contains(transaction.productID) {
-                // define os créditos a serem adicionados com base no productID
-                let creditsToAdd = transaction.productID == "credits_10" ? 10 :
-                                   transaction.productID == "credits_20" ? 20 :
-                                   transaction.productID == "credits_50" ? 50 : 0
-                
-                // atualizar o saldo de créditos
-                await MainActor.run {
-                    creditBalance += creditsToAdd
-                }
+//                // define os créditos a serem adicionados com base no productID
+//                let creditsToAdd = transaction.productID == "credits_10" ? 10 :
+//                                   transaction.productID == "credits_20" ? 20 :
+//                                   transaction.productID == "credits_50" ? 50 : 0
+//                
+//                // atualizar o saldo de créditos
+//                await MainActor.run {
+//                    creditBalance += creditsToAdd
+//                }
 
                 // termina a transação para que não seja processada novamente
                 await transaction.finish()
@@ -100,8 +119,12 @@ class StoreKitManager: ObservableObject {
 
     private func observeTransactionUpdates() -> Task<Void, Never> {
         Task(priority: .background) { [unowned self] in
-            for await _ in Transaction.updates {
-                await self.updatePurchasedProducts()
+            for await result in Transaction.updates {
+                guard case .verified(let transaction) = result else { continue }
+                guard let product = products.first(where: { product in
+                    product.id == transaction.productID
+                }) else { continue }
+                await sendTransactionToServer(transaction)
             }
         }
     }
