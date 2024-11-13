@@ -71,6 +71,7 @@ struct NewsNavigationStackView: View {
 struct NewsView: View {
     @StateObject private var viewModel = ArticleViewModel()
     @State private var selectedFilters: Set<String> = []
+    @State var isFixedTabOpen: Bool = false
     
     // Dicionário para traduzir as categorias
     private let categoryTranslations: [String: String] = [
@@ -95,7 +96,7 @@ struct NewsView: View {
                     title: "Notícias",
                     filters: uniqueCategories(from: viewModel.articles), // pegando categorias únicas
                     showFiltersBeforeSwipingUp: true,
-                    distanceContentFromTop: 120,
+                    distanceContentFromTop: 100,
                     showSearchBar: false,
                     isScrollable: true,
                     numOfItems: viewModel.articles.count,
@@ -103,37 +104,60 @@ struct NewsView: View {
                         toggleFilter(filter) // alternar seleção de filtros
                     }
                 ) { _ in
-                    LazyVStack(spacing: 30) {
-                        if viewModel.isLoading {
-                            ForEach(0...3, id: \.self) { _ in
-                                RoundedRectangle(cornerRadius: 12)
-                                    .frame(height: proxy.size.height / 2.75)
-                                .shimmer()
-                                .padding(.horizontal)
-                                .padding(.bottom, -20)
-                            }
+                    VStack {
+                        
+                        Button {
+                            isFixedTabOpen.toggle()
+                        } label: {
+                            HStack{
+                                Text("Fixados")
+                                    .font(.title2)
+                                Spacer()
+                                Image(systemName: "chevron.right")
+                                    .rotationEffect(.degrees(isFixedTabOpen ? 90 : 0))
+                                    .animation(.spring, value: isFixedTabOpen)
+                            }.padding(.horizontal)
+                                .foregroundStyle(.black)
                             
-                        } else if let errorMessage = viewModel.errorMessage {
-                            Text(errorMessage) // exibir mensagem de erro
-                                .foregroundColor(.red)
-                                .multilineTextAlignment(.center)
-                                .padding()
-                        } else {
-                            ForEach(filteredArticles, id: \.article_id) { article in
-                                NewsCardView(
-                                    title: article.title,
-                                    date: formattedDate(article.pubDate),
-                                    imageUrl: article.image_url,
-                                    link: article.link,
-                                    proxy: proxy
-                                )
-                                .frame(height: proxy.size.height / 3)
+                        }.buttonStyle(.plain)
+                        
+                        VStack{
+                            
+                        }.frame(maxWidth: .infinity)
+                            .frame(height: 1)
+                            .background(Color.black)
+                            .padding(.horizontal)
+                            .padding(.bottom)
+                        
+                        LazyVStack(spacing: 40) {
+                            
+                            
+                            if viewModel.isLoading || (viewModel.errorMessage != nil) {
+                                ForEach(0...3, id: \.self) { _ in
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .frame(height: proxy.size.height / 2.75)
+                                        .shimmer()
+                                        .padding(.horizontal)
+                                        .padding(.bottom, -20)
+                                }
+                                
+                            } else {
+                                ForEach(filteredArticles, id: \.article_id) { article in
+                                    NewsCardView(
+                                        title: article.title,
+                                        date: formattedDate(article.pubDate),
+                                        imageUrl: article.image_url,
+                                        link: article.link,
+                                        proxy: proxy
+                                    )
+                                    .frame(height: proxy.size.height / 3)
+                                }
                             }
                         }
-                    }.padding(.bottom, 100) // para tabbar nao cobrir
+                    }
+                    .padding(.bottom, 100) // para tabbar nao cobrir
                         .background(.clear)
-                }
-                
+                }.scrollDisabled(viewModel.isLoading || (viewModel.errorMessage != nil))
                 
             }.background(.colorBgPrimary)
                 .onAppear {
