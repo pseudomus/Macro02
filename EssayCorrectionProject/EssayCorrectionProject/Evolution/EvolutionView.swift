@@ -10,10 +10,10 @@ import SwiftUI
 struct EvolutionNavigationStackView: View {
     
     @EnvironmentObject var essayViewModel: EssayViewModel
-
+    
     @State var baseRouter: [BaseRoute] = []
     @Environment(\.navigate) var navigate
-
+    
     var body: some View {
         NavigationStack(path: $baseRouter) {
             EvolutionView()
@@ -146,42 +146,42 @@ struct EvolutionView: View {
     var body: some View {
         VStack {
             
-                CustomHeaderView(showCredits: false, title: "Evolução", distanceContentFromTop: 50, showSearchBar: false, isScrollable: true) { shouldAnimate in
-                    VStack(alignment: .leading, spacing: 20) {
-                        if correctedEssays > 0 {
-                            
-                            EssayQuantityCardView(correctedEssays: correctedEssays)
-                            
-                            EvolutionCardView(text: "Pontos fortes")
-                            
-                            if !topMistakes.isEmpty {
-                                EvolutionCardView(text: "Pontos fracos", graphValues: topMistakes.map { $0.averageCount }, cardTitles: topMistakes.map { $0.title })
-                            } else {
-                                Text("Nenhum erro comum encontrado.")
-                                    .font(.footnote)
-                                    .padding(.leading)
-                            }
-                            
-                            WarningInterventionCardView()
-                            
-                            Text("Média de Métricas")
-                                .padding(.leading)
+            CustomHeaderView(showCredits: false, title: "Evolução", distanceContentFromTop: 50, showSearchBar: false, isScrollable: true) { shouldAnimate in
+                VStack(alignment: .leading, spacing: 20) {
+                    if correctedEssays > 0 {
+                        
+                        EssayQuantityCardView(correctedEssays: correctedEssays)
+                        
+                        EvolutionCardView(text: "Pontos fortes")
+                        
+                        if !topMistakes.isEmpty {
+                            EvolutionCardView(text: "Pontos fracos", graphValues: topMistakes.map { $0.averageCount }, cardTitles: topMistakes.map { $0.title })
                         } else {
-                            VStack {
-                                Spacer()
-                                Image(.lapisinho2)
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .padding()
-                                Text("Corrija sua primeira redação para acompanhar sua evolução")
-                                    .multilineTextAlignment(.center)
-                                    .padding(.horizontal,50)
-                                Spacer()
-                            }
+                            Text("Nenhum erro comum encontrado.")
+                                .font(.footnote)
+                                .padding(.leading)
+                        }
+                        
+                        WarningInterventionCardView()
+                        
+                        Text("Média de Métricas")
+                            .padding(.leading)
+                    } else {
+                        VStack {
+                            Spacer()
+                            Image(.lapisinho2)
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .padding()
+                            Text("Corrija sua primeira redação para acompanhar sua evolução")
+                                .multilineTextAlignment(.center)
+                                .padding(.horizontal,50)
+                            Spacer()
                         }
                     }
-                }.scrollDisabled(!(correctedEssays > 0))
-             
+                }
+            }.scrollDisabled(!(correctedEssays > 0))
+            
         }
         .onAppear {
             correctedEssays = essayViewModel.getCount()
