@@ -124,9 +124,10 @@ struct NewsView: View {
                             }
                         }
                         .padding(.bottom, 100) // para tabbar nao cobrir
+                        .background(.clear)
                     }
                 }
-            }
+            }.background(.colorBgPrimary)
             .onAppear {
                 viewModel.fetcharticles()
             }
@@ -200,7 +201,7 @@ struct NewsCardView: View {
             ZStack(alignment: .top) {
                 // Base do Card
                 RoundedRectangle(cornerRadius: 12)
-                    .foregroundStyle(.gray.opacity(0.5))
+                    .foregroundStyle(.colorBgSecondary)
                 
                 // Conteúdo
                 VStack(alignment: .leading, spacing: 10) {
@@ -236,7 +237,7 @@ struct NewsCardView: View {
 
                     // TEXTOS E PIN
                     HStack {
-                        VStack(alignment: .leading) {
+                        VStack(alignment: .leading, spacing: 15) {
                             Text(title)
                                 .fontWeight(.bold)
                             Text(date)
@@ -245,6 +246,7 @@ struct NewsCardView: View {
                         Spacer()
                         Image(systemName: "pin")
                             .font(.title2)
+                            .foregroundStyle(.colorBrandPrimary700)
                     }
                 }
                 .padding(10)

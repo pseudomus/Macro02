@@ -40,7 +40,7 @@ struct RepertoireCardView: View {
                 
         }.padding()
         .background{
-            Color.white
+            Color.colorBgSecondary
         }
         .clipShape(.rect(cornerRadius: 10))
         .onAppear{

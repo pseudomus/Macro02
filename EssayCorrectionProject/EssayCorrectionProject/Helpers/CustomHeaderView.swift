@@ -46,7 +46,7 @@ struct CustomHeaderView<Content: View>: View {
             ZStack(alignment: .top) {
 
                 // BG COLOR
-                Color(uiColor: .systemGray5).ignoresSafeArea()
+                Color(uiColor: .clear).ignoresSafeArea()
 
                 ScrollViewReader { scrollProxy in
                     ScrollView(.vertical, showsIndicators: false) {
@@ -105,7 +105,6 @@ struct CustomHeaderView<Content: View>: View {
             .animation(.bouncy(duration: 0.2), value: opacity)
         }
         .ignoresSafeArea()
-        .background(.gray.opacity(0.05))
         .overlay(alignment: .topTrailing){
             if !shouldAnimate {
                 HStack {
@@ -278,11 +277,11 @@ struct CustomHeaderView<Content: View>: View {
        Text(filter)
            .font(.footnote)
            .padding(8)
-           .background(isSelected ? Color.white : Color(uiColor: .systemGray4)) // Cor do fundo baseada na seleção
+           .background(isSelected ? .colorBrandSecondary300 : Color(uiColor: .systemGray4)) // Cor do fundo baseada na seleção
            .clipShape(Capsule())
            .overlay(
                Capsule()
-                   .stroke(Color.white, lineWidth: 3)
+                .stroke(.colorBrandSecondary300, lineWidth: 1)
            )
            // Click no filtro
            .onTapGesture {

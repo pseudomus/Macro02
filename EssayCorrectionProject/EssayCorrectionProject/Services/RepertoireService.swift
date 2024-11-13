@@ -45,4 +45,3 @@ enum Theme: String, Codable, CaseIterable {
         return rawValue.contains(string)
     }
 }
-

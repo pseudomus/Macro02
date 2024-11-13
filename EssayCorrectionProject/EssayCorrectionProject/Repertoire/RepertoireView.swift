@@ -36,52 +36,56 @@ struct RepertoireView: View {
     
     var body: some View {
         VStack{
-            if viewModel.isLoading {
-                ProgressView("Carregando repertórios...")
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-            } else {
-                CustomHeaderView(showCredits: false,
-                                 title: "Repertories",
-                                 filters: Theme.getArray(),
-                                 showFiltersBeforeSwipingUp: true,
-                                 distanceContentFromTop: 100,
-                                 showSearchBar: false,
-                                 isScrollable: true,
-                                 numOfItems: viewModel.repertories.count,
-                                 onSelectFilter: toggleFilter) { _ in
-                    VStack(spacing: 15) {
-                        
-                        Button{
-                            isFixedTabOpen.toggle()
-                        } label: {
-                            HStack{
-                                Text("Fixados")
-                                    .font(.title2)
-                                Spacer()
-                                Image(systemName: "chevron.right")
-                                    .rotationEffect(.degrees(isFixedTabOpen ? 90 : 0))
-                                    .animation(.spring, value: isFixedTabOpen)
-                            }.padding(.horizontal)
-                                .foregroundStyle(.black)
-                                
-                        }.buttonStyle(.plain)
-
-                        VStack{
+            
+            CustomHeaderView(showCredits: false,
+                             title: "Repertories",
+                             filters: Theme.getArray(),
+                             showFiltersBeforeSwipingUp: true,
+                             distanceContentFromTop: 100,
+                             showSearchBar: false,
+                             isScrollable: true,
+                             numOfItems: viewModel.repertories.count,
+                             onSelectFilter: toggleFilter) { _ in
+                VStack{
+                    if viewModel.isLoading {
+                        ProgressView("Carregando repertórios...")
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    } else {
+                        VStack(spacing: 15) {
                             
-                        }.frame(maxWidth: .infinity)
-                            .frame(height: 1)
-                            .background(Color.black)
-                            .padding(.horizontal)
-                        
-                        ForEach(filteredRepertoires, id: \.id) { repertoire in
-                            RepertoireCardView(author: repertoire.author, descript: repertoire.text){
-                                viewModel.verifyIfIsPinned(id: "\(repertoire.id)")
-                            }
+                            Button{
+                                isFixedTabOpen.toggle()
+                            } label: {
+                                HStack{
+                                    Text("Fixados")
+                                        .font(.title2)
+                                    Spacer()
+                                    Image(systemName: "chevron.right")
+                                        .rotationEffect(.degrees(isFixedTabOpen ? 90 : 0))
+                                        .animation(.spring, value: isFixedTabOpen)
+                                }.padding(.horizontal)
+                                    .foregroundStyle(.black)
+                                
+                            }.buttonStyle(.plain)
+                            
+                            VStack{
+                                
+                            }.frame(maxWidth: .infinity)
+                                .frame(height: 1)
+                                .background(Color.black)
                                 .padding(.horizontal)
-                        }
-                    }.padding(.bottom, 110)
+                            
+                            ForEach(filteredRepertoires, id: \.id) { repertoire in
+                                RepertoireCardView(author: repertoire.author, descript: repertoire.text){
+                                    viewModel.verifyIfIsPinned(id: "\(repertoire.id)")
+                                }
+                                .padding(.horizontal)
+                            }
+                        }.padding(.bottom, 110)
+                    }
                 }
-            }
+                
+            }.background(.colorBgPrimary)
         }.onAppear{
             viewModel.fetchRepertoires()
         }
