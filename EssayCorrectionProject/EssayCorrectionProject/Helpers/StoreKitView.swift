@@ -305,108 +305,291 @@ struct CreditsView: View {
     
     @State private var isLoading = false
     @State private var purchaseError: String?
+    @State var viewSize: CGSize = .zero
 
     var body: some View {
-        VStack(alignment: .leading) {
-            // MARK: - TOP VIEW
-            /// créditos + x
-            HStack {
-                HStack {
-                    Image(systemName: "square.3.stack.3d")
-                    Text("\(storeKitManager.creditBalance) \(storeKitManager.creditBalance == 1 ? "crédito" : "créditos")")
-                }
-                .fontWeight(.bold)
-                .foregroundStyle(.white)
-                .padding(.vertical, 5)
-                .padding(.horizontal, 10)
-                .background(Color(.colorBrandPrimary700))
-                .clipShape(.capsule)
-                
-                Spacer()
-                Button {
-                    navigate(.exitSheet)
-                } label: {
-                    Image(systemName: "xmark")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .fontWeight(.light)
-                        .frame(width: 28)
-                        .foregroundStyle(.colorBrandPrimary700)
-                        .padding(.trailing, 5)
-                }
-            }
-            
-            Text("Loja")
-                .font(.title2)
-                .padding(.top)
-            Text("Compre créditos para corrigir suas redações")
-                .fontWeight(.semibold)
-            
-            if isLoading {
-                ProgressView("Processando compra...")
-                    .padding()
-            } else {
-                ScrollView(.horizontal) {
-                    ForEach(storeKitManager.products) { product in
-                        Button {
-                            _ = Task<Void, Never> {
-                                do {
-                                    try await storeKitManager.purchase(product)
-                                } catch {
-                                    print(error)
+        NavigationStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 20) {
+                    VStack(alignment: .leading, spacing: 10) {
+                        Text("Loja")
+                            .font(.title2)
+                        Text("Compre créditos para corrigir suas redações")
+                            .fontWeight(.semibold)
+                        // LISTA DE BOTOES DE CRÉDITO
+                        ScrollView(.horizontal) {
+                            ForEach(storeKitManager.products) { product in
+                                Button {
+                                    _ = Task<Void, Never> {
+                                        do {
+                                            try await storeKitManager.purchase(product)
+                                        } catch {
+                                            print(error)
+                                        }
+                                    }
+                                    
+                                } label: {
+                                    BuyCreditsButton(numberOfCredits: 1, price: 2.90)
+                                        .padding(.bottom)
                                 }
                             }
-
-                        } label: {
-                            Text("\(product.displayPrice) - \(product.displayName)")
-                                .foregroundStyle(.white)
-                                .padding()
-                                .background(.blue)
-                                .clipShape(Capsule())
+                        }
+                    }
+                    
+                    
+                    
+                    
+                    Text("OU")
+                        .fontWeight(.bold)
+                        .foregroundStyle(Color.colorBrandPrimary500)
+                        .padding(.vertical, 20)
+                        .frame(maxWidth: .infinity, alignment: .center)
+                    
+                    
+                    VStack(alignment: .leading) {
+                        Text("Trilha de anúncios")
+                            .font(.title2)
+                        Text("Assista 11 anúncios e ganhe 1 crédito")
+                            .fontWeight(.semibold)
+                    }
+                    
+                    // TRILHA DE ANÚNCIOS
+                    SnakeButtonGridView()
+                    
+                    
+                    
+                    Spacer()
+                }
+                
+                .ignoresSafeArea()
+                .padding()
+                // INICIO DO APP
+                .task {
+                    await storeKitManager.updatePurchasedProducts()
+                }
+                .task {
+                    _ = Task<Void, Never> {
+                        do {
+                            try await storeKitManager.loadProducts()
+                        } catch {
+                            purchaseError = "Erro ao carregar produtos. Tente novamente mais tarde."
                         }
                     }
                 }
-                
-            }
-            
-            if let error = purchaseError {
-                Text(error)
-                    .foregroundColor(.red)
-                    .multilineTextAlignment(.center)
-                    .padding()
-            }
-            Spacer()
-        }
-        .padding()
-        // INICIO DO APP
-        .task {
-            await storeKitManager.updatePurchasedProducts()
-        }
-        .task {
-            _ = Task<Void, Never> {
-                do {
-                    try await storeKitManager.loadProducts()
-                } catch {
-                    purchaseError = "Erro ao carregar produtos. Tente novamente mais tarde."
+                .getSize { size in
+                    self.viewSize = size
                 }
             }
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    HStack {
+                        Image(systemName: "square.3.stack.3d")
+                        Text("\(storeKitManager.creditBalance) \(storeKitManager.creditBalance == 1 ? "crédito" : "créditos")")
+                    }
+                    .fontWeight(.bold)
+                    .foregroundStyle(.white)
+                    .padding(.vertical, 5)
+                    .padding(.horizontal, 10)
+                    .background(Color(.colorBrandPrimary700))
+                    .clipShape(.capsule)
+                    //.padding(.bottom, 10)
+                }
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        navigate(.exitSheet)
+                    } label: {
+                        Image(systemName: "xmark")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .fontWeight(.light)
+                            .frame(width: 28)
+                            .foregroundStyle(.colorBrandPrimary700)
+                            .padding(.trailing, 5)
+                    }
+                }
+            }
+            .toolbarBackground(Color(.systemBackground))
+
         }
     }
 }
 
-struct BuyCreditsButton: View {
-    var number: Int = 1
-    var price: Double = 2.90
-    var icon: Image = Image("coin1")
-    var iconSize: CGFloat = 40       
+
+// MARK: - SnakeButtonGridView
+struct SnakeButtonGridView: View {
+    let buttonCount: Int = 12
+    @State private var buttonSize: CGSize = .zero
+    @State private var completedButtons: [Int: Bool] = [1: true]
+    @State private var currentButton: Int = 1 // PROPAGANDA ATUAL
     
     var body: some View {
-        
+        VStack(spacing: 12) {
+            ForEach(getRows().indices, id: \.self) { rowIndex in
+                let row = getRows()[rowIndex]
+                HStack(spacing: 10) {
+                    ForEach(row, id: \.self) { buttonNumber in
+                        if buttonNumber == buttonCount {
+                            getGiftButton()
+                        } else {
+                            getButton(for: buttonNumber)
+                        }
+                        
+                        // HORIZONTAIS
+                        if buttonNumber != row.last {
+                            // Verifica a direção da animação baseada no índice da fileira
+                            HorizontalCircles(
+                                isCompleted:
+                                    (rowIndex % 2 == 0)
+                                    ? buttonNumber < currentButton  //  fileiras pares
+                                    : buttonNumber <= currentButton, //  fileiras ímpares
+                                animateFromRight: rowIndex % 2 != 0 //  fileiras ímpares, anima da direita para a esquerda
+                            )
+                        }
+
+                    }
+                }
+                
+                // VERTICAIS
+                if row.last?.isMultiple(of: 3) != nil && row.first != buttonCount {
+                    VerticalCircles(alignment: row.last!.isMultiple(of: 2) ? .leading : .trailing, buttonSize: buttonSize, isCompleted: (currentButton > row.last!) && (currentButton > row.first!))
+                }
+            }
+        }
+        .padding(10)
+    }
+    
+    // MARK: - FUNCIONTS
+    func getRows() -> [[Int]] {
+        return [
+            [1, 2, 3],
+            [6, 5, 4],
+            [7, 8, 9],
+            [buttonCount, 11, 10]
+        ]
+    }
+    
+    // MARK: - VIEWS
+    
+    // MARK: BOTÕES PARA ASSISTIR ADD
+    @ViewBuilder
+    func getButton(for number: Int) -> some View {
+        Button {
+            print("assistir ad")
+            currentButton = number + 1
+        } label: {
+            Text("\(number)")
+                .fontWeight(.bold)
+                .frame(width: 75, height: 71)
+                .background(
+                    number == currentButton
+                    ? Image(.adButtonReady)
+                    : number < currentButton
+                    ? Image(.adButtonCompleted)
+                    : Image(.adButtonBlocked)
+                )
+                .foregroundStyle(number > currentButton ? .black : number == currentButton ? .white : Color(.secondaryLabel))
+        }
+        .animation(.easeInOut, value: currentButton)
+        .disabled(number > currentButton)  // Apenas o botão atual é clicável
+        .getSize { size in
+            self.buttonSize = size
+        }
+    }
+    
+    // MARK:  BOTÃO FINAL DE RECOMPENSA
+    @ViewBuilder
+    func getGiftButton() -> some View {
+        Button {
+            // TODO: - GANHAR UM CRÉDITO
+        } label: {
+            // Exibindo a imagem
+            Image(currentButton == buttonCount ? .unlockedGift : .lockedGift)
+                .frame(width: 75, height: 65)
+                .rotationEffect(
+                    Angle(degrees: currentButton == buttonCount ? 10 : 0)
+                )
+                .animation(.easeInOut(duration: 0.6).repeatForever(autoreverses: true), value: currentButton)
+        }
+        .disabled(currentButton != buttonCount)
+    }
+
+
+
+
+    // MARK:  Círculos Horizontais
+    @ViewBuilder
+    func HorizontalCircles(isCompleted: Bool, animateFromRight: Bool) -> some View {
+        HStack(spacing: 5) {
+            ForEach(0..<3, id: \.self) { index in
+                Circle()
+                    .frame(width: 8, height: 8)
+                    .foregroundStyle(isCompleted ? Color(.colorBrandPrimary300) : Color(.colorFillsPrimary))
+                    .scaleEffect(isCompleted ? 1.2 : 0.8)
+                    .animation(
+                        .bouncy(duration: 0.5)
+                            .delay(animateFromRight ? Double(2 - index) * 0.4 : Double(index) * 0.4),
+                        value: isCompleted
+                    )
+            }
+        }
+    }
+
+
+
+
+
+
+
+
+    // MARK:  Círculos Verticais
+    @ViewBuilder
+    func VerticalCircles(alignment: Alignment, buttonSize: CGSize, isCompleted: Bool) -> some View {
+        Circle()
+            .frame(width: 8, height: 8)
+            .foregroundStyle(isCompleted ? Color.blue : Color(.colorFillsPrimary))
+            .frame(maxWidth: .infinity, alignment: alignment)
+            .padding(.horizontal, buttonSize.width / 2)
+    }
+}
+
+
+
+
+
+
+
+
+import SwiftUI
+
+struct BuyCreditsButton: View {
+    var numberOfCredits: Int
+    var price: Double
+    var iconSize: CGFloat = 40
+    
+    // Formata o preço manualmente para "2,90"
+    private var formattedPrice: (String, String) {
+        let priceString = String(format: "%.2f", price)
+        let components = priceString.split(separator: ".")
+        let reais = String(components[0])    // Parte antes da vírgula
+        let centavos = String(components[1]) // Parte depois da vírgula
+        return (reais, centavos)
+    }
+    
+    // Determina o ícone com base no número de créditos
+    private var selectedIcon: Image {
+        switch numberOfCredits {
+        case 1: return Image("coin1")
+        case 4: return Image("coin2")
+        default: return Image("coin3")
+        }
+    }
+    
+    var body: some View {
         VStack {
             // QUANTIDADE + ICONE
             HStack {
-                Text(String(number))
-                icon
+                Text(String(numberOfCredits))
+                selectedIcon
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(width: iconSize)
@@ -418,21 +601,31 @@ struct BuyCreditsButton: View {
             Spacer()
             
             // PREÇO
-            Text("R$ \(Text(String(format: "%.2f", price)).bold())")
-                .font(.largeTitle)
+            HStack(alignment: .bottom, spacing: 0) {
+                Text("R$ ")
+                Text(formattedPrice.0) // Parte antes da vírgula (número inteiro)
+                    .bold()
+                    .padding(.bottom, 2)
+                Text(",\(formattedPrice.1)")   // Parte depois da vírgula
+            }
+            .font(.largeTitle)
         }
         .padding(20)
         .padding(.vertical, 20)
         .background(Color.colorBrandPrimary500)
         .foregroundStyle(.white)
         .clipShape(RoundedRectangle(cornerRadius: 12))
-        .frame(height: 150)
+        .shadow(color: Color.colorBrandPrimary700, radius: 0, y: 8)
+        .frame(height: 200)
     }
 }
 
 
+
+
+
 #Preview {
-    BuyCreditsButton()
+    BuyCreditsButton(numberOfCredits: 1, price: 2.90)
 }
 
 
