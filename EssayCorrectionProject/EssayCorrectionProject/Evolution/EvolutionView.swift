@@ -145,33 +145,43 @@ struct EvolutionView: View {
     
     var body: some View {
         VStack {
-            if correctedEssays > 0 {
+            
                 CustomHeaderView(showCredits: false, title: "Evolução", distanceContentFromTop: 50, showSearchBar: false, isScrollable: true) { shouldAnimate in
                     VStack(alignment: .leading, spacing: 20) {
-                        
-                        EssayQuantityCardView(correctedEssays: correctedEssays)
-                        
-                        EvolutionCardView(text: "Pontos fortes")
-                        
-                        if !topMistakes.isEmpty {
-                            EvolutionCardView(text: "Pontos fracos", graphValues: topMistakes.map { $0.averageCount }, cardTitles: topMistakes.map { $0.title })
-                        } else {
-                            Text("Nenhum erro comum encontrado.")
-                                .font(.footnote)
+                        if correctedEssays > 0 {
+                            
+                            EssayQuantityCardView(correctedEssays: correctedEssays)
+                            
+                            EvolutionCardView(text: "Pontos fortes")
+                            
+                            if !topMistakes.isEmpty {
+                                EvolutionCardView(text: "Pontos fracos", graphValues: topMistakes.map { $0.averageCount }, cardTitles: topMistakes.map { $0.title })
+                            } else {
+                                Text("Nenhum erro comum encontrado.")
+                                    .font(.footnote)
+                                    .padding(.leading)
+                            }
+                            
+                            WarningInterventionCardView()
+                            
+                            Text("Média de Métricas")
                                 .padding(.leading)
+                        } else {
+                            VStack {
+                                Spacer()
+                                Image(.lapisinho2)
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .padding()
+                                Text("Corrija sua primeira redação para acompanhar sua evolução")
+                                    .multilineTextAlignment(.center)
+                                    .padding(.horizontal,50)
+                                Spacer()
+                            }
                         }
-                        
-                        WarningInterventionCardView()
-                        
-                        Text("Média de Métricas")
-                            .padding(.leading)
                     }
-                }
-            } else {
-                VStack {
-                    ContentUnavailableView("Parece que você não corrigiu nenhuma redação ainda.", systemImage: "pencil.and.outline")
-                }
-            }
+                }.scrollDisabled(!(correctedEssays > 0))
+             
         }
         .onAppear {
             correctedEssays = essayViewModel.getCount()

@@ -30,7 +30,7 @@ class ArticleViewModel: ObservableObject {
     init(container: DependencyContainer = .shared) {
         self.articleService = container.articleService
     }
-
+    
     func fetcharticles()  {
         isLoading = true
         articleService.fetchArticles { [weak self] result in
@@ -69,9 +69,9 @@ struct NewsNavigationStackView: View {
 }
 
 struct NewsView: View {
-    @StateObject private var viewModel = ArticleViewModel() 
+    @StateObject private var viewModel = ArticleViewModel()
     @State private var selectedFilters: Set<String> = []
-
+    
     // Dicionário para traduzir as categorias
     private let categoryTranslations: [String: String] = [
         "business": "Negócios",
@@ -89,29 +89,36 @@ struct NewsView: View {
     var body: some View {
         GeometryReader { proxy in
             VStack {
-                if viewModel.isLoading {
-                    ProgressView("Carregando artigos...") // indicador de carregamento
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                } else if let errorMessage = viewModel.errorMessage {
-                    Text(errorMessage) // exibir mensagem de erro
-                        .foregroundColor(.red)
-                        .multilineTextAlignment(.center)
-                        .padding()
-                } else {
-                    CustomHeaderView(
-                        showCredits: false,
-                        title: "Notícias",
-                        filters: uniqueCategories(from: viewModel.articles), // pegando categorias únicas
-                        showFiltersBeforeSwipingUp: true,
-                        distanceContentFromTop: 120,
-                        showSearchBar: false,
-                        isScrollable: true,
-                        numOfItems: viewModel.articles.count,
-                        onSelectFilter: { filter in
-                            toggleFilter(filter) // alternar seleção de filtros
-                        }
-                    ) { _ in
-                        LazyVStack(spacing: 30) {
+                
+                CustomHeaderView(
+                    showCredits: false,
+                    title: "Notícias",
+                    filters: uniqueCategories(from: viewModel.articles), // pegando categorias únicas
+                    showFiltersBeforeSwipingUp: true,
+                    distanceContentFromTop: 120,
+                    showSearchBar: false,
+                    isScrollable: true,
+                    numOfItems: viewModel.articles.count,
+                    onSelectFilter: { filter in
+                        toggleFilter(filter) // alternar seleção de filtros
+                    }
+                ) { _ in
+                    LazyVStack(spacing: 30) {
+                        if viewModel.isLoading {
+                            ForEach(0...3, id: \.self) { _ in
+                                RoundedRectangle(cornerRadius: 12)
+                                    .frame(height: proxy.size.height / 2.75)
+                                .shimmer()
+                                .padding(.horizontal)
+                                .padding(.bottom, -20)
+                            }
+                            
+                        } else if let errorMessage = viewModel.errorMessage {
+                            Text(errorMessage) // exibir mensagem de erro
+                                .foregroundColor(.red)
+                                .multilineTextAlignment(.center)
+                                .padding()
+                        } else {
                             ForEach(filteredArticles, id: \.article_id) { article in
                                 NewsCardView(
                                     title: article.title,
@@ -123,14 +130,15 @@ struct NewsView: View {
                                 .frame(height: proxy.size.height / 3)
                             }
                         }
-                        .padding(.bottom, 100) // para tabbar nao cobrir
+                    }.padding(.bottom, 100) // para tabbar nao cobrir
                         .background(.clear)
-                    }
                 }
+                
+                
             }.background(.colorBgPrimary)
-            .onAppear {
-                viewModel.fetcharticles()
-            }
+                .onAppear {
+                    viewModel.fetcharticles()
+                }
         }
     }
     
@@ -142,14 +150,14 @@ struct NewsView: View {
         let filteredCategories = uniqueCategories.filter { $0 != "top" }
         return filteredCategories.map { translateCategory($0) }
     }
-
+    
     
     // traduzir a categoria
     func translateCategory(_ category: String) -> String {
         let translated = categoryTranslations[category, default: category.capitalized]
         return translated
     }
-
+    
     
     // formatar a data
     func formattedDate(_ dateString: String) -> String {
@@ -195,7 +203,7 @@ struct NewsCardView: View {
     }
     
     var proxy: GeometryProxy
-
+    
     var body: some View {
         GeometryReader { geometry in
             ZStack(alignment: .top) {
@@ -230,11 +238,11 @@ struct NewsCardView: View {
                                     .resizable() // Permite redimensionar a imagem
                                     .scaledToFit() // Mantém a proporção da imagem
                                     .foregroundColor(.white.opacity(0.6))
-                                        
+                                
                             }
                             .frame(width: geometry.size.width - 50, height: geometry.size.height * 0.75)
                     }
-
+                    
                     // TEXTOS E PIN
                     HStack {
                         VStack(alignment: .leading, spacing: 15) {

@@ -13,7 +13,7 @@ struct ProfileView: View {
     @EnvironmentObject var user: UserViewModel
     @EnvironmentObject var essayViewModel: EssayViewModel
     @Environment(\.navigate) var navigate
-    @State var isTabBarHidden: Bool = true
+    @State var isTabBarHidden: Bool = false
     
     var body: some View {
         ZStack {
@@ -27,7 +27,7 @@ struct ProfileView: View {
                                 withAnimation {
                                     isTabBarHidden = false
                                 }
-                                navigate(.popBackToRoot)
+                                navigate(.back)
                             } label: {
                                 Image(systemName: "xmark")
                                     .resizable()
