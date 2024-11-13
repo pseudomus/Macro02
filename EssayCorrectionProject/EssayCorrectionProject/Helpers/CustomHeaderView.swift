@@ -16,7 +16,7 @@ struct CustomHeaderView<Content: View>: View {
     // MARK: - Properties
     var showCredits: Bool
     var title: String                                       // TÍTULO
-    var filters: [String]?                                  // FILTROS (opcional)
+    @State var filters: [String]?                           // FILTROS (opcional)
     var showFiltersBeforeSwipingUp: Bool?                   // MOSTRAR FILTROS ANTES DE SCROLLAR (opcional) - para notícias
     var distanceContentFromTop: CGFloat                     // DISTANCIA QUE COMECA O CONTEÚDO DO TOPO
     var showSearchBar: Bool                                 // MOSTRAR A SEARCHBAR
@@ -293,9 +293,12 @@ struct CustomHeaderView<Content: View>: View {
    // MARK: - Helper Methods
    private func toggleFilter(_ filter: String) {
        if selectedFilters.contains(filter) {
-           selectedFilters.remove(filter) // Remove se já está selecionado
+           selectedFilters.remove(filter)// Remove se já está selecionado
        } else {
-           selectedFilters.insert(filter) // Adiciona se não está selecionado
+           withAnimation {
+               filters?.move(filter, to: 0)
+               selectedFilters.insert(filter) // Adiciona se não está selecionado
+           }
        }
    }
 
