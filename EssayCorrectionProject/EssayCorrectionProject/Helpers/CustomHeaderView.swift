@@ -277,7 +277,7 @@ struct CustomHeaderView<Content: View>: View {
        Text(filter)
            .font(.footnote)
            .padding(8)
-           .background(isSelected ? .colorBrandSecondary300 : Color(uiColor: .systemGray4)) // Cor do fundo baseada na seleção
+           .background(isSelected ? .colorBrandSecondary300 : .colorMiscellaneousFilterDefault) // Cor do fundo baseada na seleção
            .clipShape(Capsule())
            .overlay(
                Capsule()
