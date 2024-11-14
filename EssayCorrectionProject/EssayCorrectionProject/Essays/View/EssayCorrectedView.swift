@@ -37,6 +37,7 @@ struct EssayCorrectedView: View {
                         // Redação
                         essayExpandableView()
                             .id("REDACAO")
+                            .shadow(color: Color.black.opacity(0.12) ,radius: 10, x: 0, y: 10)
                         
                         // competências e cards
                         competencesWithCardsView(essayResponse: essayResponse)
@@ -97,7 +98,7 @@ struct EssayCorrectedView: View {
                     .foregroundStyle(.black.opacity(0.8))
             }
             .padding()
-            .background(Color.gray)
+            .background(.colorBgSecondary)
             .clipShape(.rect(cornerRadius: 12))
             .onTapGesture {
                 withAnimation(.easeInOut) {
@@ -163,14 +164,15 @@ struct EssayCorrectedView: View {
                 .font(.title2)
             
             LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: fontSize > 20 ? 1 : 2), spacing: 10) {
-                
-                SemiCircularGraphCardComponentView(value: essayResponse.metrics.words, minValue: 0, maxValue: 800, range: (320, 476), title: "Palavras")
-                SemiCircularGraphCardComponentView(value: essayResponse.metrics.paragraphs, minValue: 0, maxValue: 10, range: (4, 5), title: "Parágrafos")
-                SemiCircularGraphCardComponentView(value: essayResponse.metrics.lines, minValue: 0, maxValue: 30, range: (22, 30), title: "Linhas")
-                SemiCircularGraphCardComponentView(value: essayResponse.metrics.connectors, minValue: 0, maxValue: 30, range: (7, 17), title: "Conectivos")
-                SemiCircularGraphCardComponentView(value: essayResponse.metrics.deviations, minValue: 0, maxValue: 10, range: (0, 7), title: "Desvios")
-                SemiCircularGraphCardComponentView(value: essayResponse.metrics.citations, minValue: 0, maxValue: 10, range: (3, 11), title: "Citações")
-                SemiCircularGraphCardComponentView(value: essayResponse.metrics.argumentativeOperators, minValue: 0, maxValue: 30, range: (10, 17), title: "Operadores argumentativos")
+                Group{
+                    SemiCircularGraphCardComponentView(value: essayResponse.metrics.words, minValue: 0, maxValue: 800, range: (320, 476), title: "Palavras")
+                    SemiCircularGraphCardComponentView(value: essayResponse.metrics.paragraphs, minValue: 0, maxValue: 10, range: (4, 5), title: "Parágrafos")
+                    SemiCircularGraphCardComponentView(value: essayResponse.metrics.lines, minValue: 0, maxValue: 30, range: (22, 30), title: "Linhas")
+                    SemiCircularGraphCardComponentView(value: essayResponse.metrics.connectors, minValue: 0, maxValue: 30, range: (7, 17), title: "Conectivos")
+                    SemiCircularGraphCardComponentView(value: essayResponse.metrics.deviations, minValue: 0, maxValue: 10, range: (0, 7), title: "Desvios")
+                    SemiCircularGraphCardComponentView(value: essayResponse.metrics.citations, minValue: 0, maxValue: 10, range: (3, 11), title: "Citações")
+                    SemiCircularGraphCardComponentView(value: essayResponse.metrics.argumentativeOperators, minValue: 0, maxValue: 30, range: (10, 17), title: "Operadores argumentativos")
+                }.shadow(color: .black.opacity(0.12), radius: 10, x: 0, y: 12)
                             
             }
         }
@@ -263,7 +265,7 @@ struct ExpandableCompetenceCardView: View {
             }
         }
         .padding()
-        .background(Color.gray.opacity(0.2))
+        .background(.colorBrandSecondary300.opacity(0.25))
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .overlay(
             RoundedRectangle(cornerRadius: 12)
@@ -305,7 +307,7 @@ struct ExpandableCompetenceCardView: View {
             // Círculo com o índice
             Text("\(index + 1)")
                 .padding(8)
-                .background(Color.blue)
+                .background(.colorBrandSecondary500)
                 .clipShape(Circle())
                 .foregroundStyle(.white)
                 .offset(y: -8)
@@ -356,13 +358,15 @@ struct ExpandableCompetenceCardView: View {
             HStack {
                 Spacer()
                 Image(systemName: "eye")
+                    .foregroundStyle(.white)
                 Text("Visualizar erros na redação")
+                    .foregroundStyle(.white)
                 Spacer()
             }
         }
         .buttonStyle(.plain)
         .padding(8)
-        .background(Color.gray)
+        .background(.colorBrandSecondary500)
         .clipShape(RoundedRectangle(cornerRadius: 8))
         .frame(maxWidth: .infinity)
     }

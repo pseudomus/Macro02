@@ -31,12 +31,12 @@ struct SemiCircularGraphCardComponentView: View {
                     VStack {
                         Text("\(data.value)")
                             .font(.system(size: semiCircularSize.width / 4))
-                            .foregroundStyle(.black)
+                            .foregroundStyle(.colorLabelsPrimary)
                             .bold()
                         Text(title)
                             .font(.system(size: semiCircularSize.width / 9))
                             .multilineTextAlignment(.center)
-                            .foregroundStyle(.black)
+                            .foregroundStyle(.colorLabelsPrimary)
                     }.offset(y: semiCircularSize.width / 3.2)
                     
                     SemiCircularGraphView(data: data)
@@ -46,7 +46,7 @@ struct SemiCircularGraphCardComponentView: View {
                 }.offset(y: semiCircularSize.width / 10)
                     .padding(.horizontal, semiCircularSize.width / 6)
                     .padding(.vertical, semiCircularSize.width / 6)
-                    .background(Color.gray)
+                    .background(.colorBgSecondary)
                     .clipShape(.rect(cornerRadius: semiCircularSize.width / 7))
                     .overlay {
                         VStack{
@@ -56,7 +56,7 @@ struct SemiCircularGraphCardComponentView: View {
                                     .resizable()
                                     .scaledToFit()
                                     .frame(width: semiCircularSize.width / 6, height: semiCircularSize.width / 6)
-                                    .foregroundStyle(.gray.opacity(0.8))
+                                    .foregroundStyle(.colorLabelsSecondary)
                             }
                             Spacer()
                         }.padding()
@@ -69,7 +69,7 @@ struct SemiCircularGraphCardComponentView: View {
                     .animation(isFlipped ? .linear(duration: 0.2) : .linear(duration: 0.2).delay(0.2), value: isFlipped)
                 
                 RoundedRectangle(cornerRadius: semiCircularSize.width / 7)
-                    .foregroundStyle(Color.gray)
+                    .foregroundStyle(.colorBgSecondary)
                     .frame(width: graphSize.width, height: graphSize.height)
                     .overlay {
                         ZStack{
@@ -80,15 +80,15 @@ struct SemiCircularGraphCardComponentView: View {
                                         .resizable()
                                         .scaledToFit()
                                         .frame(width: semiCircularSize.width / 6, height: semiCircularSize.width / 6)
-                                        .foregroundStyle(.gray.opacity(0.8))
+                                        .foregroundStyle(.colorLabelsSecondary)
                                 }
                                 Spacer()
                             }.padding()
                             VStack(spacing: 5){
                                 Text("As redações nota 1000 variam entre")
-                                    .foregroundStyle(.black)
+                                    .foregroundStyle(.colorLabelsPrimary)
                                 Text("\(data.range.0) e \(data.range.1)")
-                                    .foregroundStyle(.black)
+                                    .foregroundStyle(.colorLabelsPrimary)
                                     .fontWeight(.bold)
                             }.padding()
                         }
