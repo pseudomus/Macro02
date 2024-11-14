@@ -72,6 +72,8 @@ struct NewsView: View {
     @StateObject private var viewModel = ArticleViewModel()
     @State private var selectedFilters: Set<String> = []
     @State var isFixedTabOpen: Bool = false
+    //Essa variável controla o intervalo em que os adds aparecem
+    private let adInterval: Int = 5
     
     // Dicionário para traduzir as categorias
     private let categoryTranslations: [String: String] = [
@@ -142,7 +144,7 @@ struct NewsView: View {
                                 }
                                 
                             } else {
-                                ForEach(filteredArticles, id: \.article_id) { article in
+                                ForEach(Array(filteredArticles.enumerated()), id: \.element.article_id) { index, article in
                                     NewsCardView(
                                         title: article.title,
                                         date: formattedDate(article.pubDate),
@@ -151,6 +153,12 @@ struct NewsView: View {
                                         proxy: proxy
                                     )
                                     .frame(height: proxy.size.height / 3)
+                                    
+                                    if (index + 1) % adInterval == 0 {
+                                        NativeAdView()
+                                            .frame(height: 300)
+                                            .padding()
+                                    }
                                 }
                             }
                         }
@@ -293,5 +301,6 @@ struct NewsCardView: View {
 
 #Preview {
     NewsView()
+        .environmentObject(EssayViewModel())
         .environmentObject(StoreKitManager())
 }
