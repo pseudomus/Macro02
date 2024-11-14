@@ -10,125 +10,208 @@ import Foundation
 import StoreKit
 import SwiftUI
 
-@MainActor
-class StoreKitManager: ObservableObject {
-    // identificadores dos produtos de créditos
-    private let productIds = ["credits_10", "credits_20", "credits_50"]
+// MARK: CREDITS IDS
+let creditsProductsIds = [
+    "credits_1"
+]
 
-    // array para produtos e IDs comprados
-    @Published private(set) var products: [Product] = []
-    @Published private(set) var purchasedProductIDs = Set<String>()
+import Foundation
+import StoreKit
+import SwiftUI
 
-    // Saldo de créditos
-    @Published private(set) var creditBalance: Int = 0
-    private var productsLoaded = false
-    private var updates: Task<Void, Never>? = nil
+typealias PurchaseResult = Product.PurchaseResult
+typealias TransactionListener = Task<Void, Error>
 
 
-    init() {
-        // observa as atualizações de transações de compra
-        self.updates = observeTransactionUpdates()
-    }
-
-    deinit {
-        self.updates?.cancel()
-    }
-
-    func loadProducts() async throws {
-        guard !self.productsLoaded else { return }
-        
-        // Busca o produto de créditos
-        self.products = try await Product.products(for: productIds)
-        self.productsLoaded = true
-    }
-
-    func purchase(_ product: Product) async throws {
-        let result = try await product.purchase()
-
-        switch result {
-        // Compra bem-sucedida
-        case let .success(.verified(transaction)):
-            await transaction.finish()
-            
-            await sendTransactionToServer(transaction)
-
-        case .success(.unverified(let transaction, _)):
-            
-            break
-        case .pending:
-            break
-        case .userCancelled:
-            break
-        @unknown default:
-            break
-        }
-    }
-
-    private func sendTransactionToServer(_ transaction: StoreKit.Transaction) async {
-        guard let url = URL(string: Endpoints.sendTransaction) else { return }
-        
-        // BODY
-        let transactionData: [String: Any] = [
-            "transactionId": transaction.id,
-            "originalTransactionId": transaction.originalID,
-            "productId": transaction.productID,
-            "purchaseDate": transaction.purchaseDate.timeIntervalSince1970
-        ]
-        
-        guard let jsonData = try? JSONSerialization.data(withJSONObject: transactionData) else { return }
-
-        var request = URLRequest(url: url)
-            request.httpMethod = "POST"
-            request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-            request.httpBody = jsonData
-            
-            // Fazer a requisição e processar a resposta
-            do {
-                let (data, _) = try await URLSession.shared.data(for: request)
-                
-                
-            } catch {
-                print("Erro ao enviar a transação para o servidor: \(error)")
-            }
-    }
-
-
-    // att os produtos comprados e créditos
-    func updatePurchasedProducts() async {
-        for await result in Transaction.updates {
-            guard case .verified(let transaction) = result else { continue }
-            
-            if productIds.contains(transaction.productID) {
-//                // define os créditos a serem adicionados com base no productID
-//                let creditsToAdd = transaction.productID == "credits_10" ? 10 :
-//                                   transaction.productID == "credits_20" ? 20 :
-//                                   transaction.productID == "credits_50" ? 50 : 0
-//                
-//                // atualizar o saldo de créditos
-//                await MainActor.run {
-//                    creditBalance += creditsToAdd
-//                }
-
-                // termina a transação para que não seja processada novamente
-                await transaction.finish()
-            }
-        }
-    }
-
-
-
-    private func observeTransactionUpdates() -> Task<Void, Never> {
-        Task(priority: .background) { [unowned self] in
-            for await result in Transaction.updates {
-                guard case .verified(let transaction) = result else { continue }
-                guard let product = products.first(where: { product in
-                    product.id == transaction.productID
-                }) else { continue }
-                await sendTransactionToServer(transaction)
-            }
+enum StoreError: LocalizedError {
+    case failedVerification
+    case serverUnavailable
+    case unfinishedTransaction(productId: String)
+    case system(Error)
+    
+    var errorDescription: String? {
+        switch self {
+        case .failedVerification:
+            return "A verificação do usuário falhou."
+        case .serverUnavailable:
+            return "O nosso servidor teve problemas em receber a sua compra. Relaxe, registramos a sua compra."
+        case .unfinishedTransaction(let productId):
+            return "Você tem uma compra que ainda não foi atualizada. \(productId)"
+        case .system(let err):
+            return err.localizedDescription
         }
     }
 }
+
+
+enum PurchaseAction: Equatable {
+    case successful
+    case failed(StoreError)
+    
+    static func == (lhs: PurchaseAction, rhs: PurchaseAction) -> Bool {
+        switch (lhs, rhs) {
+        case (.successful, .successful):
+            return true
+        case (let .failed(lhsErr), let .failed(rhsErr)):
+            return lhsErr.localizedDescription == rhsErr.localizedDescription
+        default:
+            return false
+        }
+    }
+}
+
+@MainActor
+class StoreKitManager: ObservableObject {
+    private let productIds = ["credits_1"]
+    @Published private(set) var products: [Product] = []
+    @Published private(set) var action: PurchaseAction? {
+        didSet {
+            switch action {
+            case .failed:
+                hasError = true
+            default:
+                hasError = false
+            }
+        }
+    }
+    @Published var hasError = false
+    private var transactionListener: TransactionListener?
+    private let transactionService = TransactionService()
+    
+    var error: StoreError? {
+        switch action {
+        case .failed(let error):
+            return error
+        default:
+            return nil
+        }
+    }
+    
+    // INIT
+    init() {
+        transactionListener = configureTransactionListener()
+        
+        Task { await loadProducts() }
+    }
+    
+    // DEINIT
+    deinit {
+        transactionListener?.cancel()
+    }
+
+    
+    
+    
+    func purchase(_ product: Product) async {
+        do {
+            let result = try await product.purchase()
+            try await handlePurchase(from: result)
+        } catch {
+            action = .failed(.system(error))
+            print(error)
+        }
+    }
+    
+    func resetAction() {
+        action = nil
+    }
+    
+    private func configureTransactionListener() -> TransactionListener {
+        Task { [weak self] in
+            do {
+                for await result in Transaction.updates {
+                    let transaction = try self?.checkVerified(result)
+                    self?.action = .successful
+                    await transaction?.finish()
+                }
+            } catch {
+                self?.action = .failed(.system(error))
+            }
+        }
+    }
+    
+    private func loadProducts() async {
+        do {
+            let products = try await Product.products(for: productIds)
+            self.products = products.sorted(by: { $0.price < $1.price })
+        } catch {
+            action = .failed(.system(error))
+            print(error)
+        }
+    }
+    
+    func handlePurchase(from result: PurchaseResult) async throws {
+        switch result {
+        case .success(let verification):
+            do {
+                // Verifica a transação
+                let transaction = try checkVerified(verification)
+                
+                // Envia a transação ao servidor; `sendToServer` lida com o resultado e finaliza a transação se o envio for bem-sucedido
+                await sendToServer(transaction: transaction)
+            } catch {
+                // Caso a verificação falhe
+                action = .failed(.system(error))
+                print("Falha na verificação da transação: \(error)")
+            }
+            
+        case .pending:
+            print("O usuário precisa completar uma ação antes de finalizar a compra.")
+            
+        case .userCancelled:
+            print("O usuário cancelou a compra.")
+            
+        default:
+            print("Erro desconhecido na compra.")
+        }
+    }
+
+
+
+    
+    private func checkVerified<T>(_ result: VerificationResult<T>) throws -> T {
+        switch result {
+        case .unverified:
+            throw StoreError.failedVerification
+        case .verified(let transaction):
+            return transaction
+        }
+    }
+    
+    func sendToServer(transaction: StoreKit.Transaction) async {
+        do {
+            try await transactionService.sendTransactionToServer(transaction: transaction)
+            await transaction.finish()
+            action = .successful
+        } catch {
+            action = .failed(.serverUnavailable)
+
+            print("Falha ao enviar a transação para o servidor: \(error)")
+        }
+    }
+
+    
+    func processUnfinishedTransactions() async {
+        for await transaction in Transaction.unfinished {
+            
+            do {
+                print("tem uma transaction aqui: \(transaction)")
+                
+                //print("Erro na transação para o produto: \(productId)")
+
+//
+                // Envia ao servidor, se necessário
+                //try await sendToServer(transaction: transaction)
+            } catch {
+                print("Falha ao processar transação pendente: \(error)")
+                // Você pode armazenar ou logar esse erro para tentativas futuras
+            }
+        }
+    }
+
+    
+}
+
 
 //
 //  CreditsError.swift

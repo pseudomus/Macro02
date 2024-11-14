@@ -17,7 +17,7 @@ struct CreditsButton: View {
             } label: {
                 HStack {
                     Image(systemName: "square.3.stack.3d")
-                    Text("\(storekitManager.creditBalance) \(storekitManager.creditBalance == 1 ? "crédito" : "créditos")")
+                    Text("1 creditos")
                 }
                 .padding(8)
                 .fontWeight(.bold)

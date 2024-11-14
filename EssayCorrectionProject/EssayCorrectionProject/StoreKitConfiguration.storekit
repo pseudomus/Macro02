@@ -9,7 +9,7 @@
       }
     ]
   },
-  "identifier" : "F5B1235F",
+  "identifier" : "82BEAB6F",
   "nonRenewingSubscriptions" : [
 
   ],
@@ -17,12 +17,27 @@
     {
       "displayPrice" : "0.99",
       "familyShareable" : false,
-      "internalID" : "5CF9C058",
+      "internalID" : "6738142616",
       "localizations" : [
         {
-          "description" : "",
-          "displayName" : "10 Credits",
-          "locale" : "en_US"
+          "description" : "Créditos para corrigir suas redações - 1",
+          "displayName" : "1 Crédito",
+          "locale" : "pt_BR"
+        }
+      ],
+      "productID" : "credits_1",
+      "referenceName" : "1 Credit",
+      "type" : "Consumable"
+    },
+    {
+      "displayPrice" : "0.99",
+      "familyShareable" : false,
+      "internalID" : "6737632061",
+      "localizations" : [
+        {
+          "description" : "Créditos para corrigir suas redações - 10",
+          "displayName" : "10 Créditos",
+          "locale" : "pt_BR"
         }
       ],
       "productID" : "credits_10",
@@ -31,8 +46,10 @@
     }
   ],
   "settings" : {
-    "_billingIssuesEnabled" : false,
+    "_applicationInternalID" : "6737575652",
+    "_developerTeamID" : "5GYXF2FP9Y",
     "_failTransactionsEnabled" : false,
+    "_lastSynchronizedDate" : 753299785.70744205,
     "_locale" : "en_US",
     "_storefront" : "USA",
     "_storeKitErrors" : [

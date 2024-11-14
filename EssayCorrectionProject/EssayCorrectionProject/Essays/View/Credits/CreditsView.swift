@@ -31,23 +31,19 @@ struct CreditsView: View {
                         .fontWeight(.regular)
                     
                     // LISTA DE BOTOES DE CRÉDITO
-                    ScrollView(.horizontal) {
-                        ForEach(storeKitManager.products) { product in
-                            Button {
-                                _ = Task<Void, Never> {
-                                    do {
-                                        try await storeKitManager.purchase(product)
-                                    } catch {
-                                        print(error)
-                                    }
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack (spacing: 15) {
+                            ForEach(storeKitManager.products) { product in
+                                Button {
+                                    Task { await storeKitManager.purchase(product) }
+                                } label: {
+                                    BuyCreditsButton(numberOfCredits: 1, price: 2.90)
+                                        .padding(.bottom)
                                 }
-                                
-                            } label: {
-                                BuyCreditsButton(numberOfCredits: 1, price: 2.90)
-                                    .padding(.bottom)
                             }
-                            .padding(.horizontal)
                         }
+                        .padding(.horizontal)
+
                     }
                 }
                 .padding(.top, 20)
@@ -70,26 +66,14 @@ struct CreditsView: View {
                 }
                 .padding(.horizontal)
                 
-                // COLOCAR NO ÍNICIO DO APP
-                .task {
-                    await storeKitManager.updatePurchasedProducts()
-                }
-                .task {
-                    _ = Task<Void, Never> {
-                        do {
-                            try await storeKitManager.loadProducts()
-                        } catch {
-                            purchaseError = "Erro ao carregar produtos. Tente novamente mais tarde."
-                        }
-                    }
-                }
-                
             }
+            .alert(isPresented: $storeKitManager.hasError, error: storeKitManager.error) {}
+
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     HStack {
                         Image(systemName: "square.3.stack.3d")
-                        Text("\(storeKitManager.creditBalance) \(storeKitManager.creditBalance == 1 ? "crédito" : "créditos")")
+                        Text("1 Créidto")
                     }
                     .fontWeight(.bold)
                     .foregroundStyle(.white)
@@ -97,7 +81,6 @@ struct CreditsView: View {
                     .padding(.horizontal, 10)
                     .background(Color(.colorBrandPrimary700))
                     .clipShape(.capsule)
-                    //.padding(.bottom, 10)
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
@@ -115,6 +98,12 @@ struct CreditsView: View {
             }
             .toolbarBackground(Color(.systemBackground))
         }
+        .onAppear {
+            Task {
+                await storeKitManager.processUnfinishedTransactions()
+            }
+        }
+        
     }
 }
 
