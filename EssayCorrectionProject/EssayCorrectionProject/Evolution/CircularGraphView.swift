@@ -19,11 +19,11 @@ struct CircularGraphView: View {
     var body: some View {
         ZStack {
             Circle()
-                .stroke(Color.gray.opacity(0.3), style: StrokeStyle(lineWidth: viewSize.width / lineWidth, lineCap: .round))
+                .stroke((Color.colorFillsTertiary), style: StrokeStyle(lineWidth: viewSize.width / lineWidth, lineCap: .round))
             ForEach(data.trimData.indices, id: \.self) { index in
                 Circle()
-                    .trim(from: data.trimData[index].start, to: isAnimating ? data.trimData[index].end - viewSize.width / lineWidth / (viewSize.width / 0.43) : 0)
-                    .stroke(colors[index], style: StrokeStyle(lineWidth: viewSize.width / lineWidth, lineCap: .round))
+                    .trim(from: data.trimData[index].start, to: isAnimating ? data.trimData[index].end - viewSize.width / lineWidth / (viewSize.width / 0.3) : 0)
+                    .stroke(colors[index], style: StrokeStyle(lineWidth: (viewSize.width / lineWidth) * 0.5, lineCap: .round))
                     .opacity(isAnimating ? 1 : 0)
                     .hoverEffect(.highlight)
                     .animation(.smooth(duration: 1.3).delay(Double(index) * 0.007), value: isAnimating)

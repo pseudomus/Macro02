@@ -31,6 +31,60 @@ struct EvolutionNavigationStackView: View {
     }
 }
 
+struct EvolutionView: View {
+    
+    @EnvironmentObject var essayViewModel: EssayViewModel
+    @State var correctedEssays: Int = 0
+    @State var topMistakes: [(title: String, averageCount: Int)] = []
+    
+    var body: some View {
+        VStack {
+            
+            CustomHeaderView(showCredits: false, title: "Evolução", distanceContentFromTop: 50, showSearchBar: false, isScrollable: true) { shouldAnimate in
+                VStack(alignment: .leading, spacing: 20) {
+                    if correctedEssays > 0 {
+                        
+                        EssayQuantityCardView(correctedEssays: correctedEssays)
+                        
+                        EvolutionCardView(text: "EIXOS TEMÁTICOS")
+                            .padding(.top, 15)
+                        
+                        EvolutionGraphView()
+                            .padding(.top, 5)
+
+                        WarningInterventionCardView()
+                        
+                        Text("Média de Métricas")
+                            .padding(.leading)
+                    } else {
+                        VStack {
+                            Spacer()
+                            Image(.lapisinho2)
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .padding()
+                            Text("Corrija sua primeira redação para acompanhar sua evolução")
+                                .multilineTextAlignment(.center)
+                                .padding(.horizontal, 50)
+                            Spacer()
+                        }
+                    }
+                }
+            }.scrollDisabled(!(correctedEssays > 0))
+                .background(.colorBgPrimary)
+            
+        }
+        .onAppear {
+            correctedEssays = essayViewModel.getCount()
+            
+            if !essayViewModel.essays.isEmpty {
+                topMistakes = essayViewModel.getTopEssayMistakes(in: essayViewModel.essays)
+            }
+        }
+    }
+}
+
+
 struct EvolutionCardView: View {
     
     @State var text: String
@@ -39,41 +93,44 @@ struct EvolutionCardView: View {
     @State var cardTitles: [String] = ["Argumentação", "Concordância", "Proposta de intervenção"]
     
     var body: some View {
-        VStack(alignment: .leading) {
+        VStack(alignment: .leading, spacing: 0) {
             Text(text)
-                .font(.title3)
+                .font(.subheadline)
                 .padding(.bottom, 10)
                 .padding(.top, 4)
             
-            HStack {
-                CircularGraphView(data: CircularGraphData(values: graphValues))
-                    .frame(height: 110)
-                Spacer()
+            VStack(alignment: .leading) {
                 
-                VStack(alignment: .leading) {
-                    ForEach(0..<min(cardTitles.count, colors.count), id: \.self) { index in
-                        HStack {
-                            Circle()
-                                .frame(width: 8)
-                                .padding(.trailing, 6)
-                                .foregroundStyle(colors[index])
-                            Text(cardTitles[index])
-                                .font(.footnote)
+                HStack {
+                    CircularGraphView(data: CircularGraphData(values: graphValues))
+                        .frame(height: 110)
+                    Spacer()
+                    
+                    VStack(alignment: .leading) {
+                        ForEach(0..<min(cardTitles.count, colors.count), id: \.self) { index in
+                            HStack {
+                                Circle()
+                                    .frame(width: 8)
+                                    .padding(.trailing, 6)
+                                    .foregroundStyle(colors[index])
+                                Text(cardTitles[index])
+                                    .font(.footnote)
+                            }
                         }
                     }
+                    Spacer()
                 }
-                Spacer()
             }
-        }
-        .padding()
-        .background(Color.gray.opacity(0.2))
-        .clipShape(RoundedRectangle(cornerRadius: 17))
-        .overlay(
-            RoundedRectangle(cornerRadius: 17)
-                .stroke(style: StrokeStyle(lineWidth: 1))
-                .foregroundColor(.white)
-        )
-        .padding(.horizontal)
+            .padding()
+            .background(.colorBgSecondary)
+            .clipShape(RoundedRectangle(cornerRadius: 17))
+            .overlay(
+                RoundedRectangle(cornerRadius: 17)
+                    .stroke(style: StrokeStyle(lineWidth: 1))
+                    .foregroundColor(.white)
+            )
+           
+        } .padding(.horizontal)
     }
 }
 
@@ -137,58 +194,3 @@ struct EssayQuantityCardView: View {
 }
 
 
-struct EvolutionView: View {
-    
-    @EnvironmentObject var essayViewModel: EssayViewModel
-    @State var correctedEssays: Int = 0
-    @State var topMistakes: [(title: String, averageCount: Int)] = []
-    
-    var body: some View {
-        VStack {
-            
-            CustomHeaderView(showCredits: false, title: "Evolução", distanceContentFromTop: 50, showSearchBar: false, isScrollable: true) { shouldAnimate in
-                VStack(alignment: .leading, spacing: 20) {
-                    if correctedEssays > 0 {
-                        
-                        EssayQuantityCardView(correctedEssays: correctedEssays)
-                        
-                        EvolutionCardView(text: "Pontos fortes")
-                        
-                        if !topMistakes.isEmpty {
-                            EvolutionCardView(text: "Pontos fracos", graphValues: topMistakes.map { $0.averageCount }, cardTitles: topMistakes.map { $0.title })
-                        } else {
-                            Text("Nenhum erro comum encontrado.")
-                                .font(.footnote)
-                                .padding(.leading)
-                        }
-                        
-                        WarningInterventionCardView()
-                        
-                        Text("Média de Métricas")
-                            .padding(.leading)
-                    } else {
-                        VStack {
-                            Spacer()
-                            Image(.lapisinho2)
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .padding()
-                            Text("Corrija sua primeira redação para acompanhar sua evolução")
-                                .multilineTextAlignment(.center)
-                                .padding(.horizontal,50)
-                            Spacer()
-                        }
-                    }
-                }
-            }.scrollDisabled(!(correctedEssays > 0))
-            
-        }
-        .onAppear {
-            correctedEssays = essayViewModel.getCount()
-            
-            if !essayViewModel.essays.isEmpty {
-                topMistakes = essayViewModel.getTopEssayMistakes(in: essayViewModel.essays)
-            }
-        }
-    }
-}

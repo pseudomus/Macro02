@@ -18,7 +18,6 @@ struct HomeEssayView: View {
     @Namespace private var animation
     @State private var showingDeleteAlert = false
     @State private var essayToDelete: EssayResponse?
-
     
     var body: some View {
         
