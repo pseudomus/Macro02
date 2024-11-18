@@ -295,13 +295,16 @@ struct CustomHeaderView<Content: View>: View {
    private func toggleFilter(_ filter: String) {
        if selectedFilters.contains(filter) {
            withAnimation {
-               if let index = showFilters?.firstIndex(of: filter) {
-                   filters?.move(filter, to: index)
-                   filters?.sort(by: { (lhs, rhs) -> Bool in
-                       selectedFilters.contains(lhs)
-                   })
-               }
                selectedFilters.remove(filter)// Remove se já está selecionado
+               if let index = showFilters?.firstIndex(of: filter) {
+                   if selectedFilters.count < index {
+                       filters?.move(filter, to: index)
+                   } else {
+                       filters?.sort(by: { (lhs, rhs) -> Bool in
+                           selectedFilters.contains(lhs)
+                       })
+                   }
+               }
            }
        } else {
            withAnimation {
