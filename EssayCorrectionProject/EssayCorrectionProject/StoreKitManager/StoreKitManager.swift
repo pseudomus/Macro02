@@ -12,7 +12,8 @@ import SwiftUI
 
 // MARK: CREDITS IDS
 let creditsProductsIds = [
-    "credits_1"
+    "credits_1",
+    "credits_10",
 ]
 
 import Foundation
@@ -36,7 +37,16 @@ enum StoreError: LocalizedError {
         case .serverUnavailable:
             return "O nosso servidor teve problemas em receber a sua compra. Relaxe, registramos a sua compra."
         case .unfinishedTransaction(let productId):
-            return "Você tem uma compra que ainda não foi atualizada. \(productId)"
+            switch productId {
+            case "credits_1":
+                return "Você tem 1 crédito esperando para ser processado!"
+            case "credits_4":
+                return "Você tem 4 créditos esperando para serem processados!"
+            case "credits_8":
+                return "Você tem 8 créditos esperando para serem processados!"
+            default:
+                return "Você tem créditos esperando para serem processados!"
+            }
         case .system(let err):
             return err.localizedDescription
         }
@@ -62,7 +72,10 @@ enum PurchaseAction: Equatable {
 
 @MainActor
 class StoreKitManager: ObservableObject {
-    private let productIds = ["credits_1"]
+    
+    @Published var creditBalance: Int = 0
+
+    //private let productIds = ["credits_1"]
     @Published private(set) var products: [Product] = []
     @Published private(set) var action: PurchaseAction? {
         didSet {
@@ -102,10 +115,10 @@ class StoreKitManager: ObservableObject {
     
     
     
-    func purchase(_ product: Product) async {
+    func purchase(_ product: Product, userId: Int) async {
         do {
             let result = try await product.purchase()
-            try await handlePurchase(from: result)
+            try await handlePurchase(from: result, from: userId)
         } catch {
             action = .failed(.system(error))
             print(error)
@@ -132,7 +145,7 @@ class StoreKitManager: ObservableObject {
     
     private func loadProducts() async {
         do {
-            let products = try await Product.products(for: productIds)
+            let products = try await Product.products(for: creditsProductsIds)
             self.products = products.sorted(by: { $0.price < $1.price })
         } catch {
             action = .failed(.system(error))
@@ -140,7 +153,7 @@ class StoreKitManager: ObservableObject {
         }
     }
     
-    func handlePurchase(from result: PurchaseResult) async throws {
+    func handlePurchase(from result: PurchaseResult, from userId: Int) async throws {
         switch result {
         case .success(let verification):
             do {
@@ -148,7 +161,7 @@ class StoreKitManager: ObservableObject {
                 let transaction = try checkVerified(verification)
                 
                 // Envia a transação ao servidor; `sendToServer` lida com o resultado e finaliza a transação se o envio for bem-sucedido
-                await sendToServer(transaction: transaction)
+                await sendToServer(transaction: transaction, userId: userId)
             } catch {
                 // Caso a verificação falhe
                 action = .failed(.system(error))
@@ -165,9 +178,6 @@ class StoreKitManager: ObservableObject {
             print("Erro desconhecido na compra.")
         }
     }
-
-
-
     
     private func checkVerified<T>(_ result: VerificationResult<T>) throws -> T {
         switch result {
@@ -178,10 +188,12 @@ class StoreKitManager: ObservableObject {
         }
     }
     
-    func sendToServer(transaction: StoreKit.Transaction) async {
+    // ENVIAR AO SERVIDOR
+    func sendToServer(transaction: StoreKit.Transaction, userId: Int) async {
         do {
-            try await transactionService.sendTransactionToServer(transaction: transaction)
+            try await transactionService.sendTransactionToServer(transaction: transaction, userId: userId)
             await transaction.finish()
+            await loadCreditBalance(userId: userId)
             action = .successful
         } catch {
             action = .failed(.serverUnavailable)
@@ -192,24 +204,33 @@ class StoreKitManager: ObservableObject {
 
     
     func processUnfinishedTransactions() async {
-        for await transaction in Transaction.unfinished {
-            
-            do {
-                print("tem uma transaction aqui: \(transaction)")
-                
-                //print("Erro na transação para o produto: \(productId)")
+        for await unfinishedTransaction in Transaction.unfinished {
+            guard case .verified(let transaction) = unfinishedTransaction else { continue }
 
-//
-                // Envia ao servidor, se necessário
-                //try await sendToServer(transaction: transaction)
+            do {
+                let productID = transaction.productID
+
+                action = .failed(.unfinishedTransaction(productId: productID))
+                // tenta enviar ao servidor de novo
+                // try await sendToServer(transaction: transaction)
+
             } catch {
-                print("Falha ao processar transação pendente: \(error)")
-                // Você pode armazenar ou logar esse erro para tentativas futuras
+                print("Falha ao processar transação pendente para o produto \(transaction.productID): \(error)")
             }
         }
     }
 
-    
+    // carregar o saldo de créditos do servidor
+    func loadCreditBalance(userId: Int) async {
+        do {
+            let newBalance = try await transactionService.getCreditBalance(userId: userId)
+            DispatchQueue.main.async {
+                self.creditBalance = newBalance
+            }
+        } catch {
+            print("Erro ao carregar o saldo de créditos: \(error)")
+        }
+    }
 }
 
 

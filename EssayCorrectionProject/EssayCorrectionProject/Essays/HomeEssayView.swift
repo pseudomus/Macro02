@@ -12,6 +12,7 @@ struct HomeEssayView: View {
     @Environment(\.navigate) var navigate
     @EnvironmentObject var userViewModel: UserViewModel
     @EnvironmentObject var essayViewModel: EssayViewModel
+    @EnvironmentObject var storeKitManager: StoreKitManager
     
     @State private var screenSize: CGSize = .zero
     @State private var itemHeight: CGFloat = .zero
@@ -47,12 +48,15 @@ struct HomeEssayView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .getSize { size in
             screenSize = size
-        }        // MARK: - isLoading changes (fetch essays)
+        }
+        // MARK: - isLoading changes (fetch essays)
         .onChange(of: userViewModel.isLoading) { _, newValue in
             if !newValue {
                 // quando o loading do usuário parar, faça o fetch se o usuário estiver disponível
                 guard let user = userViewModel.user else { return }
                 essayViewModel.fetchEssays(userId: "\(user.id)")
+                Task { await storeKitManager.loadCreditBalance(userId: user.id) }
+
             }
         }
         .onChange(of: essayViewModel.shouldFetchEssays) { _, newValue in

@@ -11,6 +11,7 @@ import StoreKit
 
 struct CreditsView: View {
     @EnvironmentObject var storeKitManager: StoreKitManager
+    @EnvironmentObject var userViewModel: UserViewModel
     @Environment(\.navigate) var navigate
     
     @State private var isLoading = false
@@ -35,7 +36,7 @@ struct CreditsView: View {
                         HStack (spacing: 15) {
                             ForEach(storeKitManager.products) { product in
                                 Button {
-                                    Task { await storeKitManager.purchase(product) }
+                                    Task { await storeKitManager.purchase(product, userId: userViewModel.user!.id) }
                                 } label: {
                                     BuyCreditsButton(numberOfCredits: 1, price: 2.90)
                                         .padding(.bottom)
@@ -73,7 +74,7 @@ struct CreditsView: View {
                 ToolbarItem(placement: .topBarLeading) {
                     HStack {
                         Image(systemName: "square.3.stack.3d")
-                        Text("1 Créidto")
+                        Text("\(storeKitManager.creditBalance) \(storeKitManager.creditBalance == 1 ? "crédito" : "créditos")")
                     }
                     .fontWeight(.bold)
                     .foregroundStyle(.white)
@@ -110,4 +111,5 @@ struct CreditsView: View {
 #Preview {
     CreditsView()
         .environmentObject(StoreKitManager())
+        .environmentObject(UserViewModel())
 }

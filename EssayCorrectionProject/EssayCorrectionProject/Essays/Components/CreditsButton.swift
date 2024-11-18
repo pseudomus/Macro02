@@ -9,7 +9,7 @@ import SwiftUI
 
 struct CreditsButton: View {
     @Environment(\.navigate) var navigate
-    @EnvironmentObject var storekitManager: StoreKitManager
+    @EnvironmentObject var storeKitManager: StoreKitManager
     var body: some View {
         VStack{
             Button{
@@ -17,7 +17,7 @@ struct CreditsButton: View {
             } label: {
                 HStack {
                     Image(systemName: "square.3.stack.3d")
-                    Text("1 creditos")
+                    Text("\(storeKitManager.creditBalance) \(storeKitManager.creditBalance == 1 ? "crédito" : "créditos")")
                 }
                 .padding(8)
                 .fontWeight(.bold)

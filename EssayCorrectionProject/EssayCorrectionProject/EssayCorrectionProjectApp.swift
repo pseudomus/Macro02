@@ -20,8 +20,6 @@ struct EssayCorrectionProjectApp: App {
 
     var body: some Scene {
         WindowGroup {
-//            CreditsView()
-//                .environmentObject(storeKitManager)
             ContentView()
                 .modelContainer(for: [RepertoireFixedFilter.self])
                 .environmentObject(userViewModel)
@@ -30,7 +28,6 @@ struct EssayCorrectionProjectApp: App {
                 .environmentObject(storeKitManager)
                 .onAppear {
                     if userViewModel.user == nil { userViewModel.fetchUserData() }
-                    
                     // oculta a overlay após 2 segundos
                     DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                         showOverlay = false
