@@ -17,6 +17,7 @@ struct CustomHeaderView<Content: View>: View {
     var showCredits: Bool
     var title: String                                       // TÍTULO
     @State var filters: [String]?                           // FILTROS (opcional)
+    var showFilters: [String]?                               // ORDEM DOS FILTROS
     var showFiltersBeforeSwipingUp: Bool?                   // MOSTRAR FILTROS ANTES DE SCROLLAR (opcional) - para notícias
     var distanceContentFromTop: CGFloat                     // DISTANCIA QUE COMECA O CONTEÚDO DO TOPO
     var showSearchBar: Bool                                 // MOSTRAR A SEARCHBAR
@@ -27,7 +28,7 @@ struct CustomHeaderView<Content: View>: View {
     var onCancelSearch: (() -> Void)?                       // CLOSURE - cancelamento da pesquisa (opcional)
     var onSelectFilter: ((String) -> Void)?                 // CLOSURE - ao clicar em filtro (opcional)
     var content: (Bool) -> Content                          // CONTEÚDO INSERIDO (A VIEW EM SI)
-
+    
     @State private var isUserScrollDisabled = false // para controlar o scroll quando há a animação
     @State private var searchQuery: String = ""
     @FocusState private var searchFieldIsFocused: Bool 
@@ -221,7 +222,7 @@ struct CustomHeaderView<Content: View>: View {
         HStack {
             HStack {
                 Image(systemName: "magnifyingglass")
-                TextField("Search", text: $searchQuery)
+                TextField("Pesquisar", text: $searchQuery)
                     .focused($searchFieldIsFocused)
                     .onChange(of: searchQuery) { _, newValue in
                         onSearch?(newValue)
@@ -293,7 +294,15 @@ struct CustomHeaderView<Content: View>: View {
    // MARK: - Helper Methods
    private func toggleFilter(_ filter: String) {
        if selectedFilters.contains(filter) {
-           selectedFilters.remove(filter)// Remove se já está selecionado
+           withAnimation {
+               if let index = showFilters?.firstIndex(of: filter) {
+                   filters?.move(filter, to: index)
+                   filters?.sort(by: { (lhs, rhs) -> Bool in
+                       selectedFilters.contains(lhs)
+                   })
+               }
+               selectedFilters.remove(filter)// Remove se já está selecionado
+           }
        } else {
            withAnimation {
                filters?.move(filter, to: 0)
