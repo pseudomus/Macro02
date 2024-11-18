@@ -36,11 +36,11 @@ struct EvolutionView: View {
     @EnvironmentObject var essayViewModel: EssayViewModel
     @State var correctedEssays: Int = 0
     @State var topMistakes: [(title: String, averageCount: Int)] = []
+    @State var size: CGSize = .zero
     
     var body: some View {
         VStack {
-            
-            CustomHeaderView(showCredits: false, title: "Evolução", distanceContentFromTop: 50, showSearchBar: false, isScrollable: true) { shouldAnimate in
+            CustomHeaderView(showCredits: false, title: "Evolução", distanceContentFromTop: 50, showSearchBar: false, isScrollable: true, itemsHeight: size.height) { shouldAnimate in
                 VStack(alignment: .leading, spacing: 20) {
                     if correctedEssays > 0 {
                         
@@ -49,13 +49,24 @@ struct EvolutionView: View {
                         EvolutionCardView(text: "EIXOS TEMÁTICOS")
                             .padding(.top, 15)
                         
-                        EvolutionGraphView()
+                        EvolutionGraphView(failures: $essayViewModel.failures)
                             .padding(.top, 5)
 
                         WarningInterventionCardView()
                         
-                        Text("Média de Métricas")
-                            .padding(.leading)
+                        VStack(alignment: .leading) {
+                            Text("Melhor Redação")
+                                .padding(.leading)
+                            
+                            CorrectedEssayCardView(dayOfCorrection: "20/11/2024")
+                        }
+                        
+                        VStack(alignment: .leading) {
+                            Text("Para aprimorar")
+                                .padding(.leading)
+                            
+                            CorrectedEssayCardView(dayOfCorrection: "20/11/2024")
+                        }
                     } else {
                         VStack {
                             Spacer()
@@ -69,12 +80,17 @@ struct EvolutionView: View {
                             Spacer()
                         }
                     }
+                }.padding(.bottom, 120)
+                .getSize { size in
+                    self.size = size
+                    print(essayViewModel.getNumbersOfEssayErrors())
                 }
             }.scrollDisabled(!(correctedEssays > 0))
                 .background(.colorBgPrimary)
             
         }
         .onAppear {
+            essayViewModel.getNumbersOfEssayErrors()
             correctedEssays = essayViewModel.getCount()
             
             if !essayViewModel.essays.isEmpty {

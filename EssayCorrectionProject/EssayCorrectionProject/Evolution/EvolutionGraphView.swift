@@ -8,6 +8,9 @@
 import SwiftUI
 
 struct EvolutionGraphView: View {
+    
+    @Binding var failures: [CompetenceFailure]
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             Text("MÉDIA DE ERROS POR COMPETÊNCIA")
@@ -15,7 +18,7 @@ struct EvolutionGraphView: View {
                 .padding(.bottom, 10)
                 .padding(.top, 4)
             VStack{
-                BarChart(height: 200)
+                BarChart(height: 200, failures: $failures)
                     .foregroundStyle(.colorBrandSecondary500)
             }.padding()
                 .background(.colorBgSecondary)

@@ -34,6 +34,7 @@ class EssayViewModel: ObservableObject {
     @Published var isLoading = false
     @Published var shouldFetchEssays: Bool = false
     @Published var essayResponse: EssayResponse?
+    @Published var failures: [CompetenceFailure] = Array(repeating: CompetenceFailure(errorsCount: 1, competency: 1), count: 5)
 
     private let essayService: EssayService
     let transcriptionService = TranscriptionService()
@@ -45,6 +46,31 @@ class EssayViewModel: ObservableObject {
     func getCount() -> Int {
         return essays.count
     }
+    
+    func getNumbersOfEssayErrors() {
+        var array: [[Int]] = Array(repeating: [], count: 5)
+        
+        print(essays.count)
+        
+        for essay in essays {
+            for n in 0..<array.count {
+                if n < essay.competencies.count {
+                    array[n].append(essay.competencies[n].cards.count)
+                }
+            }
+        }
+        
+        var transformedArray: [CompetenceFailure] = []
+        
+        for n in 0..<array.count {
+            transformedArray.append(CompetenceFailure(errorsCount: array[n].reduce(0, +), competency: n + 1))
+        }
+        
+        print(transformedArray)
+        
+        failures = transformedArray
+    }
+
     
     // MARK: - FETCH DE TODAS AS REDAÇÕES
     func fetchEssays(userId: String) {
@@ -91,6 +117,8 @@ class EssayViewModel: ObservableObject {
             guard let date1 = dateFromMonthYear($0), let date2 = dateFromMonthYear($1) else { return false }
             return date1 > date2
         }
+        
+        getNumbersOfEssayErrors()
     }
     
     private func monthYear(from dateString: String) -> String {

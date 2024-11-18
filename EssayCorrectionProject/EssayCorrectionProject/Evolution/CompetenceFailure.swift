@@ -5,7 +5,6 @@
 //  Created by Leonardo Mesquita Alves on 13/11/24.
 //
 
-
 import SwiftUI
 import Charts
 import Foundation
@@ -13,19 +12,12 @@ import Foundation
 struct CompetenceFailure: Hashable{
     var errorsCount : Int
     var competency : Int
-
 }
 
 struct BarChart: View {
     
     @State var height: CGFloat
-    @State var failures: [CompetenceFailure] = [
-        CompetenceFailure(errorsCount: 34, competency: 1),
-        CompetenceFailure(errorsCount: 23, competency: 2),
-        CompetenceFailure(errorsCount: 12, competency: 3),
-        CompetenceFailure(errorsCount: 65, competency: 4),
-        CompetenceFailure(errorsCount: 30, competency: 5),
-    ]
+    @Binding var failures: [CompetenceFailure] 
     @State var isAnimated: Bool = false
     
     var body: some View {
@@ -76,7 +68,7 @@ struct BarChart: View {
             .aspectRatio(1, contentMode: .fit)
         }.animation(.spring(duration: 0.5), value: isAnimated)
         .onAppear {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
                 isAnimated = true
             }
         }
