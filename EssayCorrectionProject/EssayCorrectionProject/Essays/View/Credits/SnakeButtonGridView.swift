@@ -7,13 +7,16 @@
 
 import Foundation
 import SwiftUI
+import GoogleMobileAds
 
 // MARK: - SnakeButtonGridView
 struct SnakeButtonGridView: View {
     let buttonCount: Int = 12
     @State private var buttonSize: CGSize = .zero
     @State private var completedButtons: [Int: Bool] = [1: true]
-    @State private var currentButton: Int = 1 // PROPAGANDA ATUAL
+    @AppStorage("currentButton") private var currentButton: Int = 1
+    @StateObject private var rewardedAD = RewardedAd()
+    
     
     var body: some View {
         VStack(spacing: 12) {
@@ -33,12 +36,12 @@ struct SnakeButtonGridView: View {
                             HorizontalCircles(
                                 isCompleted:
                                     (rowIndex % 2 == 0)
-                                    ? buttonNumber < currentButton  //  fileiras pares
-                                    : buttonNumber <= currentButton, //  fileiras ímpares
+                                ? buttonNumber < currentButton  //  fileiras pares
+                                : buttonNumber <= currentButton, //  fileiras ímpares
                                 animateFromRight: rowIndex % 2 != 0 //  fileiras ímpares, anima da direita para a esquerda
                             )
                         }
-
+                        
                     }
                 }
                 
@@ -67,8 +70,10 @@ struct SnakeButtonGridView: View {
     @ViewBuilder
     func getButton(for number: Int) -> some View {
         Button {
-            print("assistir ad numero \(number)")
-            currentButton = number + 1
+            rewardedAD.rewardEarnedCallback = {
+                currentButton = number + 1
+            }
+            rewardedAD.rewardedAdRetryMechanism()
         } label: {
             Text("\(number)")
                 .fontWeight(.bold)
@@ -86,6 +91,7 @@ struct SnakeButtonGridView: View {
         .disabled(number != currentButton)  // Apenas o botão atual é clicável
         .getSize { size in
             self.buttonSize = size
+            
         }
     }
     
@@ -105,7 +111,7 @@ struct SnakeButtonGridView: View {
         }
         .disabled(currentButton != buttonCount)
     }
-
+    
     // MARK:  Círculos Horizontais
     @ViewBuilder
     func HorizontalCircles(isCompleted: Bool, animateFromRight: Bool) -> some View {
@@ -117,7 +123,7 @@ struct SnakeButtonGridView: View {
                     .scaleEffect(isCompleted ? 1.2 : 0.8)
                     .animation(
                         .bouncy(duration: 0.5)
-                            .delay(animateFromRight ? Double(2 - index) * 0.4 : Double(index) * 0.4),
+                        .delay(animateFromRight ? Double(2 - index) * 0.4 : Double(index) * 0.4),
                         value: isCompleted
                     )
             }

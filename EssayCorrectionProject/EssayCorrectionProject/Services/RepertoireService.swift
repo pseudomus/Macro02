@@ -27,14 +27,14 @@ struct Repertoire: Codable {
 }
 
 enum Theme: String, Codable, CaseIterable {
-    case culture = "culture"
-    case economy = "economy"
-    case education = "education"
-    case nature = "nature"
-    case politics = "politics"
-    case rights = "rights"
-    case science = "science"
-    case technology = "technology"
+    case culture = "cultura"
+    case economy = "economia"
+    case education = "educação"
+    case nature = "natureza"
+    case politics = "política"
+    case rights = "direitos"
+    case science = "ciência"
+    case technology = "tecnologia"
     
     static func getArray() -> [String] {
         let filter = Theme.allCases

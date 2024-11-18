@@ -40,6 +40,7 @@ struct RepertoireView: View {
             CustomHeaderView(showCredits: false,
                              title: "Repertories",
                              filters: Theme.getArray(),
+                             showFilters: Theme.getArray(),
                              showFiltersBeforeSwipingUp: true,
                              distanceContentFromTop: 100,
                              showSearchBar: false,

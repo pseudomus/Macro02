@@ -43,7 +43,7 @@ struct ProfileView: View {
                             }
                         }.overlay {
                             HStack(alignment: .center) {
-                                Text("User")
+                                Text("Usuário")
                             }.frame(maxWidth: .infinity, maxHeight: .infinity)
                         }
                     

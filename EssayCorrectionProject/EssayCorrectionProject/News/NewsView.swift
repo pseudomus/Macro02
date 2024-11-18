@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import  Combine
 
 // MODEL
 struct Article: Codable {
