@@ -33,6 +33,8 @@ struct EssayCorrectionProjectApp: App {
                         showOverlay = false
                     }
                 }
+            
+            
                 .preferredColorScheme(.light)
                 // Overlay condicional com uma imagem
                 .overlay(

@@ -111,9 +111,6 @@ class StoreKitManager: ObservableObject {
     deinit {
         transactionListener?.cancel()
     }
-
-    
-    
     
     func purchase(_ product: Product, userId: Int) async {
         do {
@@ -160,8 +157,9 @@ class StoreKitManager: ObservableObject {
                 // Verifica a transação
                 let transaction = try checkVerified(verification)
                 
-                // Envia a transação ao servidor; `sendToServer` lida com o resultado e finaliza a transação se o envio for bem-sucedido
+                // Envia a transação ao servidor e atualiza os créditos
                 await sendToServer(transaction: transaction, userId: userId)
+                await loadCreditBalance(userId: userId)
             } catch {
                 // Caso a verificação falhe
                 action = .failed(.system(error))
@@ -193,7 +191,6 @@ class StoreKitManager: ObservableObject {
         do {
             try await transactionService.sendTransactionToServer(transaction: transaction, userId: userId)
             await transaction.finish()
-            await loadCreditBalance(userId: userId)
             action = .successful
         } catch {
             action = .failed(.serverUnavailable)
@@ -220,7 +217,10 @@ class StoreKitManager: ObservableObject {
         }
     }
 
-    // carregar o saldo de créditos do servidor
+    // MARK: - LOAD CREDITS FROM USER
+    // 1: when a buy occurs
+    // 2: when an essay is corrected
+    // 3: when the app initializes
     func loadCreditBalance(userId: Int) async {
         do {
             let newBalance = try await transactionService.getCreditBalance(userId: userId)
@@ -230,6 +230,10 @@ class StoreKitManager: ObservableObject {
         } catch {
             print("Erro ao carregar o saldo de créditos: \(error)")
         }
+    }
+    
+    func logout() {
+        self.creditBalance = 0
     }
 }
 
