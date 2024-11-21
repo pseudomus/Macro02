@@ -166,7 +166,7 @@ struct HomeEssayView: View {
             }
         } label: {
             CorrectedEssayCardView(
-                title: essay.title,
+                title: essay.title.isEmpty ? essay.content ?? "" : essay.title,
                 description: essay.theme,
                 dayOfCorrection: essay.creationDate ?? "",
                 isCorrected: essay.isCorrected ?? false

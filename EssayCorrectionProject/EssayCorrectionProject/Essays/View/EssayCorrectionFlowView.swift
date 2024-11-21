@@ -58,7 +58,7 @@ struct EssayCorrectionFlowView: View {
                 CorrectionModalBaseView(
                     title: "Título da redação",
                     descBody: "O título não é obrigatório na redação do ENEM, caso a sua redação não tenha título siga para a próxima etapa.",
-                    isActive: .constant(essayViewModel.title != ""),
+                    isActive: .constant(true),
                     index: $currentIndex
                 ){
                     CustomTextFieldCorrectionModal(text: $essayViewModel.title, placeholderText: "Ex: Combate a pirataria...", mode: .small)
