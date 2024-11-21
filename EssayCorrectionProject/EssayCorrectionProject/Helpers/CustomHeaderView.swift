@@ -106,17 +106,21 @@ struct CustomHeaderView<Content: View>: View {
             .animation(.bouncy(duration: 0.2), value: opacity)
         }
         .ignoresSafeArea()
-        .overlay(alignment: .topTrailing){
-            if !shouldAnimate {
-                HStack {
-                    if showCredits { CreditsButton() }
+
+        .overlay(alignment: .topTrailing) {
+            HStack {
+                if showCredits {
+                    CreditsButton(isCompact: shouldAnimate) // Alterna entre os estados visualmente
+                }
+                if !shouldAnimate {
                     ProfileButton()
                 }
-                .ignoresSafeArea()
-                .padding(10)
             }
+            .animation(.bouncy, value: shouldAnimate) // Animação para mudanças no HStack
+            .ignoresSafeArea()
+            .padding(.top, 1)
+            .padding(.trailing, 15)
         }
-        
     }
 
     // MARK: - HEADER GRANDE
@@ -168,6 +172,7 @@ struct CustomHeaderView<Content: View>: View {
                 Text(title)
                     .font(shouldAnimate ? .callout : .largeTitle)
                     .foregroundStyle(.black)
+                    .fontWeight(shouldAnimate ? .semibold : .regular)
                     .padding(.leading, shouldAnimate ? 0 : .none)
             }
             if showSearchBar {
@@ -350,7 +355,7 @@ struct CustomHeaderView<Content: View>: View {
 }
 
 #Preview {
-    CustomHeaderView(showCredits: false, title: "Redações",
+    CustomHeaderView(showCredits: true, title: "Redações",
                      filters: ["Filtro 1", "Filtro 2"],
                      showFiltersBeforeSwipingUp: true,
                      distanceContentFromTop: 120,
@@ -364,6 +369,7 @@ struct CustomHeaderView<Content: View>: View {
         }
     }
      .environmentObject(EssayViewModel())
+     .environmentObject(StoreKitManager())
 }
 struct BlurView: UIViewRepresentable {
     var style: UIBlurEffect.Style

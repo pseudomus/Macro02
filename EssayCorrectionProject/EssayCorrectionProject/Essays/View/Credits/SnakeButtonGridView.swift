@@ -91,7 +91,6 @@ struct SnakeButtonGridView: View {
         .disabled(number != currentButton)  // Apenas o botão atual é clicável
         .getSize { size in
             self.buttonSize = size
-            
         }
     }
     

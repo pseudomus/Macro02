@@ -38,7 +38,7 @@ struct RepertoireView: View {
         VStack{
             
             CustomHeaderView(showCredits: false,
-                             title: "Repertories",
+                             title: "Repertório",
                              filters: Theme.getArray(),
                              showFilters: Theme.getArray(),
                              showFiltersBeforeSwipingUp: true,

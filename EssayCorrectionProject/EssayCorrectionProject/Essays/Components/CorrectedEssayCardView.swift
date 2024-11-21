@@ -18,7 +18,7 @@ struct CorrectedEssayCardView: View {
         VStack(alignment: .leading) {
             HStack {
                 Text(title)
-                    .lineLimit(1)
+                    .lineLimit(2)
                     .bold()
                     .foregroundStyle(.black)
                 Spacer()

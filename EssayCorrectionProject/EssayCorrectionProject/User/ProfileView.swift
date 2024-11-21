@@ -126,4 +126,5 @@ struct PrivacyPolicy: View {
 
 #Preview {
     ProfileView()
+        .environmentObject(AuthManager.shared)
 }
