@@ -33,12 +33,14 @@ struct CreditsView: View {
                     
                     // LISTA DE BOTOES DE CRÉDITO
                     ScrollView(.horizontal, showsIndicators: false) {
-                        HStack (spacing: 15) {
+                        HStack(spacing: 15) {
                             ForEach(storeKitManager.products) { product in
                                 Button {
-                                    Task { await storeKitManager.purchase(product, userId: userViewModel.user!.id) }
+                                    Task {
+                                        await storeKitManager.purchase(product, userId: userViewModel.user!.id)
+                                    }
                                 } label: {
-                                    BuyCreditsButton(numberOfCredits: 1, price: 2.90)
+                                    BuyCreditsButton(product: product)
                                         .padding(.bottom)
                                 }
                             }
