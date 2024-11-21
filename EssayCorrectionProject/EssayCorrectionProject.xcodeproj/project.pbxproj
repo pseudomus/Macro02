@@ -8,9 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		26C25DBF2CD83DFB00CB06A7 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26C25DBE2CD83DFB00CB06A7 /* StoreKit.framework */; };
-		26C25DC12CD83E6400CB06A7 /* StoreKitConfiguration.storekit in Resources */ = {isa = PBXBuildFile; fileRef = 26C25DC02CD83E6400CB06A7 /* StoreKitConfiguration.storekit */; };
-		26C25DC22CD83E6400CB06A7 /* StoreKitConfiguration.storekit in Resources */ = {isa = PBXBuildFile; fileRef = 26C25DC02CD83E6400CB06A7 /* StoreKitConfiguration.storekit */; };
-		26C25DC32CD83E6400CB06A7 /* StoreKitConfiguration.storekit in Resources */ = {isa = PBXBuildFile; fileRef = 26C25DC02CD83E6400CB06A7 /* StoreKitConfiguration.storekit */; };
 		C39943C82CE519B70016C7EF /* GoogleMobileAds.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = C39943C72CE519B70016C7EF /* GoogleMobileAds.xcframework */; };
 		E0922FA42CDBE2FD002DC4F1 /* WeScan in Frameworks */ = {isa = PBXBuildFile; productRef = E0922FA32CDBE2FD002DC4F1 /* WeScan */; };
 /* End PBXBuildFile section */
@@ -34,7 +31,6 @@
 
 /* Begin PBXFileReference section */
 		26C25DBE2CD83DFB00CB06A7 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
-		26C25DC02CD83E6400CB06A7 /* StoreKitConfiguration.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = StoreKitConfiguration.storekit; sourceTree = "<group>"; };
 		C39943C72CE519B70016C7EF /* GoogleMobileAds.xcframework */ = {isa = PBXFileReference; expectedSignature = "AppleDeveloperProgram:EQHXZ8M8AV:Google LLC"; lastKnownFileType = wrapper.xcframework; path = GoogleMobileAds.xcframework; sourceTree = "<group>"; };
 		E8BAA93C2CB7026C001C0418 /* EssayCorrectionProject.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EssayCorrectionProject.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E8BAA94C2CB7026E001C0418 /* EssayCorrectionProjectTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EssayCorrectionProjectTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -42,6 +38,20 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		26AE45312CE67146004B0637 /* Exceptions for "EssayCorrectionProject" folder in "EssayCorrectionProjectTests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				StoreKitConfiguration.storekit,
+			);
+			target = E8BAA94B2CB7026E001C0418 /* EssayCorrectionProjectTests */;
+		};
+		26AE45322CE67146004B0637 /* Exceptions for "EssayCorrectionProject" folder in "EssayCorrectionProjectUITests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				StoreKitConfiguration.storekit,
+			);
+			target = E8BAA9552CB7026E001C0418 /* EssayCorrectionProjectUITests */;
+		};
 		C30532B52CD2E9230095BCBB /* Exceptions for "EssayCorrectionProject" folder in "EssayCorrectionProject" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -56,6 +66,8 @@
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				C30532B52CD2E9230095BCBB /* Exceptions for "EssayCorrectionProject" folder in "EssayCorrectionProject" target */,
+				26AE45312CE67146004B0637 /* Exceptions for "EssayCorrectionProject" folder in "EssayCorrectionProjectTests" target */,
+				26AE45322CE67146004B0637 /* Exceptions for "EssayCorrectionProject" folder in "EssayCorrectionProjectUITests" target */,
 			);
 			path = EssayCorrectionProject;
 			sourceTree = "<group>";
@@ -112,7 +124,6 @@
 		E8BAA9332CB7026C001C0418 = {
 			isa = PBXGroup;
 			children = (
-				26C25DC02CD83E6400CB06A7 /* StoreKitConfiguration.storekit */,
 				E8BAA93E2CB7026C001C0418 /* EssayCorrectionProject */,
 				E8BAA94F2CB7026E001C0418 /* EssayCorrectionProjectTests */,
 				E8BAA9592CB7026E001C0418 /* EssayCorrectionProjectUITests */,
@@ -255,7 +266,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				26C25DC12CD83E6400CB06A7 /* StoreKitConfiguration.storekit in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -263,7 +273,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				26C25DC22CD83E6400CB06A7 /* StoreKitConfiguration.storekit in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -271,7 +280,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				26C25DC32CD83E6400CB06A7 /* StoreKitConfiguration.storekit in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

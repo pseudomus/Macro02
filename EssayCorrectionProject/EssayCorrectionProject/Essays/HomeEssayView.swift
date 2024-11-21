@@ -12,6 +12,7 @@ struct HomeEssayView: View {
     @Environment(\.navigate) var navigate
     @EnvironmentObject var userViewModel: UserViewModel
     @EnvironmentObject var essayViewModel: EssayViewModel
+    @EnvironmentObject var storeKitManager: StoreKitManager
     
     @State private var screenSize: CGSize = .zero
     @State private var itemHeight: CGFloat = .zero
@@ -40,44 +41,48 @@ struct HomeEssayView: View {
                 }
             }
             .animation(.easeInOut(duration: 0.2), value: shouldAnimate)
-            
-            .padding(.bottom, 100) // para tabbar nao cobrir
+            .padding(.bottom, 100)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .getSize { size in
             screenSize = size
-        }        // MARK: - isLoading changes (fetch essays)
-        .onChange(of: userViewModel.isLoading) { _, newValue in
-            if !newValue {
-                // quando o loading do usuário parar, faça o fetch se o usuário estiver disponível
-                guard let user = userViewModel.user else { return }
-                essayViewModel.fetchEssays(userId: "\(user.id)")
-            }
         }
-        .onChange(of: essayViewModel.shouldFetchEssays) { _, newValue in
-            if newValue {
-                guard let userId = userViewModel.user?.id else { return }
-                // verifica se há um usuário logado
-                essayViewModel.fetchEssays(userId: "\(userId)")
-                
-                // redefine shouldFetchEssays para evitar buscas repetidas
-                essayViewModel.shouldFetchEssays = false
-            }
-        }
-
         .alert(isPresented: $showingDeleteAlert) {
             deleteEssayAlert
         }
+        // MARK: - ONCHANGE
+        // OPENNING OF THE APP
+        .onChange(of: userViewModel.isLoading) { _, newValue in
+            if !newValue {
+                guard let user = userViewModel.user else { return }
+                essayViewModel.fetchEssays(userId: "\(user.id)") // puxa redações
+                Task { await storeKitManager.loadCreditBalance(userId: user.id) } // carrega créditos
 
+            }
+        }
+        
+        // FETCHING ESSAYS
+        .onChange(of: essayViewModel.shouldFetchEssays) { _, newValue in
+            if newValue {
+                guard let userId = userViewModel.user?.id else { return }
+                
+                essayViewModel.fetchEssays(userId: "\(userId)") // puxa redações
+                Task { await storeKitManager.loadCreditBalance(userId: userId) } 
+               
+                essayViewModel.shouldFetchEssays = false
+            }
+        }
     }
     
     // MARK: - VIEWS
     private var correctionButton: some View {
         Button {
-            if userViewModel.user != nil {
-                navigate(.sheet)
-            } else {
+            if userViewModel.user == nil {                  // Não está logado
                 navigate(.essays(.profile))
+            } else if storeKitManager.creditBalance < 1 {   // Não tem crédito
+                navigate(.creditsSheet)
+            } else {                                        // Pode
+                navigate(.sheet)
             }
             
         } label: {
@@ -199,4 +204,5 @@ struct HomeEssayView: View {
         .environmentObject(StoreKitManager())
         .environmentObject(EssayViewModel())
 }
+
 
