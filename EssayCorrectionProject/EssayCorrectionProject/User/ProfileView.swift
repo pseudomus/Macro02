@@ -12,6 +12,8 @@ struct ProfileView: View {
     @EnvironmentObject var authManager: AuthManager
     @EnvironmentObject var user: UserViewModel
     @EnvironmentObject var essayViewModel: EssayViewModel
+    @EnvironmentObject var storeKitManager: StoreKitManager
+    
     @Environment(\.navigate) var navigate
     @State var isTabBarHidden: Bool = false
     
@@ -69,6 +71,7 @@ struct ProfileView: View {
                         AuthManager.shared.logout()
                         essayViewModel.logout()
                         user.user = nil
+                        storeKitManager.logout()
                         navigate(.back)
                     })
                     .padding(.bottom,20)
