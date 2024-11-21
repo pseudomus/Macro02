@@ -11,7 +11,7 @@ struct CorrectedEssayCardView: View {
     @State var title: String = "Corrected Essay Card"
     @State var description: String = "This is a corrected essay card."
     @State var dayOfCorrection: String
-    @State var tags: [String] = ["tag", "tag"]
+    @State var tags: String = "any"
     @State var isCorrected: Bool = true
     
     var body: some View {
@@ -26,25 +26,17 @@ struct CorrectedEssayCardView: View {
             Text(description)
                 .lineLimit(1)
                 .foregroundStyle(.black)
-
+            
             HStack {
                 Text(dateFormatted)
                     .lineLimit(1)
                     .font(.subheadline)
                     .foregroundStyle(.black.opacity(0.6))
-
+                
                 Spacer()
-                ForEach(tags.indices, id: \.self) { index in
-                    if index < 2 {
-                        Text(tags[index])
-                            .padding(.horizontal, 10)
-                            .padding(.vertical, 5)
-                            .background(Color.gray)
-                            .clipShape(.rect(cornerRadius: 7))
-                            .foregroundStyle(.black)
-
-                    }
-                }
+                
+                TagComponent(label: tags.captalizedSetence)
+                
             }
         }
         .padding(.horizontal, 12)
@@ -69,6 +61,7 @@ struct CorrectedEssayCardView: View {
         .padding(.horizontal)
     }
     
+    
     var dateFormatted: String {
         let dateFormatter = DateFormatter()
         
@@ -92,8 +85,8 @@ struct CorrectedEssayCardView: View {
         
         return "" // Retorna uma string vazia caso a conversão falhe
     }
-
-
+    
+    
 }
 
 #Preview {

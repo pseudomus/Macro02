@@ -164,6 +164,7 @@ struct HomeEssayView: View {
                 title: essay.title,
                 description: essay.theme,
                 dayOfCorrection: essay.creationDate ?? "",
+                tags: essay.tag,
                 isCorrected: essay.isCorrected ?? false
             )
         }
