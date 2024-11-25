@@ -22,15 +22,22 @@ struct HomeEssayView: View {
     
     var body: some View {
         
-        CustomHeaderView(showCredits: true, title: "Redações", filters: [],
-                         distanceContentFromTop: essayViewModel.isFirstTime ? 100 : 110,
-                         showSearchBar: !essayViewModel.isFirstTime,
-                         isScrollable: !essayViewModel.isFirstTime,
-                         numOfItems: essayViewModel.essays.count,
-                         itemsHeight: itemHeight,
-                         onSearch: { query in
-                            essayViewModel.searchText = query
-                        }){ shouldAnimate in
+        CustomHeaderView(
+            showCredits: true,
+            title: "Redações",
+            filters: TagCases.allCases.map { $0.rawValue }, // Adiciona as tags no filtro
+            distanceContentFromTop: essayViewModel.isFirstTime ? 100 : 110,
+            showSearchBar: !essayViewModel.isFirstTime,
+            isScrollable: !essayViewModel.isFirstTime,
+            numOfItems: essayViewModel.essays.count,
+            itemsHeight: itemHeight,
+            onSearch: { query in
+                essayViewModel.searchText = query
+            },
+            onSelectFilter: { selectedFilter in
+                
+            }
+        ) { shouldAnimate in
             VStack {
                 correctionButton
                     .offset(y: shouldAnimate ? -250 : 0)
@@ -45,6 +52,7 @@ struct HomeEssayView: View {
             .animation(.easeInOut(duration: 0.2), value: shouldAnimate)
             .padding(.bottom, 100)
         }
+
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .getSize { size in
             screenSize = size
@@ -74,9 +82,9 @@ struct HomeEssayView: View {
                 essayViewModel.shouldFetchEssays = false
             }
         }
-//        .onAppear {
-//            essayViewModel.fetchEssays(userId: "101")
-//        }
+        .onAppear {
+            essayViewModel.fetchEssays(userId: "101")
+        }
     }
     
     // MARK: - VIEWS

@@ -15,7 +15,7 @@ struct CorrectedEssayCardView: View {
     @State var isCorrected: Bool = true
     
     var body: some View {
-        VStack(alignment: .leading) {
+        VStack(alignment: .leading, spacing: 8) {
             HStack {
                 Text(title)
                     .lineLimit(2)
@@ -31,7 +31,7 @@ struct CorrectedEssayCardView: View {
                 Text(dateFormatted)
                     .lineLimit(1)
                     .font(.subheadline)
-                    .foregroundStyle(.black.opacity(0.6))
+                    .foregroundStyle(.black.opacity(0.7))
                 
                 Spacer()
                 
@@ -43,7 +43,7 @@ struct CorrectedEssayCardView: View {
         .padding(.vertical, 10)
         .background(Color.white)
         .clipShape(.rect(cornerRadius: 10))
-        .shadow(color: Color.black.opacity(0.12), radius: 10, x: 0, y: 4)
+        .shadow(color: Color.black.opacity(0.25), radius: 6, x: 0, y: 4)
         .overlay{
             if !isCorrected {
                 Rectangle()
