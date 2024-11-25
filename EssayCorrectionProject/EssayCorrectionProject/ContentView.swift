@@ -9,16 +9,17 @@ import SwiftUI
 
 struct ContentView: View {
     @State var selection: AppScreenNavigation? = .essays
-    @AppStorage("Onboarding") var onboarding: Bool = false
+    @AppStorage("Onboarding") var onboarding: Bool = true
     
     var body: some View {
         if onboarding {
+            OnboardingView(isOnOnboarding: $onboarding)
+        } else {
             AppTabView(selection: $selection)
                 .onAppear{
                     NotificationManager.instance.requestAuthorization()
                 }
-        } else {
-            OnboardingView(isOnOnboarding: $onboarding)
+            
         }
     }
 }

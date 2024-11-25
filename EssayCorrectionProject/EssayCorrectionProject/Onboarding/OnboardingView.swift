@@ -68,7 +68,8 @@ struct OnboardingCardView: View {
     var image: [String] = ["LapisOnboarding", "CorrigirOnboarding", "Graficos3DOnboarding"]
     
     var body: some View {
-        VStack{
+        VStack {
+            Spacer()
             Image(image[index])
                 .resizable()
                 .scaledToFit()
@@ -82,10 +83,26 @@ struct OnboardingCardView: View {
             
             Text(bodyText[index])
                 .multilineTextAlignment(.center)
-                .padding()
+                .padding(.horizontal, 35)
+                .padding(.vertical)
                 .frame(width: 390)
             
-        }
+                Button{
+                    isOnOnboarding = false
+                } label: {
+                    Text("Começar")
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 15)
+                        .padding(.vertical, 8)
+                        .background {
+                            Capsule()
+                                .foregroundStyle(.blue)
+                        }
+                }
+                .padding(.top)
+                .opacity(index != 2 ? 0 : 1)
+            
+        }.padding(.bottom, 70)
     }
 }
 
@@ -104,7 +121,6 @@ struct Wave: Shape {
             waveHeight = newValue.second
         }
     }
-    
     
     func path(in rect: CGRect) -> Path {
         var p = Path()

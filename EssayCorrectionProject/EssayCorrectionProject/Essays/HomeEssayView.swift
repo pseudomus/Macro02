@@ -7,7 +7,6 @@
 
 import SwiftUI
 
-
 struct HomeEssayView: View {
     @Environment(\.navigate) var navigate
     @EnvironmentObject var userViewModel: UserViewModel
@@ -57,7 +56,6 @@ struct HomeEssayView: View {
                 guard let user = userViewModel.user else { return }
                 essayViewModel.fetchEssays(userId: "\(user.id)") // puxa redações
                 Task { await storeKitManager.loadCreditBalance(userId: user.id) } // carrega créditos
-
             }
         }
         
@@ -93,7 +91,7 @@ struct HomeEssayView: View {
                     .fontWeight(.bold)
                 Spacer(minLength: screenSize.width / 2.7)
                 if !essayViewModel.isFirstTime {
-                    Image(.lapisinho)
+                    Image(.lapisinhoHome)
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .matchedGeometryEffect(id: "lapis", in: animation)
@@ -110,8 +108,10 @@ struct HomeEssayView: View {
     
     private var firstTimeView: some View {
         ZStack {
-            Image(.lapisinho)
-                .offset(x: -screenSize.width / 2.4)
+            Image(.lapisinhoHome)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .offset(x: -screenSize.width / 2.3)
                 .matchedGeometryEffect(id: "lapis", in: animation)
             
             VStack {
@@ -124,7 +124,7 @@ struct HomeEssayView: View {
                 .padding(.trailing, screenSize.height / 20)
                 .offset(y: -screenSize.height / 25)
             }
-        }
+        }.offset(y: -screenSize.height / 15)
     }
     
     private var essayListView: some View {
