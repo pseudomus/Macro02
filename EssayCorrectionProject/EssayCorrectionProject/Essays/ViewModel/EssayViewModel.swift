@@ -12,7 +12,8 @@ class EssayViewModel: ObservableObject {
     //DADOS PARA A HOMEVIEW
     @Published var groupedEssays: [String: [EssayResponse]] = [:]
     @Published var sortedMonths: [String] = []
-
+    @Published var searchText: String = ""
+    
     //DADOS TEMPORARIOS PARA O FLUXO DE CORREÇÃO
     @Published var correctionMode: CorrectionMode = .none
     @Published var text: String = ""
@@ -43,10 +44,6 @@ class EssayViewModel: ObservableObject {
         self.essayService = container.essayService
     }
     
-    func getCount() -> Int {
-        return essays.count
-    }
-    
     func getNumbersOfEssayErrors() {
         var array: [[Int]] = Array(repeating: [], count: 5)
         
@@ -71,7 +68,6 @@ class EssayViewModel: ObservableObject {
         failures = transformedArray
     }
 
-    
     // MARK: - FETCH DE TODAS AS REDAÇÕES
     func fetchEssays(userId: String) {
         guard !isLoading else { return }
@@ -99,13 +95,12 @@ class EssayViewModel: ObservableObject {
     }
     
     //MARK: - ORGANIZACAO DAS REDACOES
-    
-    
     private func updateGroupedEssaysAndMonths() {
         // Cache grouped essays
         let essaysWithValidDate = essays.filter { $0.creationDate != nil }
         let grouped = Dictionary(grouping: essaysWithValidDate, by: { monthYear(from: $0.creationDate ?? "") })
-             groupedEssays = grouped.mapValues {
+             
+        groupedEssays = grouped.mapValues {
             $0.sorted {
                 guard let date1 = dateFromString($0.creationDate!), let date2 = dateFromString($1.creationDate!) else { return false }
                 return date1 > date2
@@ -119,6 +114,20 @@ class EssayViewModel: ObservableObject {
         }
         
         getNumbersOfEssayErrors()
+    }
+    
+    // filtrar as redações com base no estado de correção e no texto da pesquisa
+    func filteredEssays(isCorrected: Bool) -> [EssayResponse] {
+        return essays
+            .filter { $0.isCorrected == isCorrected }
+            .filter { searchText.isEmpty || $0.title.localizedCaseInsensitiveContains(searchText) }
+    }
+    
+    // filtrar as redações por mês e estado de correção
+    func filteredEssays(by monthYear: String, isCorrected: Bool) -> [EssayResponse]? {
+        return groupedEssays[monthYear]?
+            .filter { $0.isCorrected == isCorrected }
+            .filter { searchText.isEmpty || $0.title.localizedCaseInsensitiveContains(searchText) }
     }
     
     private func monthYear(from dateString: String) -> String {

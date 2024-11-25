@@ -27,8 +27,10 @@ struct HomeEssayView: View {
                          showSearchBar: !essayViewModel.isFirstTime,
                          isScrollable: !essayViewModel.isFirstTime,
                          numOfItems: essayViewModel.essays.count,
-                         itemsHeight: itemHeight) { shouldAnimate in
-            
+                         itemsHeight: itemHeight,
+                         onSearch: { query in
+                            essayViewModel.searchText = query
+                        }){ shouldAnimate in
             VStack {
                 correctionButton
                     .offset(y: shouldAnimate ? -250 : 0)
@@ -72,6 +74,9 @@ struct HomeEssayView: View {
                 essayViewModel.shouldFetchEssays = false
             }
         }
+//        .onAppear {
+//            essayViewModel.fetchEssays(userId: "101")
+//        }
     }
     
     // MARK: - VIEWS
@@ -130,7 +135,7 @@ struct HomeEssayView: View {
     private var essayListView: some View {
         VStack(spacing: 15) {
             // REDAÇÃO CARREGANDO
-            ForEach(essayViewModel.essays.filter { $0.isCorrected == false }, id: \.id) { temporaryEssay in
+            ForEach(essayViewModel.filteredEssays(isCorrected: false), id: \.id) { temporaryEssay in
                 essayButton(for: temporaryEssay)
             }
             
@@ -141,7 +146,7 @@ struct HomeEssayView: View {
                     .textCase(nil)
                     .foregroundStyle(.primary)
                 ) {
-                    if let essaysForMonth = self.essayViewModel.groupedEssays[monthYear]?.filter({ $0.isCorrected == true }) {
+                    if let essaysForMonth = self.essayViewModel.filteredEssays(by: monthYear, isCorrected: true) {
                         ForEach(essaysForMonth, id: \.id) { essay in
                             essayButton(for: essay)
                         }
