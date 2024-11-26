@@ -13,7 +13,8 @@ class EssayViewModel: ObservableObject {
     @Published var groupedEssays: [String: [EssayResponse]] = [:]
     @Published var sortedMonths: [String] = []
     @Published var searchText: String = ""
-    
+    @Published var selectedTags: [String] = []
+
     //DADOS TEMPORARIOS PARA O FLUXO DE CORREÇÃO
     @Published var correctionMode: CorrectionMode = .none
     @Published var text: String = ""
@@ -121,6 +122,7 @@ class EssayViewModel: ObservableObject {
         return essays
             .filter { $0.isCorrected == isCorrected }
             .filter { searchText.isEmpty || $0.title.localizedCaseInsensitiveContains(searchText) }
+            .filter { selectedTags.isEmpty || selectedTags.contains($0.tag) } // Filtro de tags
     }
     
     // filtrar as redações por mês e estado de correção
@@ -128,6 +130,7 @@ class EssayViewModel: ObservableObject {
         return groupedEssays[monthYear]?
             .filter { $0.isCorrected == isCorrected }
             .filter { searchText.isEmpty || $0.title.localizedCaseInsensitiveContains(searchText) }
+            .filter { selectedTags.isEmpty || selectedTags.contains($0.tag) } // Filtro de tags
     }
     
     private func monthYear(from dateString: String) -> String {

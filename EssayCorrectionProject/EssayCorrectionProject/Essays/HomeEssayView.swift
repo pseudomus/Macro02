@@ -35,7 +35,12 @@ struct HomeEssayView: View {
                 essayViewModel.searchText = query
             },
             onSelectFilter: { selectedFilter in
-                
+                if let index = essayViewModel.selectedTags.firstIndex(of: selectedFilter) {
+                    essayViewModel.selectedTags.remove(at: index) // Remove se já estiver selecionada
+                } else {
+                    essayViewModel.selectedTags.append(selectedFilter) // Adiciona se não estiver
+                    print(essayViewModel.selectedTags)
+                }
             }
         ) { shouldAnimate in
             VStack {
