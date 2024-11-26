@@ -32,7 +32,7 @@ class EssayViewModel: ObservableObject {
             self.updateGroupedEssaysAndMonths()
         }
     }
-    @Published var isFirstTime: Bool = false
+    @Published var isFirstTime: Bool = true
     @Published var isLoading = false
     @Published var shouldFetchEssays: Bool = false
     @Published var essayResponse: EssayResponse?
