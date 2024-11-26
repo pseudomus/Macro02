@@ -66,7 +66,7 @@ struct EssayCorrectedView: View {
             }
             .padding()
         }
-        .navigationBarBackButtonHidden()
+        .toolbar(.hidden, for: .navigationBar)
         .onChange(of: essayViewModel.isLoading){ _, newValue in
             if !newValue {
                 essayResponse = essayViewModel.essayResponse
