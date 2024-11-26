@@ -13,11 +13,19 @@ struct HomeEssayView: View {
     @EnvironmentObject var essayViewModel: EssayViewModel
     @EnvironmentObject var storeKitManager: StoreKitManager
     
+    
     @State private var screenSize: CGSize = .zero
     @State private var itemHeight: CGFloat = .zero
     @Namespace private var animation
     @State private var showingDeleteAlert = false
     @State private var essayToDelete: EssayResponse?
+    
+    //Opções para gerenciamento de scroll da view
+    @State private var isDragging = false
+    @State private var isScrolling = false
+    @State private var lastOffset: CGFloat = 0
+    @State private var scrollCheckTimer: Timer? = nil
+    
     
     var body: some View {
         
@@ -41,7 +49,7 @@ struct HomeEssayView: View {
             }
             .animation(.easeInOut(duration: 0.2), value: shouldAnimate)
             .padding(.bottom, 100)
-        }
+        }.scrollDisabled(isDragging)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .getSize { size in
             screenSize = size
@@ -157,27 +165,53 @@ struct HomeEssayView: View {
 
     
     private func essayButton(for essay: EssayResponse) -> some View {
-        Button {
-            if essay.isCorrected ?? false {
-                navigate(.essays(.esssayCorrected(essayResponse: essay, text: essay.content!))) // redação pronta
-            } else {
-                guard let content = essay.content else { return }
-                navigate(.essays(.esssayCorrected(text: content))) // redação carregando
-            }
-        } label: {
-            CorrectedEssayCardView(
+        
+            DeletableCorrectedEssayCardView(
                 title: essay.title.isEmpty ? essay.content ?? "" : essay.title,
                 description: essay.theme,
                 dayOfCorrection: essay.creationDate ?? "",
                 tags: essay.tag,
-                isCorrected: essay.isCorrected ?? false
+                isCorrected: essay.isCorrected ?? false,
+                isScrolling: $isScrolling,
+                isDragging: $isDragging
+            ) {
+                if essay.isCorrected ?? false {
+                    navigate(.essays(.esssayCorrected(essayResponse: essay, text: essay.content!))) // redação pronta
+                } else {
+                    guard let content = essay.content else { return }
+                    navigate(.essays(.esssayCorrected(text: content))) // redação carregando
+                }
+            } delete: {
+                essayViewModel.deleteEssay(withId: String(essay.id!))
+            }.background(
+                GeometryReader { geometry in
+                    Color.clear
+                        .onChange(of: geometry.frame(in: .global).origin.y) { _ , newOffset in
+                            detectScrollingChange(newOffset: newOffset)
+                        }
+                }
             )
-        }
-        .simultaneousGesture(LongPressGesture().onEnded { _ in
-            showDeleteConfirmation(for: essay)
-        })
         
     }
+    
+    private func detectScrollingChange(newOffset: CGFloat) {
+        // Detect if scrolling is happening
+        if newOffset != lastOffset {
+            if !isScrolling {
+                isScrolling = true
+            }
+            
+            // Reset the timer whenever movement is detected
+            scrollCheckTimer?.invalidate()
+            scrollCheckTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: false) { _ in
+                isScrolling = false
+            }
+        }
+        
+        // Update the last offset
+        lastOffset = newOffset
+    }
+    
     // MARK: - ALERT
     private var deleteEssayAlert: Alert {
         Alert(title: Text("Deletar redação"),

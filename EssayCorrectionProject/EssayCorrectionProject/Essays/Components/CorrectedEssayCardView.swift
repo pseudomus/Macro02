@@ -7,6 +7,130 @@
 
 import SwiftUI
 
+struct DeletableCorrectedEssayCardView: View {
+    
+    @State var boxSize: CGSize = .zero
+    @State var itemOffset: CGFloat = .zero
+    @State var isSwiped: Bool = false
+    @State var isDeleting: Bool = false
+    @State var wasDeleting: Bool = false
+    
+    @State var title: String = "Corrected Essay Card"
+    @State var description: String = "This is a corrected essay card."
+    @State var dayOfCorrection: String = ""
+    @State var tags: String = "Tag"
+    @State var isCorrected: Bool = true
+    @Binding var isScrolling: Bool
+    @Binding var isDragging: Bool
+    var callback: (() -> Void)?
+    var delete: (() -> Void)?
+    
+    var body: some View {
+        VStack {
+            if !wasDeleting {
+                ZStack {
+                    Button {
+                        deleteItem()
+                    } label: {
+                        HStack {
+                            Spacer()
+                            Image(systemName: "trash")
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(height: 23)
+                                .foregroundColor(.white)
+                        }
+                        .padding(.trailing, boxSize.width / 9.8)
+                        .frame(height: boxSize.height)
+                        .background {
+                            Color.red
+                        }
+                        .clipShape(.rect(cornerRadius: 10))
+                    }
+                    
+                    CorrectedEssayCardView(
+                        title: title,
+                        description: description,
+                        dayOfCorrection: dayOfCorrection,
+                        tags: tags,
+                        isCorrected: isCorrected)
+                    .getSize { size in
+                        boxSize = size
+                    }
+                    .offset(x: itemOffset)
+                    .onTapGesture {
+                        callback?()
+                    }
+                    .animation(.spring, value: itemOffset)
+                }.shadow(color: Color.black.opacity(0.12), radius: 10, x: 0, y: 4)
+                .padding(.horizontal)
+                .contentShape(Rectangle())
+                .scaleEffect(x: 1, y: isDeleting ? 0 : 1, anchor: .top)
+                .opacity(isDeleting ? 0 : 1)
+                .blur(radius: isDeleting ? 10 : 0)
+                .animation(.spring(duration: 0.9), value: isDeleting)
+                .simultaneousGesture(
+                    !isScrolling ? DragGesture().onChanged(onChanged(value:)).onEnded(onEnd(value:)) : nil
+                )
+                .onChange(of: isScrolling) { oldValue, newValue in
+                        if newValue == true {
+                            itemOffset = 0
+                        }
+                    }
+            }
+        }
+    }
+    
+    func onChanged(value: DragGesture.Value) {
+        if value.translation.width < 0 {
+            if isSwiped {
+                itemOffset = value.translation.width - 40
+            } else {
+                itemOffset = value.translation.width
+            }
+        }
+        print("Iniciou Drag")
+        if value.translation.width < -30 {
+            isDragging = true
+        }
+        
+    }
+    
+    func onEnd(value: DragGesture.Value) {
+        if value.translation.width < 0 {
+            if -value.translation.width > UIScreen.main.bounds.width / 2 {
+                deleteItem()
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                    itemOffset = -1000
+                }
+            } else if -itemOffset > 50 {
+                isSwiped = true
+                itemOffset = -90
+            } else {
+                isSwiped = false
+                itemOffset = 0
+            }
+        } else {
+            isSwiped = false
+            itemOffset = 0
+        }
+        print("Finalizou drag")
+        isDragging = false
+    }
+    
+    func deleteItem() {
+        isDeleting = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            withAnimation {
+                wasDeleting = true
+            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                delete?()
+            }
+        }
+    }
+}
+
 struct CorrectedEssayCardView: View {
     @State var title: String = "Corrected Essay Card"
     @State var description: String = "This is a corrected essay card."
@@ -58,7 +182,6 @@ struct CorrectedEssayCardView: View {
                     }
             }
         }
-        .padding(.horizontal)
     }
     
     
