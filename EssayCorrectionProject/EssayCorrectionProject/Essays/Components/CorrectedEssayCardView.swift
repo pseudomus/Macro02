@@ -19,6 +19,7 @@ struct CorrectedEssayCardView: View {
             HStack {
                 Text(title)
                     .lineLimit(2)
+                    .multilineTextAlignment(.leading)
                     .bold()
                     .foregroundStyle(.black)
                 Spacer()
@@ -26,17 +27,13 @@ struct CorrectedEssayCardView: View {
             Text(description)
                 .lineLimit(1)
                 .foregroundStyle(.black)
-            
             HStack {
                 Text(dateFormatted)
                     .lineLimit(1)
                     .font(.subheadline)
                     .foregroundStyle(.black.opacity(0.7))
-                
                 Spacer()
-                
                 TagComponent(label: tags.captalizedSetence)
-                
             }
         }
         .padding(.horizontal, 12)

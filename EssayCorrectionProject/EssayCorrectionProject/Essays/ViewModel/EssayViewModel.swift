@@ -14,6 +14,7 @@ class EssayViewModel: ObservableObject {
     @Published var sortedMonths: [String] = []
     @Published var searchText: String = ""
     @Published var selectedTags: [String] = []
+    @Published var selectedFilterInPicker: FilterOption = .recent
 
     //DADOS TEMPORARIOS PARA O FLUXO DE CORREÇÃO
     @Published var correctionMode: CorrectionMode = .none
@@ -28,9 +29,7 @@ class EssayViewModel: ObservableObject {
     
     @Published var errorMessage: String?
     @Published var essays: [EssayResponse] = [] {
-        didSet {
-            self.updateGroupedEssaysAndMonths()
-        }
+        didSet { self.updateGroupedEssaysAndMonths() }
     }
     @Published var isFirstTime: Bool = true
     @Published var isLoading = false
@@ -63,9 +62,7 @@ class EssayViewModel: ObservableObject {
         for n in 0..<array.count {
             transformedArray.append(CompetenceFailure(errorsCount: array[n].reduce(0, +), competency: n + 1))
         }
-        
-        print(transformedArray)
-        
+                
         failures = transformedArray
     }
 
@@ -122,7 +119,7 @@ class EssayViewModel: ObservableObject {
         return essays
             .filter { $0.isCorrected == isCorrected }
             .filter { searchText.isEmpty || $0.title.localizedCaseInsensitiveContains(searchText) }
-            .filter { selectedTags.isEmpty || selectedTags.contains($0.tag) } // Filtro de tags
+            .filter { selectedTags.isEmpty || selectedTags.map{$0.lowercased()}.contains($0.tag.lowercased())} // Filtro de tags
     }
     
     // filtrar as redações por mês e estado de correção
@@ -130,8 +127,9 @@ class EssayViewModel: ObservableObject {
         return groupedEssays[monthYear]?
             .filter { $0.isCorrected == isCorrected }
             .filter { searchText.isEmpty || $0.title.localizedCaseInsensitiveContains(searchText) }
-            .filter { selectedTags.isEmpty || selectedTags.contains($0.tag) } // Filtro de tags
+            .filter { selectedTags.isEmpty || selectedTags.map{$0.lowercased()}.contains($0.tag.lowercased())} // Filtro de tags
     }
+
     
     private func monthYear(from dateString: String) -> String {
         let dateFormatter = DateFormatter()
