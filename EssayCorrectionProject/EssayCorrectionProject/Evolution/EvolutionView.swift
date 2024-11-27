@@ -91,7 +91,7 @@ struct EvolutionView: View {
         }
         .onAppear {
             essayViewModel.getNumbersOfEssayErrors()
-            correctedEssays = essayViewModel.getCount()
+            correctedEssays = essayViewModel.essays.count
             
             if !essayViewModel.essays.isEmpty {
                 topMistakes = essayViewModel.getTopEssayMistakes(in: essayViewModel.essays)

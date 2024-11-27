@@ -29,13 +29,29 @@ struct HomeEssayView: View {
     
     var body: some View {
         
-        CustomHeaderView(showCredits: true, title: "Redações", filters: [],
-                         distanceContentFromTop: essayViewModel.isFirstTime ? 100 : 110,
-                         showSearchBar: !essayViewModel.isFirstTime,
-                         isScrollable: !essayViewModel.isFirstTime,
-                         numOfItems: essayViewModel.essays.count,
-                         itemsHeight: itemHeight) { shouldAnimate in
-            
+        CustomHeaderView(
+            showCredits: true,
+            title: "Redações",
+            filters: TagCases.allCases.map { $0.rawValue }, // Adiciona as tags no filtro
+            distanceContentFromTop: essayViewModel.isFirstTime ? 100 : 110,
+            showSearchBar: !essayViewModel.isFirstTime,
+            isScrollable: !essayViewModel.isFirstTime,
+            numOfItems: essayViewModel.essays.count,
+            itemsHeight: itemHeight,
+            onSearch: { query in
+                essayViewModel.searchText = query
+            },
+            onSelectFilter: { selectedFilter in
+                if let index = essayViewModel.selectedTags.firstIndex(of: selectedFilter) {
+                    essayViewModel.selectedTags.remove(at: index)
+                    print(essayViewModel.selectedTags)
+
+                } else {
+                    essayViewModel.selectedTags.append(selectedFilter)
+                    print(essayViewModel.selectedTags)
+                }
+            }
+        ) { shouldAnimate in
             VStack {
                 correctionButton
                     .offset(y: shouldAnimate ? -250 : 0)
@@ -50,6 +66,9 @@ struct HomeEssayView: View {
             .animation(.easeInOut(duration: 0.2), value: shouldAnimate)
             .padding(.bottom, 100)
         }.scrollDisabled(isDragging)
+        
+        .background(Color.colorBgPrimary)
+
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .getSize { size in
             screenSize = size
@@ -77,6 +96,9 @@ struct HomeEssayView: View {
                
                 essayViewModel.shouldFetchEssays = false
             }
+        }
+        .onAppear {
+            essayViewModel.fetchEssays(userId: "101")
         }
     }
     
@@ -121,7 +143,6 @@ struct HomeEssayView: View {
                 .aspectRatio(contentMode: .fit)
                 .offset(x: -screenSize.width / 2.3)
                 .matchedGeometryEffect(id: "lapis", in: animation)
-            
             VStack {
                 HStack(spacing: 10) {
                     Text("--")
@@ -132,24 +153,39 @@ struct HomeEssayView: View {
                 .padding(.trailing, screenSize.height / 20)
                 .offset(y: -screenSize.height / 25)
             }
-        }.offset(y: -screenSize.height / 15)
+        }
+        .offset(y: -screenSize.height / 15)
     }
     
     private var essayListView: some View {
         VStack(spacing: 15) {
             // REDAÇÃO CARREGANDO
-            ForEach(essayViewModel.essays.filter { $0.isCorrected == false }, id: \.id) { temporaryEssay in
+            ForEach(essayViewModel.filteredEssays(isCorrected: false), id: \.id) { temporaryEssay in
                 essayButton(for: temporaryEssay)
             }
             
+            // Picker para selecionar entre recentes e antigos
+            Picker("Filtrar", selection: $essayViewModel.selectedFilterInPicker ) {
+                ForEach(FilterOption.allCases) { filter in
+                    Text(filter.rawValue).tag(filter)
+                }
+            }
+            .tint(Color.colorBrandPrimary700)
+            .frame(maxWidth: .infinity, alignment: .trailing)
+            .padding(.trailing)
+
+
             // REDAÇÕES PRONTAS
             ForEach(self.essayViewModel.sortedMonths, id: \.self) { monthYear in
-                Section(header: Text(monthYear)
-                    .font(.headline)
-                    .textCase(nil)
-                    .foregroundStyle(.primary)
+                Section(header:
+                    Text(monthYear)
+                        .font(.headline)
+                        .textCase(nil)
+                        .foregroundStyle(.primary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.leading)
                 ) {
-                    if let essaysForMonth = self.essayViewModel.groupedEssays[monthYear]?.filter({ $0.isCorrected == true }) {
+                    if let essaysForMonth = self.essayViewModel.filteredEssays(by: monthYear, isCorrected: true) {
                         ForEach(essaysForMonth, id: \.id) { essay in
                             essayButton(for: essay)
                         }

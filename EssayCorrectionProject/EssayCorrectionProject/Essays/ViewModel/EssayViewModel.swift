@@ -12,6 +12,9 @@ class EssayViewModel: ObservableObject {
     //DADOS PARA A HOMEVIEW
     @Published var groupedEssays: [String: [EssayResponse]] = [:]
     @Published var sortedMonths: [String] = []
+    @Published var searchText: String = ""
+    @Published var selectedTags: [String] = []
+    @Published var selectedFilterInPicker: FilterOption = .recent
 
     //DADOS TEMPORARIOS PARA O FLUXO DE CORREÇÃO
     @Published var correctionMode: CorrectionMode = .none
@@ -26,9 +29,7 @@ class EssayViewModel: ObservableObject {
     
     @Published var errorMessage: String?
     @Published var essays: [EssayResponse] = [] {
-        didSet {
-            self.updateGroupedEssaysAndMonths()
-        }
+        didSet { self.updateGroupedEssaysAndMonths() }
     }
     @Published var isFirstTime: Bool = true
     @Published var isLoading = false
@@ -41,10 +42,6 @@ class EssayViewModel: ObservableObject {
     
     init(container: DependencyContainer = .shared) {
         self.essayService = container.essayService
-    }
-    
-    func getCount() -> Int {
-        return essays.count
     }
     
     func getNumbersOfEssayErrors() {
@@ -65,13 +62,10 @@ class EssayViewModel: ObservableObject {
         for n in 0..<array.count {
             transformedArray.append(CompetenceFailure(errorsCount: array[n].reduce(0, +), competency: n + 1))
         }
-        
-        print(transformedArray)
-        
+                
         failures = transformedArray
     }
 
-    
     // MARK: - FETCH DE TODAS AS REDAÇÕES
     func fetchEssays(userId: String) {
         guard !isLoading else { return }
@@ -99,13 +93,12 @@ class EssayViewModel: ObservableObject {
     }
     
     //MARK: - ORGANIZACAO DAS REDACOES
-    
-    
     private func updateGroupedEssaysAndMonths() {
         // Cache grouped essays
         let essaysWithValidDate = essays.filter { $0.creationDate != nil }
         let grouped = Dictionary(grouping: essaysWithValidDate, by: { monthYear(from: $0.creationDate ?? "") })
-             groupedEssays = grouped.mapValues {
+             
+        groupedEssays = grouped.mapValues {
             $0.sorted {
                 guard let date1 = dateFromString($0.creationDate!), let date2 = dateFromString($1.creationDate!) else { return false }
                 return date1 > date2
@@ -120,6 +113,46 @@ class EssayViewModel: ObservableObject {
         
         getNumbersOfEssayErrors()
     }
+    
+    // filtrar as redações com base no estado de correção e no texto da pesquisa
+    func filteredEssays(isCorrected: Bool) -> [EssayResponse] {
+        return essays
+            .filter { $0.isCorrected == isCorrected }
+            .filter { searchText.isEmpty || $0.title.localizedCaseInsensitiveContains(searchText) }
+            .filter { selectedTags.isEmpty || selectedTags.map{$0.lowercased()}.contains($0.tag.lowercased())} // Filtro de tags
+    }
+    
+    // filtrar as redações por mês e estado de correção
+    func filteredEssays(by monthYear: String, isCorrected: Bool) -> [EssayResponse]? {
+        return groupedEssays[monthYear]?
+            .filter { $0.isCorrected == isCorrected }
+            .filter { searchText.isEmpty || $0.title.localizedCaseInsensitiveContains(searchText) }
+            .filter { selectedTags.isEmpty || selectedTags.map{$0.lowercased()}.contains($0.tag.lowercased())} // Filtro de tags
+    }
+
+    
+    private func filteredEssaysByPicker() -> [EssayResponse] {
+        switch selectedFilterInPicker {
+        case .recent:
+            return essays
+                .enumerated() // Obtemos o índice de cada redação
+                .sorted { $0.offset > $1.offset } // Mais recentes (índices maiores)
+                .map { $0.element } // Retorna os elementos originais
+                .filter { $0.isCorrected == true }
+                .filter { searchText.isEmpty || $0.title.localizedCaseInsensitiveContains(searchText) }
+                .filter { selectedTags.isEmpty || selectedTags.map { $0.lowercased() }.contains($0.tag.lowercased()) }
+        case .old:
+            return essays
+                .enumerated()
+                .sorted { $0.offset < $1.offset } // Mais antigas (índices menores)
+                .map { $0.element }
+                .filter { $0.isCorrected == true }
+                .filter { searchText.isEmpty || $0.title.localizedCaseInsensitiveContains(searchText) }
+                .filter { selectedTags.isEmpty || selectedTags.map { $0.lowercased() }.contains($0.tag.lowercased()) }
+        }
+    }
+
+
     
     private func monthYear(from dateString: String) -> String {
         let dateFormatter = DateFormatter()

@@ -74,8 +74,8 @@ struct CreditsView: View {
 
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
-                    HStack {
-                        Image(systemName: "square.3.stack.3d")
+                    HStack(spacing: 8) {
+                        Image(.creditsStack)
                         Text("\(storeKitManager.creditBalance) \(storeKitManager.creditBalance == 1 ? "crédito" : "créditos")")
                     }
                     .fontWeight(.bold)

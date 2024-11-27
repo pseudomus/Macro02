@@ -31,8 +31,9 @@ struct TagComponent: View {
                 .foregroundStyle(labelColor)
                 .padding(.horizontal, 10)
                 .padding(.vertical, 5)
+                .fontWeight(.semibold)
                 .background(backColor)
-                .clipShape(.rect(cornerRadius: 7))
+                .clipShape(.capsule)
                 .foregroundStyle(.black)
         }.onAppear {
             switch label {
