@@ -131,6 +131,29 @@ class EssayViewModel: ObservableObject {
     }
 
     
+    private func filteredEssaysByPicker() -> [EssayResponse] {
+        switch selectedFilterInPicker {
+        case .recent:
+            return essays
+                .enumerated() // Obtemos o índice de cada redação
+                .sorted { $0.offset > $1.offset } // Mais recentes (índices maiores)
+                .map { $0.element } // Retorna os elementos originais
+                .filter { $0.isCorrected == true }
+                .filter { searchText.isEmpty || $0.title.localizedCaseInsensitiveContains(searchText) }
+                .filter { selectedTags.isEmpty || selectedTags.map { $0.lowercased() }.contains($0.tag.lowercased()) }
+        case .old:
+            return essays
+                .enumerated()
+                .sorted { $0.offset < $1.offset } // Mais antigas (índices menores)
+                .map { $0.element }
+                .filter { $0.isCorrected == true }
+                .filter { searchText.isEmpty || $0.title.localizedCaseInsensitiveContains(searchText) }
+                .filter { selectedTags.isEmpty || selectedTags.map { $0.lowercased() }.contains($0.tag.lowercased()) }
+        }
+    }
+
+
+    
     private func monthYear(from dateString: String) -> String {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
