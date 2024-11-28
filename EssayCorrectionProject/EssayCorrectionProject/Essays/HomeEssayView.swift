@@ -65,8 +65,8 @@ struct HomeEssayView: View {
             }
             .animation(.easeInOut(duration: 0.2), value: shouldAnimate)
             .padding(.bottom, 100)
-        }.scrollDisabled(isDragging)
-        
+        }
+        .scrollDisabled(isDragging)
         .background(Color.colorBgPrimary)
 
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -96,9 +96,6 @@ struct HomeEssayView: View {
                
                 essayViewModel.shouldFetchEssays = false
             }
-        }
-        .onAppear {
-            essayViewModel.fetchEssays(userId: "101")
         }
     }
     

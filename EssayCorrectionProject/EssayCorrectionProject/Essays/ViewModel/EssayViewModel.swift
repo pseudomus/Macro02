@@ -128,27 +128,39 @@ class EssayViewModel: ObservableObject {
             .filter { $0.isCorrected == isCorrected }
             .filter { searchText.isEmpty || $0.title.localizedCaseInsensitiveContains(searchText) }
             .filter { selectedTags.isEmpty || selectedTags.map{$0.lowercased()}.contains($0.tag.lowercased())} // Filtro de tags
+            //.filter { filteredEssaysByPicker() }
     }
 
     
     private func filteredEssaysByPicker() -> [EssayResponse] {
+        print("oiiii")
         switch selectedFilterInPicker {
         case .recent:
             return essays
-                .enumerated() // Obtemos o índice de cada redação
-                .sorted { $0.offset > $1.offset } // Mais recentes (índices maiores)
-                .map { $0.element } // Retorna os elementos originais
-                .filter { $0.isCorrected == true }
-                .filter { searchText.isEmpty || $0.title.localizedCaseInsensitiveContains(searchText) }
-                .filter { selectedTags.isEmpty || selectedTags.map { $0.lowercased() }.contains($0.tag.lowercased()) }
+                //.filter { $0.isCorrected == true }
+                //.filter { searchText.isEmpty || $0.title.localizedCaseInsensitiveContains(searchText) }
+                //.filter { selectedTags.isEmpty || selectedTags.map { $0.lowercased() }.contains($0.tag.lowercased()) }
+                .compactMap { essay -> (EssayResponse, Date)? in
+                    guard let dateString = essay.creationDate,
+                          let date = ISO8601DateFormatter().date(from: dateString) else { return nil }
+                    print("recent \(date)")
+                    return (essay, date)
+                }
+                .sorted { $0.1 > $1.1}
+                .map { $0.0 }
         case .old:
             return essays
-                .enumerated()
-                .sorted { $0.offset < $1.offset } // Mais antigas (índices menores)
-                .map { $0.element }
-                .filter { $0.isCorrected == true }
-                .filter { searchText.isEmpty || $0.title.localizedCaseInsensitiveContains(searchText) }
-                .filter { selectedTags.isEmpty || selectedTags.map { $0.lowercased() }.contains($0.tag.lowercased()) }
+                //.filter { $0.isCorrected == true }
+                //.filter { searchText.isEmpty || $0.title.localizedCaseInsensitiveContains(searchText) }
+                //.filter { selectedTags.isEmpty || selectedTags.map { $0.lowercased() }.contains($0.tag.lowercased()) }
+                .compactMap { essay -> (EssayResponse, Date)? in
+                    guard let dateString = essay.creationDate,
+                          let date = ISO8601DateFormatter().date(from: dateString) else { return nil }
+                    print("old \(date)")
+                    return (essay, date)
+                }
+                .sorted { $0.1 < $1.1}
+                .map { $0.0 }
         }
     }
 

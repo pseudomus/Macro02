@@ -89,7 +89,6 @@ struct DeletableCorrectedEssayCardView: View {
                 itemOffset = value.translation.width
             }
         }
-        print("Iniciou Drag")
         if value.translation.width < -30 {
             isDragging = true
         }
@@ -114,7 +113,6 @@ struct DeletableCorrectedEssayCardView: View {
             isSwiped = false
             itemOffset = 0
         }
-        print("Finalizou drag")
         isDragging = false
     }
     
