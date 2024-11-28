@@ -34,9 +34,13 @@ struct EvolutionNavigationStackView: View {
 struct EvolutionView: View {
     
     @EnvironmentObject var essayViewModel: EssayViewModel
-    @State var correctedEssays: Int = 0
+    @State var correctedEssays: Int = 1
     @State var topMistakes: [(title: String, averageCount: Int)] = []
     @State var size: CGSize = .zero
+    @State var circularGraphData: [(tag: String, count: Int)] = []
+    @State var graphValues: [Int] = []
+    @State var cardTitles: [String] = []
+    @State var bestAndWorstEssay: [EssayResponse?] = []
     
     var body: some View {
         VStack {
@@ -46,34 +50,42 @@ struct EvolutionView: View {
                         
                         EssayQuantityCardView(correctedEssays: correctedEssays)
                         
-                        EvolutionCardView(text: "EIXOS TEMÁTICOS")
-                            .padding(.top, 15)
+                        EvolutionCardView(
+                            text: "EIXOS TEMÁTICOS",
+                            graphValues: $graphValues,
+                            cardTitles: $cardTitles
+                        )
+                        .padding(.top, 15)
                         
                         EvolutionGraphView(failures: $essayViewModel.failures)
                             .padding(.top, 5)
-
+                        
                         WarningInterventionCardView()
                         
-                        VStack(alignment: .leading) {
-                            Text("Melhor Redação")
-                                .padding(.leading)
+                        if !essayViewModel.essays.isEmpty {
+                            VStack(alignment: .leading) {
+                                Text("Melhor Redação")
+                                    .padding(.leading)
+                                
+                                CorrectedEssayCardView(title: bestAndWorstEssay[1]?.title ?? "", description: bestAndWorstEssay[1]?.theme ?? "", dayOfCorrection: bestAndWorstEssay[1]?.creationDate ?? "", tags: bestAndWorstEssay[1]?.tag ?? "", isCorrected: true)
+                            }
                             
-                            CorrectedEssayCardView(dayOfCorrection: "20/11/2024")
-                        }
-                        
-                        VStack(alignment: .leading) {
-                            Text("Para aprimorar")
-                                .padding(.leading)
-                            
-                            CorrectedEssayCardView(dayOfCorrection: "20/11/2024")
+                            VStack(alignment: .leading) {
+                                Text("Para aprimorar")
+                                    .padding(.leading)
+                                
+                                CorrectedEssayCardView(title: bestAndWorstEssay[0]?.title ?? "", description: bestAndWorstEssay[0]?.theme ?? "", dayOfCorrection: bestAndWorstEssay[0]?.creationDate ?? "", tags: bestAndWorstEssay[0]?.tag ?? "", isCorrected: true)
+                            }
                         }
                     } else {
                         VStack {
                             Spacer()
-                            Image(.lapisinho2)
+                            Image("LapisEvolução")
                                 .resizable()
                                 .aspectRatio(contentMode: .fit)
+                                .frame(height: UIScreen.main.bounds.height * 0.3839)
                                 .padding()
+                            
                             Text("Corrija sua primeira redação para acompanhar sua evolução")
                                 .multilineTextAlignment(.center)
                                 .padding(.horizontal, 50)
@@ -81,21 +93,23 @@ struct EvolutionView: View {
                         }
                     }
                 }.padding(.bottom, 120)
-                .getSize { size in
-                    self.size = size
-                    print(essayViewModel.getNumbersOfEssayErrors())
-                }
+                    .getSize { size in
+                        self.size = size
+                        print(essayViewModel.getNumbersOfEssayErrors())
+                    }
             }.scrollDisabled(!(correctedEssays > 0))
                 .background(.colorBgPrimary)
             
         }
         .onAppear {
             essayViewModel.getNumbersOfEssayErrors()
-            correctedEssays = essayViewModel.getCount()
+            correctedEssays = 1
             
-            if !essayViewModel.essays.isEmpty {
-                topMistakes = essayViewModel.getTopEssayMistakes(in: essayViewModel.essays)
-            }
+            circularGraphData = essayViewModel.topRepeatedTags(in: essayViewModel.essays)
+            graphValues = circularGraphData.map { $0.count }
+            cardTitles = circularGraphData.map { $0.tag }
+            bestAndWorstEssay = essayViewModel.findEssayResponsesWithMostAndLeastCards(essayResponses: essayViewModel.essays)
+            
         }
     }
 }
@@ -105,8 +119,8 @@ struct EvolutionCardView: View {
     
     @State var text: String
     @State var colors: [Color] = [.red, .blue, .purple]
-    @State var graphValues: [Int] = [5, 2, 3]
-    @State var cardTitles: [String] = ["Argumentação", "Concordância", "Proposta de intervenção"]
+    @Binding var graphValues: [Int]
+    @Binding var cardTitles: [String]
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -145,7 +159,7 @@ struct EvolutionCardView: View {
                     .stroke(style: StrokeStyle(lineWidth: 1))
                     .foregroundColor(.white)
             )
-           
+            
         } .padding(.horizontal)
     }
 }

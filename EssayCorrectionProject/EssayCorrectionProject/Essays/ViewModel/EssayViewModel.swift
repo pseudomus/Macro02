@@ -213,6 +213,7 @@ class EssayViewModel: ObservableObject {
             }
         }
     }
+    
     func getTopEssayMistakes(in responses: [EssayResponse]) -> [(title: String, averageCount: Int)] {
 
         var titleCounts: [String: Int] = [:]
@@ -241,5 +242,39 @@ class EssayViewModel: ObservableObject {
         
         return topThree
     }
+    
+    func topRepeatedTags(in essays: [EssayResponse]) -> [(tag: String, count: Int)] {
+        
+        if essays.isEmpty { return [] }
+
+        let tagCounts = essays.reduce(into: [String: Int]()) { counts, essay in
+            counts[essay.tag, default: 0] += 1
+        }
+        
+        let topTags = tagCounts
+            .sorted(by: { $0.value > $1.value })
+            .prefix(3)
+            .map { (tag: $0.key, count: $0.value) }
+        
+        return Array(topTags)
+    }
+    
+    func findEssayResponsesWithMostAndLeastCards(essayResponses: [EssayResponse]) -> [EssayResponse?] {
+        
+        func totalCards(in response: EssayResponse) -> Int {
+            return response.competencies.reduce(0) { $0 + $1.cards.count }
+        }
+        
+        guard !essayResponses.isEmpty else {
+            return [nil, nil]
+        }
+        
+        let mostCardsResponse = essayResponses.max(by: { totalCards(in: $0) < totalCards(in: $1) })
+        let leastCardsResponse = essayResponses.min(by: { totalCards(in: $0) < totalCards(in: $1) })
+        
+        return [mostCardsResponse, leastCardsResponse]
+    }
+
+
 
 }
