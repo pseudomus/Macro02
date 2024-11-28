@@ -29,7 +29,7 @@ struct EssayCorrectionProjectApp: App {
                 .onAppear {
                     if userViewModel.user == nil { userViewModel.fetchUserData() }
                     // oculta a overlay após 2 segundos
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 4) {
                         showOverlay = false
                     }
                 }
@@ -46,27 +46,36 @@ struct EssayCorrectionProjectApp: App {
 }
 
 struct OverlayView: View {
+    
+    @State var isAnimating: Bool = false
+    @State var isScaleAnimating: Bool = false
+    
     var body: some View {
-        VStack {
-            Spacer()
+        VStack (alignment: .center){
             Image(.dissserta)
                 .resizable()
                 .aspectRatio(contentMode: .fit)
-                .frame(width: 120)
-            Spacer()
-            Text("Disserta")
-                .font(.title)
-                .fontDesign(.rounded)
-                .bold()
-                .foregroundStyle(.gray)
-                .padding(.bottom, 70)
+                .frame(width: 128, height: 128)
+                .scaleEffect(isScaleAnimating ? 1.8 : 1)
+                .onAppear {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                        isScaleAnimating.toggle()
+                    }
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 2.2) {
+                        isAnimating.toggle()
+                    }
+                }
+                .blur(radius: isAnimating ? 100 : 0)
+                
         }.frame(maxWidth: .infinity, maxHeight: .infinity)
             .background {
                 Color.white
                     .ignoresSafeArea()
             }
             .ignoresSafeArea()
-        .transition(.opacity)
-        .animation(.easeOut(duration: 0.5), value: UUID())
+            .opacity(isAnimating ? 0 : 1)
+//        .transition(.opacity)
+        .animation(.spring(duration: 1.1), value: isAnimating)
+        .animation(.spring(duration: 1.1), value: isScaleAnimating)
     }
 }

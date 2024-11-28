@@ -103,12 +103,12 @@ struct EvolutionView: View {
         }
         .onAppear {
             essayViewModel.getNumbersOfEssayErrors()
-            correctedEssays = 1
             
             circularGraphData = essayViewModel.topRepeatedTags(in: essayViewModel.essays)
             graphValues = circularGraphData.map { $0.count }
             cardTitles = circularGraphData.map { $0.tag }
             bestAndWorstEssay = essayViewModel.findEssayResponsesWithMostAndLeastCards(essayResponses: essayViewModel.essays)
+            correctedEssays = essayViewModel.essays.count
             
         }
     }

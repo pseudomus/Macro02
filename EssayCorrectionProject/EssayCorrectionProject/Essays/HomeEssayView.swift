@@ -7,12 +7,12 @@
 
 import SwiftUI
 
-
 struct HomeEssayView: View {
     @Environment(\.navigate) var navigate
     @EnvironmentObject var userViewModel: UserViewModel
     @EnvironmentObject var essayViewModel: EssayViewModel
     @EnvironmentObject var storeKitManager: StoreKitManager
+    
     
     @State private var screenSize: CGSize = .zero
     @State private var itemHeight: CGFloat = .zero
@@ -20,15 +20,38 @@ struct HomeEssayView: View {
     @State private var showingDeleteAlert = false
     @State private var essayToDelete: EssayResponse?
     
+    //Opções para gerenciamento de scroll da view
+    @State private var isDragging = false
+    @State private var isScrolling = false
+    @State private var lastOffset: CGFloat = 0
+    @State private var scrollCheckTimer: Timer? = nil
+    
+    
     var body: some View {
         
-        CustomHeaderView(showCredits: true, title: "Redações", filters: [],
-                         distanceContentFromTop: essayViewModel.isFirstTime ? 100 : 110,
-                         showSearchBar: !essayViewModel.isFirstTime,
-                         isScrollable: !essayViewModel.isFirstTime,
-                         numOfItems: essayViewModel.essays.count,
-                         itemsHeight: itemHeight) { shouldAnimate in
-            
+        CustomHeaderView(
+            showCredits: true,
+            title: "Redações",
+            filters: TagCases.allCases.map { $0.rawValue }, // Adiciona as tags no filtro
+            distanceContentFromTop: essayViewModel.isFirstTime ? 100 : 110,
+            showSearchBar: !essayViewModel.isFirstTime,
+            isScrollable: !essayViewModel.isFirstTime,
+            numOfItems: essayViewModel.essays.count,
+            itemsHeight: itemHeight,
+            onSearch: { query in
+                essayViewModel.searchText = query
+            },
+            onSelectFilter: { selectedFilter in
+                if let index = essayViewModel.selectedTags.firstIndex(of: selectedFilter) {
+                    essayViewModel.selectedTags.remove(at: index)
+                    print(essayViewModel.selectedTags)
+
+                } else {
+                    essayViewModel.selectedTags.append(selectedFilter)
+                    print(essayViewModel.selectedTags)
+                }
+            }
+        ) { shouldAnimate in
             VStack {
                 correctionButton
                     .offset(y: shouldAnimate ? -250 : 0)
@@ -43,6 +66,9 @@ struct HomeEssayView: View {
             .animation(.easeInOut(duration: 0.2), value: shouldAnimate)
             .padding(.bottom, 100)
         }
+        .scrollDisabled(isDragging)
+        .background(Color.colorBgPrimary)
+
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .getSize { size in
             screenSize = size
@@ -57,7 +83,6 @@ struct HomeEssayView: View {
                 guard let user = userViewModel.user else { return }
                 essayViewModel.fetchEssays(userId: "\(user.id)") // puxa redações
                 Task { await storeKitManager.loadCreditBalance(userId: user.id) } // carrega créditos
-
             }
         }
         
@@ -93,7 +118,7 @@ struct HomeEssayView: View {
                     .fontWeight(.bold)
                 Spacer(minLength: screenSize.width / 2.7)
                 if !essayViewModel.isFirstTime {
-                    Image(.lapisinho)
+                    Image(.lapisinhoHome)
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .matchedGeometryEffect(id: "lapis", in: animation)
@@ -110,10 +135,11 @@ struct HomeEssayView: View {
     
     private var firstTimeView: some View {
         ZStack {
-            Image(.lapisinho)
-                .offset(x: -screenSize.width / 2.4)
+            Image(.lapisinhoHome)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .offset(x: -screenSize.width / 2.3)
                 .matchedGeometryEffect(id: "lapis", in: animation)
-            
             VStack {
                 HStack(spacing: 10) {
                     Text("--")
@@ -125,23 +151,38 @@ struct HomeEssayView: View {
                 .offset(y: -screenSize.height / 25)
             }
         }
+        .offset(y: -screenSize.height / 15)
     }
     
     private var essayListView: some View {
         VStack(spacing: 15) {
             // REDAÇÃO CARREGANDO
-            ForEach(essayViewModel.essays.filter { $0.isCorrected == false }, id: \.id) { temporaryEssay in
+            ForEach(essayViewModel.filteredEssays(isCorrected: false), id: \.id) { temporaryEssay in
                 essayButton(for: temporaryEssay)
             }
             
+            // Picker para selecionar entre recentes e antigos
+            Picker("Filtrar", selection: $essayViewModel.selectedFilterInPicker ) {
+                ForEach(FilterOption.allCases) { filter in
+                    Text(filter.rawValue).tag(filter)
+                }
+            }
+            .tint(Color.colorBrandPrimary700)
+            .frame(maxWidth: .infinity, alignment: .trailing)
+            .padding(.trailing)
+
+
             // REDAÇÕES PRONTAS
             ForEach(self.essayViewModel.sortedMonths, id: \.self) { monthYear in
-                Section(header: Text(monthYear)
-                    .font(.headline)
-                    .textCase(nil)
-                    .foregroundStyle(.primary)
+                Section(header:
+                    Text(monthYear)
+                        .font(.headline)
+                        .textCase(nil)
+                        .foregroundStyle(.primary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.leading)
                 ) {
-                    if let essaysForMonth = self.essayViewModel.groupedEssays[monthYear]?.filter({ $0.isCorrected == true }) {
+                    if let essaysForMonth = self.essayViewModel.filteredEssays(by: monthYear, isCorrected: true) {
                         ForEach(essaysForMonth, id: \.id) { essay in
                             essayButton(for: essay)
                         }
@@ -157,27 +198,53 @@ struct HomeEssayView: View {
 
     
     private func essayButton(for essay: EssayResponse) -> some View {
-        Button {
-            if essay.isCorrected ?? false {
-                navigate(.essays(.esssayCorrected(essayResponse: essay, text: essay.content!))) // redação pronta
-            } else {
-                guard let content = essay.content else { return }
-                navigate(.essays(.esssayCorrected(text: content))) // redação carregando
-            }
-        } label: {
-            CorrectedEssayCardView(
+        
+            DeletableCorrectedEssayCardView(
                 title: essay.title.isEmpty ? essay.content ?? "" : essay.title,
                 description: essay.theme,
                 dayOfCorrection: essay.creationDate ?? "",
                 tags: essay.tag,
-                isCorrected: essay.isCorrected ?? false
+                isCorrected: essay.isCorrected ?? false,
+                isScrolling: $isScrolling,
+                isDragging: $isDragging
+            ) {
+                if essay.isCorrected ?? false {
+                    navigate(.essays(.esssayCorrected(essayResponse: essay, text: essay.content!))) // redação pronta
+                } else {
+                    guard let content = essay.content else { return }
+                    navigate(.essays(.esssayCorrected(text: content))) // redação carregando
+                }
+            } delete: {
+                essayViewModel.deleteEssay(withId: String(essay.id!))
+            }.background(
+                GeometryReader { geometry in
+                    Color.clear
+                        .onChange(of: geometry.frame(in: .global).origin.y) { _ , newOffset in
+                            detectScrollingChange(newOffset: newOffset)
+                        }
+                }
             )
-        }
-        .simultaneousGesture(LongPressGesture().onEnded { _ in
-            showDeleteConfirmation(for: essay)
-        })
         
     }
+    
+    private func detectScrollingChange(newOffset: CGFloat) {
+        // Detect if scrolling is happening
+        if newOffset != lastOffset {
+            if !isScrolling {
+                isScrolling = true
+            }
+            
+            // Reset the timer whenever movement is detected
+            scrollCheckTimer?.invalidate()
+            scrollCheckTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: false) { _ in
+                isScrolling = false
+            }
+        }
+        
+        // Update the last offset
+        lastOffset = newOffset
+    }
+    
     // MARK: - ALERT
     private var deleteEssayAlert: Alert {
         Alert(title: Text("Deletar redação"),

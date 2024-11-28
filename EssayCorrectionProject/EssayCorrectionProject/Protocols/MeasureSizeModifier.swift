@@ -21,7 +21,6 @@ struct MeasureSizeModifier: ViewModifier {
                         }
                         .onChange(of: geometry.size) { oldValue, newValue in
                             if oldValue != newValue {
-                                print("Caso 2", oldValue, newValue)
                                 callback(geometry.size)
                             }
                         }
