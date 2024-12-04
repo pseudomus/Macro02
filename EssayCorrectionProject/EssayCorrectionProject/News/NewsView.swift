@@ -30,6 +30,7 @@ class ArticleViewModel: ObservableObject {
     
     init(container: DependencyContainer = .shared) {
         self.articleService = container.articleService
+        self.fetcharticles()
     }
     
     func fetcharticles()  {
@@ -97,7 +98,8 @@ struct NewsView: View {
                 CustomHeaderView(
                     showCredits: false,
                     title: "Notícias",
-                    filters: uniqueCategories(from: viewModel.articles), // pegando categorias únicas
+                    filters: uniqueCategories(from: viewModel.articles),
+                    showFilters: uniqueCategories(from: viewModel.articles),// pegando categorias únicas
                     showFiltersBeforeSwipingUp: true,
                     distanceContentFromTop: 100,
                     showSearchBar: false,
@@ -169,9 +171,9 @@ struct NewsView: View {
                 }.scrollDisabled(viewModel.isLoading || (viewModel.errorMessage != nil))
                 
             }.background(.colorBgPrimary)
-                .onAppear {
-                    viewModel.fetcharticles()
-                }
+//                .onAppear {
+//                    viewModel.fetcharticles()
+//                }
         }
     }
     
@@ -181,6 +183,8 @@ struct NewsView: View {
         let uniqueCategories = Array(Set(allCategories)).sorted()
         // remover o "top" - api problemas
         let filteredCategories = uniqueCategories.filter { $0 != "top" }
+        print("categorias")
+        print(filteredCategories)
         return filteredCategories.map { translateCategory($0) }
     }
     
