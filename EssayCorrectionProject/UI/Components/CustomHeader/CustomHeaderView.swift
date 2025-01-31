@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-
+import UIKit
 
 
 // MARK: - CustomHeaderView
@@ -124,8 +124,9 @@ struct CustomHeaderView<Content: View>: View {
     }
 
     // MARK: - HEADER GRANDE
+
     @ViewBuilder
-    private func headerBackground(in geometry: GeometryProxy) -> some View {
+    func headerBackground(in geometry: GeometryProxy) -> some View {
         GeometryReader { reader in
             let minY = reader.frame(in: .global).minY
             let height = geometry.size.height / 5
@@ -154,7 +155,6 @@ struct CustomHeaderView<Content: View>: View {
         }
         .frame(height: geometry.size.height / 5)
     }
-
     
     // MARK: - HEADER PEQUENO
     @ViewBuilder
@@ -320,7 +320,7 @@ struct CustomHeaderView<Content: View>: View {
    }
 
     // MARK: - Helper Methods
-    private func updateOpacity(for offset: CGFloat, height: CGFloat) {
+    func updateOpacity(for offset: CGFloat, height: CGFloat) {
         if offset < -20 {
             opacity = offset > 0 ? Double((30 - offset) / 30) : 1
         } else {
@@ -329,19 +329,19 @@ struct CustomHeaderView<Content: View>: View {
         scrollOffset = offset
     }
 
-    private func clearSearch() {
+    func clearSearch() {
         searchQuery = ""
         searchFieldIsFocused = false
     }
 
-    private func cancelSearch() {
+    func cancelSearch() {
         searchQuery = ""
         searchFieldIsFocused = false
         onCancelSearch?()  // Só chama se existir
     }
     
     // Função auxiliar para criar o ScrollView de filtros
-    private func filterScrollView(for filters: [String]) -> some View {
+    func filterScrollView(for filters: [String]) -> some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack {
                 ForEach(filters, id: \.self) { filter in
@@ -371,14 +371,4 @@ struct CustomHeaderView<Content: View>: View {
      .environmentObject(EssayViewModel())
      .environmentObject(StoreKitManager())
 }
-struct BlurView: UIViewRepresentable {
-    var style: UIBlurEffect.Style
 
-    func makeUIView(context: Context) -> UIVisualEffectView {
-        return UIVisualEffectView(effect: UIBlurEffect(style: style))
-    }
-
-    func updateUIView(_ uiView: UIVisualEffectView, context: Context) {
-        uiView.effect = UIBlurEffect(style: style)
-    }
-}

@@ -59,9 +59,36 @@
 			);
 			target = E8BAA93B2CB7026C001C0418 /* EssayCorrectionProject */;
 		};
+		E06771C12D4C489A00D0A3FB /* Exceptions for "UI" folder in "EssayCorrectionProject" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Components/CustomHeader/CustomHeaderView.swift,
+				Components/CustomHeader/HeaderComponents/BlurView.swift,
+				Views/News/View/NewsView.swift,
+				Views/Repertoire/Components/RepertoireCardView.swift,
+				Views/Repertoire/Components/RepertoireFixedFilter.swift,
+				Views/Repertoire/View/RepertoireNavigationStackView.swift,
+				Views/Repertoire/View/RepertoireView.swift,
+				Views/Repertoire/ViewModel/RepertoireViewModel.swift,
+			);
+			target = E8BAA93B2CB7026C001C0418 /* EssayCorrectionProject */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		E06771BE2D4C489A00D0A3FB /* UI */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				E06771C12D4C489A00D0A3FB /* Exceptions for "UI" folder in "EssayCorrectionProject" target */,
+			);
+			path = UI;
+			sourceTree = "<group>";
+		};
+		E06771CD2D4C4D2300D0A3FB /* Extensions */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Extensions;
+			sourceTree = "<group>";
+		};
 		E8BAA93E2CB7026C001C0418 /* EssayCorrectionProject */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
@@ -124,6 +151,8 @@
 		E8BAA9332CB7026C001C0418 = {
 			isa = PBXGroup;
 			children = (
+				E06771CD2D4C4D2300D0A3FB /* Extensions */,
+				E06771BE2D4C489A00D0A3FB /* UI */,
 				E8BAA93E2CB7026C001C0418 /* EssayCorrectionProject */,
 				E8BAA94F2CB7026E001C0418 /* EssayCorrectionProjectTests */,
 				E8BAA9592CB7026E001C0418 /* EssayCorrectionProjectUITests */,
@@ -158,6 +187,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
+				E06771CD2D4C4D2300D0A3FB /* Extensions */,
 				E8BAA93E2CB7026C001C0418 /* EssayCorrectionProject */,
 			);
 			name = EssayCorrectionProject;
