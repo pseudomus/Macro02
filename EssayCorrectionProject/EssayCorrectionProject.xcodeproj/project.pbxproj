@@ -64,9 +64,16 @@
 			membershipExceptions = (
 				Components/CustomHeader/CustomHeaderView.swift,
 				Components/CustomHeader/HeaderComponents/BlurView.swift,
-				onboard/Components/OnboardCardView.swift,
-				onboard/Components/Wave.swift,
-				onboard/Onboarding/OnboardingView.swift,
+				Onboarding/Components/OnboardCardView.swift,
+				Onboarding/Components/Wave.swift,
+				Onboarding/View/OnboardingView.swift,
+				Views/Evolution/Components/CircularGraph/CircularGraphData.swift,
+				Views/Evolution/Components/CircularGraph/CircularGraphView.swift,
+				Views/Evolution/Components/CompetenceFailure.swift,
+				Views/Evolution/Components/EvolutionCardView.swift,
+				Views/Evolution/Components/EvolutionGraphView.swift,
+				Views/Evolution/View/EvolutionView.swift,
+				Views/Evolution/ViewModel/EvolutioViewModel.swift,
 				Views/News/Components/NewsCardView.swift,
 				Views/News/View/NewsStackView.swift,
 				Views/News/View/NewsView.swift,
@@ -112,6 +119,11 @@
 		E0F64B842D4C56C800F4EB3A /* Protocols */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = Protocols;
+			sourceTree = "<group>";
+		};
+		E0F64B972D4C585700F4EB3A /* Helpers */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Helpers;
 			sourceTree = "<group>";
 		};
 		E8BAA93E2CB7026C001C0418 /* EssayCorrectionProject */ = {
@@ -176,6 +188,7 @@
 		E8BAA9332CB7026C001C0418 = {
 			isa = PBXGroup;
 			children = (
+				E0F64B972D4C585700F4EB3A /* Helpers */,
 				E0F64B742D4C54C300F4EB3A /* Model */,
 				E0F64B682D4C53C600F4EB3A /* Services */,
 				E06771CD2D4C4D2300D0A3FB /* Extensions */,
@@ -219,6 +232,7 @@
 				E0F64B682D4C53C600F4EB3A /* Services */,
 				E0F64B742D4C54C300F4EB3A /* Model */,
 				E0F64B842D4C56C800F4EB3A /* Protocols */,
+				E0F64B972D4C585700F4EB3A /* Helpers */,
 				E8BAA93E2CB7026C001C0418 /* EssayCorrectionProject */,
 			);
 			name = EssayCorrectionProject;

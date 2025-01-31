@@ -9,11 +9,6 @@ import SwiftUI
 import Charts
 import Foundation
 
-struct CompetenceFailure: Hashable{
-    var errorsCount : Int
-    var competency : Int
-}
-
 struct BarChart: View {
     
     @State var height: CGFloat
