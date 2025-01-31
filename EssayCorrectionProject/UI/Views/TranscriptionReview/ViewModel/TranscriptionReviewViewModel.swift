@@ -1,12 +1,11 @@
 //
-//  Words.swift
+//  TranscriptionReviewViewModel.swift
 //  EssayCorrectionProject
 //
-//  Created by Leonardo Mesquita Alves on 08/11/24.
+//  Created by Luca Lacerda on 31/01/25.
 //
 
-
-//: [Previous](@previous)
+import Foundation
 
 import SwiftUI
 import UIKit
@@ -49,9 +48,4 @@ class TranscriptionViewModel: ObservableObject {
         return recognizer.dominantLanguage
     }
     
-}
-
-struct Words {
-    var range: NSRange?
-    var word:  String
 }

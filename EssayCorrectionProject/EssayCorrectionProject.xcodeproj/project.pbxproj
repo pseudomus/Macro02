@@ -38,42 +38,39 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		26AE45312CE67146004B0637 /* Exceptions for "EssayCorrectionProject" folder in "EssayCorrectionProjectTests" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				StoreKitConfiguration.storekit,
-			);
-			target = E8BAA94B2CB7026E001C0418 /* EssayCorrectionProjectTests */;
-		};
-		26AE45322CE67146004B0637 /* Exceptions for "EssayCorrectionProject" folder in "EssayCorrectionProjectUITests" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				StoreKitConfiguration.storekit,
-			);
-			target = E8BAA9552CB7026E001C0418 /* EssayCorrectionProjectUITests */;
-		};
-		C30532B52CD2E9230095BCBB /* Exceptions for "EssayCorrectionProject" folder in "EssayCorrectionProject" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Info.plist,
-			);
-			target = E8BAA93B2CB7026C001C0418 /* EssayCorrectionProject */;
-		};
 		E06771C12D4C489A00D0A3FB /* Exceptions for "UI" folder in "EssayCorrectionProject" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				Components/BorderedContainerComponent.swift,
 				Components/CustomHeader/CustomHeaderView.swift,
 				Components/CustomHeader/HeaderComponents/BlurView.swift,
 				Onboarding/Components/OnboardCardView.swift,
 				Onboarding/Components/Wave.swift,
 				Onboarding/View/OnboardingView.swift,
+				Views/CorrectionFlow/Components/ButtonModeCorrectionModal.swift,
+				Views/CorrectionFlow/Components/CorrectionModalBaseView.swift,
+				Views/CorrectionFlow/Components/CorrectionMode.swift,
+				Views/CorrectionFlow/Components/CustomTextFieldCorrectionModal.swift,
+				Views/CorrectionFlow/Components/ModalHeaderView.swift,
+				Views/CorrectionFlow/View/EssayCorrectionFlowView.swift,
+				Views/CorrectionFlow/ViewModel/CorrectionFlowViewModel.swift,
+				Views/Credits/Components/BuyCreditsButton.swift,
+				Views/Credits/Components/SnakeButtonGridView.swift,
+				Views/Credits/View/CreditsView.swift,
+				Views/Credits/ViewModel/CreditsViewModel.swift,
+				Views/Evolution/Components/BarChart.swift,
 				Views/Evolution/Components/CircularGraph/CircularGraphData.swift,
 				Views/Evolution/Components/CircularGraph/CircularGraphView.swift,
-				Views/Evolution/Components/CompetenceFailure.swift,
 				Views/Evolution/Components/EvolutionCardView.swift,
 				Views/Evolution/Components/EvolutionGraphView.swift,
 				Views/Evolution/View/EvolutionView.swift,
 				Views/Evolution/ViewModel/EvolutioViewModel.swift,
+				Views/FeedbackView/Components/FeedbackSelectorComponent.swift,
+				Views/FeedbackView/View/FeedvackView.swift,
+				Views/FeedbackView/ViewModel/FeedbackViewModel.swift,
+				Views/Login/Components/LoginBackground.swift,
+				Views/Login/View/LoginView.swift,
+				Views/Login/ViewModel/LoginViewModel.swift,
 				Views/News/Components/NewsCardView.swift,
 				Views/News/View/NewsStackView.swift,
 				Views/News/View/NewsView.swift,
@@ -83,12 +80,40 @@
 				Views/Repertoire/View/RepertoireNavigationStackView.swift,
 				Views/Repertoire/View/RepertoireView.swift,
 				Views/Repertoire/ViewModel/RepertoireViewModel.swift,
+				Views/Scanner/Coordinator/DocumentScannerCoordinator.swift,
+				Views/Scanner/View/DocumentScannerView.swift,
+				Views/Scanner/ViewController/ScannerViewController.swift,
+				Views/TranscriptionReview/Components/HighlightedTextView.swift,
+				Views/TranscriptionReview/Components/WordSuggestionModalView.swift,
+				Views/TranscriptionReview/View/TranscriptionReviewView.swift,
+				Views/TranscriptionReview/ViewModel/TranscriptionReviewViewModel.swift,
 				Views/User/Components/LogoutButton.swift,
 				Views/User/Components/ProfileTextBox.swift,
 				Views/User/View/ProfileView.swift,
-				Views/User/ViewModel/UserViewModel.swift,
+				Views/User/ViewModel/UserViewViewModel.swift,
 			);
 			target = E8BAA93B2CB7026C001C0418 /* EssayCorrectionProject */;
+		};
+		E08F81022D4D50B600D54EF1 /* Exceptions for "EssayCorrectionProject" folder in "EssayCorrectionProject" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = E8BAA93B2CB7026C001C0418 /* EssayCorrectionProject */;
+		};
+		E0ECEC872D4D4FCC00052A25 /* Exceptions for "EssayCorrectionProject" folder in "EssayCorrectionProjectTests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				StoreKitConfiguration.storekit,
+			);
+			target = E8BAA94B2CB7026E001C0418 /* EssayCorrectionProjectTests */;
+		};
+		E0ECEC882D4D4FCC00052A25 /* Exceptions for "EssayCorrectionProject" folder in "EssayCorrectionProjectUITests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				StoreKitConfiguration.storekit,
+			);
+			target = E8BAA9552CB7026E001C0418 /* EssayCorrectionProjectUITests */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
@@ -104,6 +129,16 @@
 		E06771CD2D4C4D2300D0A3FB /* Extensions */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = Extensions;
+			sourceTree = "<group>";
+		};
+		E0ECEAF92D4D448B00052A25 /* Utility */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Utility;
+			sourceTree = "<group>";
+		};
+		E0ECEC822D4D4EA600052A25 /* App */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = App;
 			sourceTree = "<group>";
 		};
 		E0F64B682D4C53C600F4EB3A /* Services */ = {
@@ -134,9 +169,9 @@
 		E8BAA93E2CB7026C001C0418 /* EssayCorrectionProject */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				C30532B52CD2E9230095BCBB /* Exceptions for "EssayCorrectionProject" folder in "EssayCorrectionProject" target */,
-				26AE45312CE67146004B0637 /* Exceptions for "EssayCorrectionProject" folder in "EssayCorrectionProjectTests" target */,
-				26AE45322CE67146004B0637 /* Exceptions for "EssayCorrectionProject" folder in "EssayCorrectionProjectUITests" target */,
+				E08F81022D4D50B600D54EF1 /* Exceptions for "EssayCorrectionProject" folder in "EssayCorrectionProject" target */,
+				E0ECEC872D4D4FCC00052A25 /* Exceptions for "EssayCorrectionProject" folder in "EssayCorrectionProjectTests" target */,
+				E0ECEC882D4D4FCC00052A25 /* Exceptions for "EssayCorrectionProject" folder in "EssayCorrectionProjectUITests" target */,
 			);
 			path = EssayCorrectionProject;
 			sourceTree = "<group>";
@@ -193,6 +228,8 @@
 		E8BAA9332CB7026C001C0418 = {
 			isa = PBXGroup;
 			children = (
+				E0ECEC822D4D4EA600052A25 /* App */,
+				E0ECEAF92D4D448B00052A25 /* Utility */,
 				E0F64BAF2D4C5A3200F4EB3A /* Routes */,
 				E0F64B972D4C585700F4EB3A /* Helpers */,
 				E0F64B742D4C54C300F4EB3A /* Model */,
@@ -235,6 +272,8 @@
 			);
 			fileSystemSynchronizedGroups = (
 				E06771CD2D4C4D2300D0A3FB /* Extensions */,
+				E0ECEAF92D4D448B00052A25 /* Utility */,
+				E0ECEC822D4D4EA600052A25 /* App */,
 				E0F64B682D4C53C600F4EB3A /* Services */,
 				E0F64B742D4C54C300F4EB3A /* Model */,
 				E0F64B842D4C56C800F4EB3A /* Protocols */,

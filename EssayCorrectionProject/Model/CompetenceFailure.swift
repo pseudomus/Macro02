@@ -1,8 +1,8 @@
 //
-//  CompetenceFailure.swift
+//  CompetenceFailura.swift
 //  EssayCorrectionProject
 //
-//  Created by Luca Lacerda on 30/01/25.
+//  Created by Luca Lacerda on 31/01/25.
 //
 
 import Foundation
