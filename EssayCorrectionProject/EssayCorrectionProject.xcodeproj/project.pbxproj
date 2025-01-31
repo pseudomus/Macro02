@@ -64,12 +64,22 @@
 			membershipExceptions = (
 				Components/CustomHeader/CustomHeaderView.swift,
 				Components/CustomHeader/HeaderComponents/BlurView.swift,
+				onboard/Components/OnboardCardView.swift,
+				onboard/Components/Wave.swift,
+				onboard/Onboarding/OnboardingView.swift,
+				Views/News/Components/NewsCardView.swift,
+				Views/News/View/NewsStackView.swift,
 				Views/News/View/NewsView.swift,
+				Views/News/ViewModel/NewsViewModel.swift,
 				Views/Repertoire/Components/RepertoireCardView.swift,
 				Views/Repertoire/Components/RepertoireFixedFilter.swift,
 				Views/Repertoire/View/RepertoireNavigationStackView.swift,
 				Views/Repertoire/View/RepertoireView.swift,
 				Views/Repertoire/ViewModel/RepertoireViewModel.swift,
+				Views/User/Components/LogoutButton.swift,
+				Views/User/Components/ProfileTextBox.swift,
+				Views/User/View/ProfileView.swift,
+				Views/User/ViewModel/UserViewModel.swift,
 			);
 			target = E8BAA93B2CB7026C001C0418 /* EssayCorrectionProject */;
 		};
@@ -87,6 +97,21 @@
 		E06771CD2D4C4D2300D0A3FB /* Extensions */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = Extensions;
+			sourceTree = "<group>";
+		};
+		E0F64B682D4C53C600F4EB3A /* Services */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Services;
+			sourceTree = "<group>";
+		};
+		E0F64B742D4C54C300F4EB3A /* Model */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Model;
+			sourceTree = "<group>";
+		};
+		E0F64B842D4C56C800F4EB3A /* Protocols */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Protocols;
 			sourceTree = "<group>";
 		};
 		E8BAA93E2CB7026C001C0418 /* EssayCorrectionProject */ = {
@@ -151,6 +176,8 @@
 		E8BAA9332CB7026C001C0418 = {
 			isa = PBXGroup;
 			children = (
+				E0F64B742D4C54C300F4EB3A /* Model */,
+				E0F64B682D4C53C600F4EB3A /* Services */,
 				E06771CD2D4C4D2300D0A3FB /* Extensions */,
 				E06771BE2D4C489A00D0A3FB /* UI */,
 				E8BAA93E2CB7026C001C0418 /* EssayCorrectionProject */,
@@ -158,6 +185,7 @@
 				E8BAA9592CB7026E001C0418 /* EssayCorrectionProjectUITests */,
 				26C25DBD2CD83DFB00CB06A7 /* Frameworks */,
 				E8BAA93D2CB7026C001C0418 /* Products */,
+				E0F64B842D4C56C800F4EB3A /* Protocols */,
 			);
 			sourceTree = "<group>";
 		};
@@ -188,6 +216,9 @@
 			);
 			fileSystemSynchronizedGroups = (
 				E06771CD2D4C4D2300D0A3FB /* Extensions */,
+				E0F64B682D4C53C600F4EB3A /* Services */,
+				E0F64B742D4C54C300F4EB3A /* Model */,
+				E0F64B842D4C56C800F4EB3A /* Protocols */,
 				E8BAA93E2CB7026C001C0418 /* EssayCorrectionProject */,
 			);
 			name = EssayCorrectionProject;

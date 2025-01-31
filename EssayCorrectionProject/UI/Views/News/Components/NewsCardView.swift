@@ -1,5 +1,5 @@
 //
-//  NewsCardView.swift
+//  File.swift
 //  EssayCorrectionProject
 //
 //  Created by Luca Lacerda on 30/01/25.

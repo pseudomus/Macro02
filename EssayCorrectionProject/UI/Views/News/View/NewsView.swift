@@ -8,22 +8,6 @@
 import SwiftUI
 import  Combine
 
-// MODEL
-struct Article: Codable {
-    let article_id: String
-    let title: String
-    let source_name: String
-    let source_icon: String?
-    let pubDate: String
-    let category: [String]
-    let image_url: String?
-    let link: String
-}
-
-
-
-
-
 struct NewsView: View {
     @StateObject private var viewModel = NewsViewModel()
     @State private var selectedFilters: Set<String> = []

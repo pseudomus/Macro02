@@ -5,6 +5,8 @@
 //  Created by Luca Lacerda on 30/01/25.
 //
 
+import SwiftUI
+
 struct NewsNavigationStackView: View {
     
     @State var baseRouter: [BaseRoute] = []

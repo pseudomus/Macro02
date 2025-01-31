@@ -1,11 +1,13 @@
 //
-//  Untitled.swift
+//  NewsViewModel2.swift
 //  EssayCorrectionProject
 //
 //  Created by Luca Lacerda on 30/01/25.
 //
 
-class NewsViewModel: ObservableObject {
+import Foundation
+
+public class NewsViewModel: ObservableObject {
     @Published var articles: [Article] = []
     @Published var isLoading: Bool = false
     @Published var errorMessage: String?
